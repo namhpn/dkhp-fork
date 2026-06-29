@@ -1,6 +1,5 @@
 import { AgGridReact } from 'ag-grid-react';
 import { ClassModel } from 'types';
-import { useDrawerStore } from '../../../zus';
 import './styles.css';
 import { useGridOptions } from './utils';
 
@@ -23,16 +22,9 @@ function AgGrid() {
     rowData,
     getRowId,
   } = useGridOptions();
-  const isDrawerOpen = useDrawerStore((s) => s.isDrawerOpen);
 
   return (
-    <div
-      className="ag-theme-alpine"
-      style={{
-        height: `calc(100vh - ${isDrawerOpen ? 50 : 18}px)`,
-        fontFamily: 'inherit',
-      }}
-    >
+    <div className="ag-theme-alpine course-grid">
       <AgGridReact<ClassModel>
         ref={agGridRef}
         rowData={rowData}
@@ -40,8 +32,8 @@ function AgGrid() {
         defaultColDef={defaultColDef}
         columnDefs={columnDefs}
         autoGroupColumnDef={autoGroupColumnDef}
-        headerHeight={30}
-        rowHeight={30}
+        headerHeight={42}
+        rowHeight={34}
         enableCellTextSelection={true}
         suppressAnimationFrame={true}
         rowSelection="multiple"
@@ -51,8 +43,7 @@ function AgGrid() {
         getMainMenuItems={getMainMenuItems}
         getContextMenuItems={getContextMenuItems}
         statusBar={statusBar}
-        sideBar={sideBar} // TODO: open/close sideBar by keyboard shortcut
-        // set this to "never" to display grouping info at sideBar only, for a more minimal UI
+        sideBar={sideBar}
         rowGroupPanelShow="never"
         suppressDragLeaveHidesColumns={true}
         rowClass="ag-cell-normal"

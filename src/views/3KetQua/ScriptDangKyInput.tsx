@@ -17,7 +17,7 @@ const COPIED_TOOLTIP = 'Đã sao chép';
 const getReadonlySx = (theme: Theme) => ({
   '& .MuiInputBase-input': {
     color: theme.palette.text.secondary,
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor: '#f8fafc',
     cursor: 'default',
   },
 });
@@ -27,7 +27,7 @@ const CustomInputComponent: InputBaseProps['inputComponent'] = forwardRef<
   HTMLAttributes<HTMLTextAreaElement>
 >((props, ref) => (
   <Tooltip title="Xem video hướng dẫn ở B1 để biết cách dùng.">
-    <textarea ref={ref} style={{ resize: 'vertical' }} {...props} />
+    <textarea ref={ref} style={{ resize: 'vertical', minHeight: 92 }} {...props} />
   </Tooltip>
 ));
 
@@ -38,7 +38,7 @@ const CustomInputComponent2: InputBaseProps['inputComponent'] = forwardRef<
   const khongXepLop = useTkbStore(selectIsChiVeTkb);
   return (
     <Tooltip title={khongXepLop ? 'Mỗi mã lớp một hàng, hoặc cách nhau bằng khoảng trắng, hoặc dấu phẩy' : ''}>
-      <textarea ref={ref} style={{ resize: 'vertical' }} {...props} />
+      <textarea ref={ref} style={{ resize: 'vertical', minHeight: 92 }} {...props} />
     </Tooltip>
   );
 });
@@ -76,23 +76,24 @@ export function ScriptDangKyInput() {
   const [isCopying, setIsCopying] = useState(false);
   const { hasLop, scriptInputValue } = useCommon();
   return (
-    <Grid item xs={6} style={{ paddingRight: 0 }}>
+    <Grid item xs={12} md={6} style={{ paddingRight: 0 }}>
       <TextField
-        label={'Script đăng ký nhanh'}
+        label="Script đăng ký nhanh"
         fullWidth
-        size="small"
         multiline
-        rows={2}
-        variant="outlined"
+        minRows={4}
+        maxRows={10}
         value={scriptInputValue}
         disabled={!hasLop}
         inputProps={{ readOnly: true }}
         sx={getReadonlySx(theme)}
+        helperText="Sao chép và chạy trên trang đăng ký học phần của UIT theo hướng dẫn."
         InputProps={{
           inputComponent: CustomInputComponent,
           endAdornment: hasLop ? (
             <Tooltip title={isCopying ? COPIED_TOOLTIP : DEFAULT_TOOLTIP}>
               <IconButton
+                aria-label="Sao chép script đăng ký nhanh"
                 onClick={() => {
                   navigator.clipboard.writeText(scriptInputValue).then(
                     () => {
@@ -124,29 +125,28 @@ export function DanhSachLopInput() {
   const useToolXepLop = !isChiVeTkb;
 
   return (
-    <Grid item xs={6}>
-      {/* TODO: refactor the mess */}
-
+    <Grid item xs={12} md={6}>
       <TextField
         label="Danh sách mã lớp"
         fullWidth
-        size="small"
         multiline
-        inputProps={{ readOnly: useToolXepLop, style: { resize: 'vertical' } }}
-        rows={2}
-        variant="outlined"
+        inputProps={{ readOnly: useToolXepLop, style: { resize: 'vertical', minHeight: 92 } }}
+        minRows={4}
+        maxRows={10}
         onChange={(e) => {
           setTextareChiVeTkb(e.target.value);
         }}
         value={dsLopInputValue}
         disabled={useToolXepLop && !hasLop}
         sx={useToolXepLop ? getReadonlySx(theme) : undefined}
+        helperText={useToolXepLop ? 'Được tạo từ các lớp đã chọn ở bước 2.' : 'Nhập mã lớp thủ công khi chỉ muốn vẽ TKB.'}
         InputProps={{
           inputComponent: CustomInputComponent2,
           endAdornment:
             useToolXepLop && hasLop ? (
-              <Tooltip title={'Chia sẻ TKB'}>
+              <Tooltip title="Chia sẻ TKB">
                 <IconButton
+                  aria-label="Tạo link chia sẻ thời khóa biểu"
                   edge="end"
                   size="small"
                   onClick={() => {

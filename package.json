@@ -26,11 +26,9 @@
     "proxy-memoize": "^2.0.4",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-github-btn": "^1.2.0",
     "react-hotkeys-hook": "^4.4.3",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^5.0.1",
-    "typewriter-effect": "^2.21.0",
     "use-debounce": "^7.0.0",
     "xlsx": "^0.17.0",
     "zustand": "^4.4.6"

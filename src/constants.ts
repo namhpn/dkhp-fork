@@ -1,12 +1,14 @@
 export const COLORS = {
-  SUCCESS: 'green',
-  ERROR: 'red',
+  SUCCESS: '#047857',
+  ERROR: '#b91c1c',
+  PRIMARY: '#1e40af',
+  WARNING: '#f59e0b',
 } as const;
 
 export const ROUTES = {
   _1ChonFileExcel: {
     path: '/1',
-    name: '1. Chọn file excel',
+    name: '1. Chọn file Excel',
   },
   _2XepLop: {
     path: '/2',
@@ -16,8 +18,4 @@ export const ROUTES = {
     path: '/3',
     name: '3. TKB và script',
   },
-  // _4GiaoDienDKHP: {
-  //   path: '/4',
-  //   name: '4. Trang ĐKHP UIT',
-  // },
 } as const;

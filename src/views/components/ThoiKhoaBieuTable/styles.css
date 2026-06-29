@@ -1,102 +1,129 @@
-#thoi-khoa-bieu th, #thoi-khoa-bieu td {
-    padding: 0.5em 0.3em;
-    border: 1px solid #ddd;
+#thoi-khoa-bieu {
+  position: relative;
+  width: max-content;
+  max-width: 100%;
+  color: #0f172a;
+}
+
+#thoi-khoa-bieu th,
+#thoi-khoa-bieu td {
+  padding: 0.65em 0.5em;
+  border: 1px solid #dbe4ef;
+}
+
+#thoi-khoa-bieu table {
+  min-width: 1050px;
+  max-width: 1500px;
+  min-height: 70vh;
+  overflow: hidden;
+  border: 1px solid #dbe4ef;
+  border-radius: 16px;
+  border-spacing: 0;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.055);
 }
 
 #thoi-khoa-bieu table thead tr th {
-    background-color: #eee;
-    text-align: center;
-    width: 3%;
-}
-
-/*#thoi-khoa-bieu {*/
-/*    width: 100%;*/
-/*    height: 100%;*/
-/*}*/
-
-#thoi-khoa-bieu table {
-    min-width: 1050px;
-    max-width: 1500px;
-    min-height: 75vh;
-    /* border: 2px dashed #52a4d3; */
-    /* https://stackoverflow.com/questions/628301/css3s-border-radius-property-and-border-collapsecollapse-dont-mix-how-can-i */
-    overflow: hidden;
-    border-radius: 5px;
-    border-spacing: 0;
+  width: 3%;
+  color: #1e3a8a;
+  background-color: #eff6ff;
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 #thoi-khoa-bieu table tr td {
-    background: #ccc !important;
-    border-bottom: 1px solid #ddd;
+  background: #f8fafc !important;
+  border-bottom: 1px solid #dbe4ef;
 }
 
 #thoi-khoa-bieu table tr td.cell-tiet {
-    text-align: center;
-    font-weight: 500;
-    width: 10em;
+  width: 10em;
+  color: #475569;
+  background: #f1f5f9 !important;
+  text-align: center;
+  font-size: 0.86rem;
+  font-weight: 800;
 }
 
 #thoi-khoa-bieu .cell-class {
-    background-color: #fff !important;
-    text-align: center;
-    width: 230px;
-    position: relative;
+  width: 230px;
+  position: relative;
+  color: #0f172a;
+  background-color: #ffffff !important;
+  text-align: left;
+  line-height: 1.48;
+  vertical-align: top;
+}
+
+#thoi-khoa-bieu .cell-class strong:first-of-type {
+  color: #1e40af;
+}
+
+#thoi-khoa-bieu .cell-class:hover {
+  background: #eff6ff !important;
 }
 
 #thoi-khoa-bieu .cell-class .remove-class-btn {
-    opacity: 0;
-    transition: opacity 0.1s ease-in-out;
+  opacity: 0;
+  color: #b91c1c;
+  background: #fee2e2;
+  transition: opacity 0.12s ease-in-out;
 }
+
 #thoi-khoa-bieu .cell-class-hovering .remove-class-btn {
-    opacity: 1;
+  opacity: 1;
 }
 
-#thoi-khoa-bieu {
-    position: relative;
-}
 #thoi-khoa-bieu .extra-buttons {
-    position: absolute;
-    top: 0;
-    right: 0;
-    opacity: 0;
-    transform: translateX(100%);
-    display: flex;
-    flex-direction: column;
-    transition: 0.1s ease-in-out;
-    border-radius: 5px;
-    background: #fff;
-    box-shadow: 0 0 2px #0003;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  opacity: 0;
+  transform: translateX(calc(100% + 8px));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid #dbe4ef;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  transition: 0.12s ease-in-out;
 }
+
 #thoi-khoa-bieu .extra-buttons.extra-buttons-shown {
-    opacity: 1;
+  opacity: 1;
 }
+
 #thoi-khoa-bieu.compact .extra-buttons {
-    display: none;
+  display: none;
 }
 
-/* the tooltip by default is too far away from the anchor, i.e: "Xoá môn này" tooltip */
 .MuiTooltip-tooltipPlacementBottom {
-    margin-top: 0 !important;
+  margin-top: 0 !important;
 }
 
 #thoi-khoa-bieu.compact table {
-    font-size: 0.9em;
+  min-width: 700px;
+  min-height: auto;
+  font-size: 0.9em;
 }
+
 #thoi-khoa-bieu.compact table thead tr th {
-    width: 10ch;
-}
-#thoi-khoa-bieu.compact table {
-    min-width: 700px;
+  width: 10ch;
 }
 
 @media screen and (max-width: 1100px) {
-    #thoi-khoa-bieu table {
-        font-size: 0.9em;
-    }
-    #thoi-khoa-bieu table thead tr th {
-        width: 10ch;
-    }
-    #thoi-khoa-bieu table {
-        min-width: 700px;
-    }
+  #thoi-khoa-bieu table {
+    min-width: 760px;
+    font-size: 0.9em;
+  }
+
+  #thoi-khoa-bieu table thead tr th {
+    width: 10ch;
+  }
 }
