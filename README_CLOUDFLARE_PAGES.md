@@ -25,3 +25,29 @@ npm run build:strict
 ```
 
 SPA routing note: this package intentionally has no top-level `public/404.html`. Cloudflare Pages will then serve the React app for unknown client-side routes.
+
+## Cloudflare Workers Builds / Pages deploy command
+
+If the Cloudflare UI requires a deploy command, use:
+
+```txt
+npm run deploy
+```
+
+The deploy script uploads the generated `build/` directory with Wrangler Pages:
+
+```bash
+npx wrangler pages deploy build --project-name=${CLOUDFLARE_PAGES_PROJECT_NAME:-dkhp-fork} --branch=${CF_PAGES_BRANCH:-main}
+```
+
+Default project name is `dkhp-fork`. If your actual Cloudflare Pages project slug is different, set a build variable named `CLOUDFLARE_PAGES_PROJECT_NAME` to that slug, or edit the script in `package.json`.
+
+Recommended settings:
+
+```txt
+Root directory: /
+Build command: npm run build
+Build output directory: build
+Deploy command: npm run deploy
+Build variables: optional CLOUDFLARE_PAGES_PROJECT_NAME if project slug is not dkhp-fork
+```

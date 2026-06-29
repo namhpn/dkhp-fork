@@ -40,7 +40,8 @@
     "eject": "react-scripts eject",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,md}\"",
     "lint:fix": "eslint --fix --color \"./src/**/*.{js,jsx,ts,tsx}\"",
-    "build:strict": "cross-env CI=true GENERATE_SOURCEMAP=false react-scripts build"
+    "build:strict": "cross-env CI=true GENERATE_SOURCEMAP=false react-scripts build",
+    "deploy": "npx wrangler pages deploy build --project-name=${CLOUDFLARE_PAGES_PROJECT_NAME:-dkhp-fork} --branch=${CF_PAGES_BRANCH:-main}"
   },
   "eslintConfig": {
     "extends": "react-app"
