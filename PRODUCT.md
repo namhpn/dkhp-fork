@@ -1,24 +1,24 @@
-# PRODUCT.md — UIT Course Planner
+# PRODUCT.md — Courses
 
 ## Product intent
-A browser-only tool for UIT students to import the official Excel timetable, choose non-conflicting classes, and copy the final class-code list or fast registration script.
+A browser-only tool for importing an Excel timetable, choosing non-conflicting classes, and copying the final class-code list or fast registration script.
 
 ## Users
-UIT students preparing for course registration. They are time-constrained, compare many table rows, and need confidence that selected classes do not overlap.
+Students preparing for course registration. They compare many table rows under time pressure and need confidence that selected classes do not overlap.
 
 ## Core flow
-Import Excel file → plan courses in one table → copy class list or registration script.
+Nhập Excel → xếp lớp trong một bảng → sao chép mã lớp hoặc script đăng ký nhanh.
 
 ## Required UI behavior
 - One page, not separate route steps.
 - Vietnamese labels by default.
 - Minimal copy. Prefer labels, status, and validation messages.
-- Show only useful operational state: file, row count, selected classes, credits, generated outputs.
+- Show only useful operational state: file, selected classes, credits, generated outputs.
 - Timetable data stays local in the browser.
 - No telemetry or hidden data submission.
 
 ## Accessibility and resilience
-- Semantic header/nav/main/section structure.
+- Semantic main/section structure.
 - Skip link for keyboard users.
 - Visible focus rings.
 - Disabled controls while importing.

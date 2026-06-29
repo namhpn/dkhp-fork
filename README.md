@@ -1,11 +1,11 @@
-# UIT Course Planner
+# Courses
 
-Single-page React app for UIT course planning.
+Single-page React app for course planning.
 
 Flow:
 
 ```txt
-Import Excel → Xếp lớp → Mã lớp & script
+Nhập Excel → Xếp lớp → Mã lớp & script
 ```
 
 Deployment target: Cloudflare Pages. See `README_CLOUDFLARE_PAGES.md`.

@@ -1,4 +1,4 @@
-import { Button, useMediaQuery, useTheme } from '@mui/material';
+import { Button } from '@mui/material';
 import {
   AgGridEvent,
   CellStyle,
@@ -18,8 +18,6 @@ import { closeSnackbar, enqueueSnackbar } from 'notistack';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Buoi, ClassModel } from 'types';
 import { useDebouncedCallback } from 'use-debounce';
-import SoTinChi from '../../components/SoTinChi';
-import ThoiKhoaBieuTable from '../../components/ThoiKhoaBieuTable';
 import {
   findOverlapedClasses,
   getAgGridRowId,
@@ -38,12 +36,12 @@ import {
 } from '../../../zus';
 import { useTrungTkbDialogContext } from '../TrungTkbDialog';
 
-type FormattedBuoiValid = 'Sáng ☀️' | 'Chiều 🌞' | 'Tối 🌚';
+type FormattedBuoiValid = 'Sáng' | 'Chiều' | 'Tối';
 type FormattedBuoi = FormattedBuoiValid | '*';
 const BUOI_FORMAT_MAP: Record<Buoi, FormattedBuoi> = {
-  [Buoi.Sang]: 'Sáng ☀️',
-  [Buoi.Chieu]: 'Chiều 🌞',
-  [Buoi.Toi]: 'Tối 🌚',
+  [Buoi.Sang]: 'Sáng',
+  [Buoi.Chieu]: 'Chiều',
+  [Buoi.Toi]: 'Tối',
   [Buoi.N_A]: '*',
 } as const;
 
@@ -51,24 +49,24 @@ type FormattedThuBuoiValid = `Thứ ${number} ${FormattedBuoiValid}`;
 type FormattedThuBuoi = FormattedThuBuoiValid | '*';
 const THUBUOI_ORDER_PRIORITY: Record<FormattedThuBuoi, number> = {
   '*': 0,
-  'Thứ 2 Sáng ☀️': 1,
-  'Thứ 2 Chiều 🌞': 2,
-  'Thứ 2 Tối 🌚': 3,
-  'Thứ 3 Sáng ☀️': 4,
-  'Thứ 3 Chiều 🌞': 5,
-  'Thứ 3 Tối 🌚': 6,
-  'Thứ 4 Sáng ☀️': 7,
-  'Thứ 4 Chiều 🌞': 8,
-  'Thứ 4 Tối 🌚': 9,
-  'Thứ 5 Sáng ☀️': 10,
-  'Thứ 5 Chiều 🌞': 11,
-  'Thứ 5 Tối 🌚': 12,
-  'Thứ 6 Sáng ☀️': 13,
-  'Thứ 6 Chiều 🌞': 14,
-  'Thứ 6 Tối 🌚': 15,
-  'Thứ 7 Sáng ☀️': 16,
-  'Thứ 7 Chiều 🌞': 17,
-  'Thứ 7 Tối 🌚': 18,
+  'Thứ 2 Sáng': 1,
+  'Thứ 2 Chiều': 2,
+  'Thứ 2 Tối': 3,
+  'Thứ 3 Sáng': 4,
+  'Thứ 3 Chiều': 5,
+  'Thứ 3 Tối': 6,
+  'Thứ 4 Sáng': 7,
+  'Thứ 4 Chiều': 8,
+  'Thứ 4 Tối': 9,
+  'Thứ 5 Sáng': 10,
+  'Thứ 5 Chiều': 11,
+  'Thứ 5 Tối': 12,
+  'Thứ 6 Sáng': 13,
+  'Thứ 6 Chiều': 14,
+  'Thứ 6 Tối': 15,
+  'Thứ 7 Sáng': 16,
+  'Thứ 7 Chiều': 17,
+  'Thứ 7 Tối': 18,
 } as const;
 
 const HTGD_ORDER_PRIORITY: Record<ClassModel['HTGD'], number> = {
@@ -285,14 +283,6 @@ const autoGroupColumnDef: GridOptions['autoGroupColumnDef'] = {
   },
 };
 
-const statusBar: GridOptions['statusBar'] = {
-  statusPanels: [
-    { statusPanel: 'agSelectedRowCountComponent', align: 'right' },
-    { statusPanel: 'agTotalAndFilteredRowCountComponent', align: 'right' },
-    { statusPanel: SoTinChi, align: 'left' },
-  ],
-};
-
 const getMainMenuItems: GridOptions['getMainMenuItems'] = () => {
   return ['pinSubMenu', 'separator', 'autoSizeThis', 'autoSizeAll'];
 };
@@ -328,49 +318,9 @@ function getContextMenuItemsBuilder() {
 const PROGRAMMATICALLY_CHANGE_SELECTION = 'api';
 export const useGridOptions = () => {
   const agGridRef = useRef<AgGridReact<ClassModel>>(null);
-  const theme = useTheme();
-  // Enable Preview panel by default on screens wider than 1400px
-  // This helps users discover the feature while avoiding clutter on smaller screens
-  const isLargeScreen = useMediaQuery(theme.breakpoints.up(1400));
-
   const { openTrungTkbDialog } = useTrungTkbDialogContext();
   const selectedClasses = useTkbStore(selectSelectedClasses);
   const setSelectedClasses = useTkbStore((s) => s.setSelectedClasses);
-
-  const sideBar: GridOptions['sideBar'] = useMemo(
-    () => ({
-      defaultToolPanel: isLargeScreen ? 'preview' : undefined,
-      toolPanels: [
-        {
-          id: 'preview',
-          labelDefault: 'Preview',
-          labelKey: 'preview',
-          iconKey: 'columnMoveMove',
-          toolPanel: ThoiKhoaBieuTable,
-          width: 700,
-        },
-        {
-          id: 'columns',
-          labelDefault: 'Columns',
-          labelKey: 'columns',
-          iconKey: 'columns',
-          toolPanel: 'agColumnsToolPanel',
-          toolPanelParams: {
-            suppressValues: true,
-            suppressPivotMode: true,
-          },
-        },
-        {
-          id: 'filters',
-          labelDefault: 'Filters',
-          labelKey: 'filters',
-          iconKey: 'filter',
-          toolPanel: 'agFiltersToolPanel',
-        },
-      ],
-    }),
-    [isLargeScreen],
-  );
 
   const updateNodesSelectionToAgGrid = useCallback((selectedClasses: ClassModel[]) => {
     if (!agGridRef.current?.api) return;
@@ -477,7 +427,7 @@ export const useGridOptions = () => {
 
       if (value) {
         addToBlock({
-          name: `Copy text "${value}"`,
+          name: `Sao chép "${value}"`,
           action: () => {
             navigator.clipboard.writeText(value);
           },
@@ -491,7 +441,7 @@ export const useGridOptions = () => {
           thisColumnCurrentFilterModel?.filter === value || thisColumnCurrentFilterModel?.values?.includes(value);
         if (!alreadyFilterByThisValue) {
           addToBlock({
-            name: `Add Filter "${headerName}"="${value}"`,
+            name: `Lọc "${headerName}"="${value}"`,
             action: () => {
               api.setFilterModel({
                 ...api.getFilterModel(),
@@ -509,7 +459,7 @@ export const useGridOptions = () => {
         const { [column.getColId()]: thisColumnFilterModel, ...otherColumnsFilterModel } = api.getFilterModel();
         if (thisColumnFilterModel) {
           addToBlock({
-            name: `Reset Filter For "${headerName}"`,
+            name: `Xóa lọc "${headerName}"`,
             action: () => {
               api.setFilterModel({
                 ...api.getFilterModel(),
@@ -520,7 +470,7 @@ export const useGridOptions = () => {
         }
         if (thisColumnFilterModel && Object.keys(otherColumnsFilterModel).length) {
           addToBlock({
-            name: `Reset All Filters Except "${headerName}"`,
+            name: `Xóa lọc khác ngoài "${headerName}"`,
             action: () => {
               api.setFilterModel({
                 [column.getColId()]: api.getFilterModel()[column.getColId()],
@@ -531,7 +481,7 @@ export const useGridOptions = () => {
       }
       if (api.isColumnFilterPresent()) {
         addToBlock({
-          name: 'Reset All Filters',
+          name: 'Xóa tất cả bộ lọc',
           action: () => {
             api.setFilterModel(null);
           },
@@ -616,8 +566,6 @@ export const useGridOptions = () => {
     autoGroupColumnDef,
     getMainMenuItems,
     getContextMenuItems,
-    statusBar,
-    sideBar,
     onSelectionChanged,
     onFilterChanged,
     onColumnChanged,

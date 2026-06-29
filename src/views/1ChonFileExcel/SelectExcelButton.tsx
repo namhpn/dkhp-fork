@@ -1,7 +1,6 @@
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { enqueueSnackbar } from 'notistack';
 import React, { ChangeEventHandler, useState } from 'react';
@@ -15,6 +14,7 @@ function SelectExcelButton() {
   const [isImporting, setIsImporting] = useState(false);
   const lastUpdateString = getLastUpdateString(dataExcel);
   const hasFile = !!dataExcel?.data?.length;
+  const rowCount = dataExcel?.data?.length ?? 0;
 
   const handleUploadFileExcel = React.useCallback<ChangeEventHandler<HTMLInputElement>>(
     (event) => {
@@ -36,7 +36,7 @@ function SelectExcelButton() {
           const dataInArray = [...dataLyThuyet, ...dataThucHanh].filter((row) => typeof row[0] === 'number');
 
           if (!dataInArray.length) {
-            enqueueSnackbar('File không đúng định dạng thời khóa biểu UIT.', { variant: 'error' });
+            enqueueSnackbar('File không đúng định dạng thời khóa biểu.', { variant: 'error' });
             return;
           }
 
@@ -47,7 +47,7 @@ function SelectExcelButton() {
             lastUpdateTimestamp: now.getTime(),
             lastUpdate: toDateTimeString(now),
           });
-          enqueueSnackbar(`Đã import ${file.name}.`, { variant: 'success' });
+          enqueueSnackbar(`Đã nhập ${file.name}.`, { variant: 'success' });
         } catch {
           enqueueSnackbar('Không đọc được file Excel.', { variant: 'error' });
         } finally {
@@ -72,49 +72,26 @@ function SelectExcelButton() {
       <div className="upload-drop-panel">
         <div className="upload-main">
           <div className="upload-icon-box" aria-hidden="true">
-            {isImporting ? <CircularProgress size={20} /> : <FileUploadOutlinedIcon />}
+            {isImporting ? <CircularProgress size={22} /> : <FileUploadOutlinedIcon fontSize="medium" />}
           </div>
           <div style={{ minWidth: 0 }}>
             <Typography component="h3" className="upload-title">
               File Excel thời khóa biểu
             </Typography>
             <Typography className="upload-file-name">{dataExcel?.fileName || 'Chưa chọn file'}</Typography>
+            {hasFile && (
+              <Typography className="upload-status">
+                {rowCount} dòng{lastUpdateString ? ` · ${lastUpdateString}` : ''}
+              </Typography>
+            )}
           </div>
         </div>
 
         <div className="upload-actions">
-          <Tooltip title={dataExcel?.fileName || 'Chọn file .xlsx'}>
-            <span>
-              <Button
-                variant="contained"
-                component="label"
-                startIcon={isImporting ? <CircularProgress color="inherit" size={16} /> : <FileUploadOutlinedIcon />}
-                disabled={isImporting}
-              >
-                {isImporting ? 'Đang đọc' : hasFile ? 'Đổi file' : 'Chọn file'}
-                <input type="file" style={{ display: 'none' }} accept={sheetJSFT} onChange={handleUploadFileExcel} disabled={isImporting} />
-              </Button>
-            </span>
-          </Tooltip>
-          <Button
-            variant="outlined"
-            href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRyf8-kMRTo4CllfPA4sjbjxkhGhR1tT7yD1HASjmClqTwwkJBgWRvuxJPIAK8Wdw/pub?output=xlsx"
-            target="_blank"
-            rel="noreferrer"
-          >
-            File mẫu
+          <Button variant="contained" component="label" disabled={isImporting}>
+            {isImporting ? 'Đang đọc' : hasFile ? 'Đổi file' : 'Chọn file Excel'}
+            <input type="file" style={{ display: 'none' }} accept={sheetJSFT} onChange={handleUploadFileExcel} disabled={isImporting} />
           </Button>
-        </div>
-      </div>
-
-      <div className="upload-meta-list" aria-label="Thông tin file">
-        <div className="meta-row">
-          <span className="meta-label">Dòng</span>
-          <span className="meta-value">{dataExcel?.data?.length ?? 0}</span>
-        </div>
-        <div className="meta-row">
-          <span className="meta-label">Cập nhật</span>
-          <span className="meta-value">{lastUpdateString || '—'}</span>
         </div>
       </div>
     </div>

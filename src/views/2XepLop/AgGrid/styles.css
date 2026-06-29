@@ -86,20 +86,6 @@
   overflow: auto;
 }
 
-.course-grid .ag-status-bar {
-  min-height: 42px;
-  padding: 0 12px;
-  color: #3f3f46;
-  background: #fafafa;
-  border-top: 1px solid #e4e4e7;
-}
-
-.course-grid .ag-status-name-value {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  font-weight: 750;
-}
-
 .course-grid .ag-cell-focus,
 .course-grid .ag-cell-no-focus {
   border-color: transparent !important;
@@ -123,4 +109,34 @@
   text-transform: none;
   -webkit-font-smoothing: antialiased;
   content: var(--ag-icon-font-code-pin, "\f124");
+}
+
+.grid-statusbar {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  color: #3f3f46;
+  background: #fafafa;
+  border-top: 1px solid #e4e4e7;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.grid-credit.ok {
+  color: #047857;
+}
+
+.grid-credit.warn {
+  color: #b45309;
+}
+
+@media (max-width: 680px) {
+  .grid-statusbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 12px;
+  }
 }

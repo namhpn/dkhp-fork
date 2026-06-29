@@ -1,7 +1,7 @@
-# DESIGN.md — UIT Course Planner
+# DESIGN.md — Courses
 
 ## Source and precedence
-Intent defines the product goal: import the UIT Excel timetable, plan classes without conflicts, then copy class codes or the registration script. ui-ux-pro-max provides the canonical visual direction. Impeccable is the implementation quality gate: remove clutter, preserve task focus, and reject decorative UI that does not help the workflow.
+Intent defines the product goal: import an Excel timetable, plan classes without conflicts, then copy class codes or the registration script. ui-ux-pro-max provides the canonical visual direction. Impeccable is the implementation quality gate: remove clutter, preserve task focus, and reject decorative UI that does not help the workflow.
 
 ## Canonical visual direction
 Clean Vietnamese productivity dashboard, light mode, monochrome base with blue accent, compact spacing, restrained motion, and tactile micro-interactions.
@@ -28,7 +28,7 @@ Clean Vietnamese productivity dashboard, light mode, monochrome base with blue a
 
 ## Information architecture
 Single page only:
-1. Import Excel.
+1. Nhập Excel.
 2. Xếp lớp.
 3. Mã lớp & script.
 
@@ -40,7 +40,7 @@ The navigation is an in-page anchor bar with visible active state. It must not r
 - No marketing hero copy.
 - No status-card pileups.
 - No FAQ/video buttons in the primary interface.
-- Show only operational status: file name, row count, update time, selected class count, credit count.
+- Show only operational status: file name, selected class count, credit count, generated outputs.
 
 ## Interaction rules
 - Show import loading state and disable upload while parsing.

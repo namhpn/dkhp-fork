@@ -1,6 +1,5 @@
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
-import PlayArrowOutlinedIcon from '@mui/icons-material/PlayArrowOutlined';
 import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -13,13 +12,10 @@ import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { getTongSoTcJudgement } from '../utils';
 import {
-  selectDataExcel,
   selectFinalDataTkb,
   selectIsChiVeTkb,
-  selectSelectedClasses,
   selectSelectedClassesOutput,
   selectTongSoTcOutput,
-  selectTongSoTcSelected,
   useTkbStore,
 } from '../zus';
 import SelectExcelButton from './1ChonFileExcel/SelectExcelButton';
@@ -33,7 +29,7 @@ import './App.css';
 const AgGrid = lazy(() => import('./2XepLop/AgGrid'));
 
 const NAV_ITEMS = [
-  { id: 'import', label: 'Import Excel', Icon: FileUploadOutlinedIcon },
+  { id: 'import', label: 'Nhập Excel', Icon: FileUploadOutlinedIcon },
   { id: 'plan', label: 'Xếp lớp', Icon: TableChartOutlinedIcon },
   { id: 'output', label: 'Mã lớp & script', Icon: ListAltOutlinedIcon },
 ] as const;
@@ -54,7 +50,7 @@ function useActiveSection() {
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
         if (visible?.target?.id) setActive(visible.target.id as NavId);
       },
-      { rootMargin: '-20% 0px -68% 0px', threshold: [0.1, 0.35, 0.6] },
+      { rootMargin: '-18% 0px -70% 0px', threshold: [0.1, 0.35, 0.6] },
     );
 
     sections.forEach((section) => observer.observe(section));
@@ -64,26 +60,14 @@ function useActiveSection() {
   return active;
 }
 
-function TopBar() {
+function PageHeader() {
   const active = useActiveSection();
-  const dataExcel = useTkbStore(selectDataExcel);
-  const selectedClasses = useTkbStore(selectSelectedClasses);
-  const status = dataExcel?.data?.length ? `${dataExcel.data.length} dòng · ${selectedClasses.length} lớp chọn` : 'Chưa có file';
 
   return (
-    <header className="app-topbar">
-      <div className="brand-lockup">
-        <div className="brand-mark" aria-hidden="true">
-          UIT
-        </div>
-        <div>
-          <Typography component="h1" className="app-title">
-            Đăng ký học phần UIT
-          </Typography>
-          <Typography className="app-status">{status}</Typography>
-        </div>
-      </div>
-
+    <div className="page-header">
+      <Typography component="h1" className="app-title">
+        Courses
+      </Typography>
       <nav className="section-nav" aria-label="Điều hướng trong trang">
         {NAV_ITEMS.map(({ id, label, Icon }) => (
           <a key={id} className={active === id ? 'section-nav-item active' : 'section-nav-item'} href={`#${id}`}>
@@ -92,37 +76,17 @@ function TopBar() {
           </a>
         ))}
       </nav>
-    </header>
-  );
-}
-
-function SectionHeader({ id, icon, title, actions }: { id: string; icon: React.ReactNode; title: string; actions?: React.ReactNode }) {
-  return (
-    <div className="section-header">
-      <div className="section-heading">
-        <span className="section-icon" aria-hidden="true">
-          {icon}
-        </span>
-        <Typography id={id} component="h2" className="section-title">
-          {title}
-        </Typography>
-      </div>
-      {actions && <div className="section-actions">{actions}</div>}
     </div>
   );
 }
 
-function CompactStats() {
-  const allClasses = useTkbStore(selectFinalDataTkb);
-  const selectedClasses = useTkbStore(selectSelectedClasses);
-  const tongSoTC = useTkbStore(selectTongSoTcSelected);
-  const judgement = getTongSoTcJudgement(tongSoTC);
-
+function SectionHeader({ id, title, actions }: { id: string; title: string; actions?: React.ReactNode }) {
   return (
-    <div className="compact-stats" aria-label="Trạng thái xếp lớp">
-      <span>{allClasses.length} dòng</span>
-      <span>{selectedClasses.length} lớp chọn</span>
-      <span className={judgement.isOk ? 'stat-ok' : 'stat-warn'}>{tongSoTC} tín chỉ</span>
+    <div className="section-header">
+      <Typography id={id} component="h2" className="section-title">
+        {title}
+      </Typography>
+      {actions && <div className="section-actions">{actions}</div>}
     </div>
   );
 }
@@ -130,9 +94,26 @@ function CompactStats() {
 function ImportSection() {
   return (
     <section id="import" className="task-section import-section" aria-labelledby="import-title">
-      <SectionHeader id="import-title" icon={<FileUploadOutlinedIcon fontSize="small" />} title="Import Excel" />
+      <SectionHeader id="import-title" title="Nhập Excel" />
       <SelectExcelButton />
     </section>
+  );
+}
+
+function SchedulePanel() {
+  const selectedClasses = useTkbStore(selectSelectedClassesOutput);
+
+  if (!selectedClasses.length) return null;
+
+  return (
+    <div className="schedule-panel" aria-label="Thời khóa biểu">
+      <Typography component="h3" className="subsection-title">
+        Thời khóa biểu
+      </Typography>
+      <div id="thoi-khoa-bieu-wrapper">
+        <ThoiKhoaBieuTable />
+      </div>
+    </div>
   );
 }
 
@@ -141,7 +122,7 @@ function PlanSection() {
 
   return (
     <section id="plan" className="task-section plan-section" aria-labelledby="plan-title">
-      <SectionHeader id="plan-title" icon={<TableChartOutlinedIcon fontSize="small" />} title="Xếp lớp" actions={<CompactStats />} />
+      <SectionHeader id="plan-title" title="Xếp lớp" />
       {allClasses.length ? (
         <TrungTkbDialogContext>
           <div className="grid-frame">
@@ -149,6 +130,7 @@ function PlanSection() {
               <AgGrid />
             </Suspense>
           </div>
+          <SchedulePanel />
           <TrungTkbDialog />
         </TrungTkbDialogContext>
       ) : (
@@ -161,21 +143,18 @@ function PlanSection() {
 function OutputSection() {
   const setIsChiVeTkb = useTkbStore((s) => s.setIsChiVeTkb);
   const khongXepLop = useTkbStore(selectIsChiVeTkb);
-  const selectedClasses = useTkbStore(selectSelectedClassesOutput);
   const tongSoTC = useTkbStore(selectTongSoTcOutput);
   const judgement = useMemo(() => getTongSoTcJudgement(tongSoTC), [tongSoTC]);
-  const hasSelection = selectedClasses.length > 0;
 
   return (
     <section id="output" className="task-section output-section" aria-labelledby="output-title">
       <SectionHeader
         id="output-title"
-        icon={<PlayArrowOutlinedIcon fontSize="small" />}
         title="Mã lớp & script"
         actions={
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems={{ xs: 'flex-start', sm: 'center' }}>
             <span className={judgement.isOk ? 'credit-pill ok' : 'credit-pill warn'}>{tongSoTC} tín chỉ</span>
-            <Tooltip title="Bật khi chỉ muốn nhập mã lớp thủ công">
+            <Tooltip title="Bật để nhập mã lớp thủ công">
               <FormControlLabel
                 className="manual-toggle"
                 control={
@@ -198,19 +177,6 @@ function OutputSection() {
         <DanhSachLopInput />
         <ScriptDangKyInput />
       </Grid>
-
-      {hasSelection ? (
-        <div className="schedule-panel" aria-label="Thời khóa biểu">
-          <Typography component="h3" className="subsection-title">
-            Thời khóa biểu
-          </Typography>
-          <div id="thoi-khoa-bieu-wrapper">
-            <ThoiKhoaBieuTable />
-          </div>
-        </div>
-      ) : (
-        <div className="empty-inline">Chưa có lớp để xuất script.</div>
-      )}
     </section>
   );
 }
@@ -221,8 +187,8 @@ function AppContent() {
       <a href="#main-content" className="skip-link">
         Bỏ qua điều hướng
       </a>
-      <TopBar />
       <main id="main-content" className="single-page-flow">
+        <PageHeader />
         <ImportSection />
         <PlanSection />
         <OutputSection />
