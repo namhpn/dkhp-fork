@@ -1,13 +1,21 @@
 # Cloudflare Pages deployment
 
-This project is prepared for Cloudflare Pages as a Create React App static SPA.
+This package is a static Create React App deployment target. There is no backend server.
 
-Build settings:
+Use these settings for Cloudflare Pages Git integration:
 
-- Framework preset: Create React App, or None/custom
+- Root directory: `/`
 - Build command: `npm run build`
 - Build output directory: `build`
-- Root directory: repository root of this ZIP
+- Deploy command: leave blank for Pages Git integration
+- Build variables: none required
 
-The `public/_redirects` file is included so Cloudflare Pages serves `index.html` for client-side routes.
-The old `public/404.html` GitHub Pages fallback was removed because it conflicts with Cloudflare Pages SPA fallback behavior.
+Do not use `npx wrangler deploy` for a Cloudflare Pages Git deployment. That command targets Workers deployment. If you are using Wrangler Direct Upload instead of Git integration, build first and deploy the build folder with:
+
+```bash
+npm install
+npm run build
+npx wrangler pages deploy build
+```
+
+SPA routing note: this package intentionally has no top-level `public/404.html`. Cloudflare Pages will then serve the React app for unknown client-side routes.

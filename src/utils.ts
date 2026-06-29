@@ -1,7 +1,6 @@
 import uniqBy from 'lodash/uniqBy';
 import { Buoi, ClassModel } from 'types';
 import { TTrungTkb } from './views/2XepLop/TrungTkbDialog';
-import { isProd } from '.';
 
 export function uniqMaLop(classes: ClassModel[]): ClassModel[] {
   return uniqBy(classes, 'MaLop'); // Có nhiều lớp học nhiều buổi 1 tuần, xuất hiện nhiều lần, nhưng chỉ nên cộng 1 lần
@@ -122,5 +121,6 @@ export const findOverlapedClasses = (
 };
 
 export const log = (...args: any[]) => {
-  (window.__DEBUG__ || !isProd) && console.log(...args);
+  const productionMode = process.env.NODE_ENV === 'production';
+  if (window.__DEBUG__ || !productionMode) console.log(...args);
 };
