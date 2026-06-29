@@ -8,56 +8,19 @@ import reverse from 'lodash/reverse';
 import { useMemo, useState } from 'react';
 import { ClassModel } from '../../../types';
 import { isSameAgGridRowId, uniqMaLop } from '../../../utils';
-import { selectIsChiVeTkb, selectSelectedClasses, selectSelectedClassesBuoc3, useTkbStore } from '../../../zus';
+import { selectIsChiVeTkb, selectSelectedClasses, selectSelectedClassesOutput, useTkbStore } from '../../../zus';
 import { usePhanLoaiHocTrenTruongContext } from './hooks';
 import './styles.css';
 
 const randomColors = [
-  '#FF5733',
-  '#3498DB',
-  '#1ABC9C',
-  '#9B59B6',
-  '#E74C3C',
-  '#2ECC71',
-  '#F39C12',
-  '#7F8C8D',
-  '#D35400',
-  '#2980B9',
-  '#27AE60',
-  '#8E44AD',
-  '#C0392B',
-  '#16A085',
-  '#F1C40F',
-  '#34495E',
-  '#E67E22',
-  '#3498DB',
-  '#2C3E50',
-  '#E74C3C',
-  '#1B1464',
-  '#6C3483',
-  '#2E4053',
-  '#FF4500',
-  '#008080',
-  '#800000',
-  '#8B4513',
-  '#FF6347',
-  '#4B0082',
-  '#7CFC00',
-  '#8A2BE2',
-  '#00FA9A',
-  '#DC143C',
-  '#20B2AA',
-  '#FFFF00',
-  '#191970',
-  '#A52A2A',
-  '#808080',
-  '#8B008B',
-  '#008B8B',
-  '#00CED1',
-  '#BC8F8F',
-  '#4169E1',
-  '#00FF7F',
-  '#FF1493',
+  '#2563EB',
+  '#1D4ED8',
+  '#0F766E',
+  '#047857',
+  '#B45309',
+  '#B91C1C',
+  '#52525B',
+  '#18181B',
 ] as const;
 
 type Props = {
@@ -68,7 +31,7 @@ type Props = {
 const getMonChonRoiKey = (data: ClassModel) => `${data.MaMH}-${data.ThucHanh}`;
 const useMonChonRoi = () => {
   const newRandomColors = useMemo(() => reverse([...randomColors]), []);
-  const selectedClasses = useTkbStore(selectSelectedClassesBuoc3);
+  const selectedClasses = useTkbStore(selectSelectedClassesOutput);
   const map = groupBy(selectedClasses, getMonChonRoiKey);
   const mapColor: Record<keyof typeof map, (typeof newRandomColors)[number]> = {};
   let index = 0;

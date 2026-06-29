@@ -1,53 +1,33 @@
 # Cloudflare Pages deployment
 
-This package is a static Create React App deployment target. There is no backend server.
+Static Create React App package. No backend server.
 
-Use these settings for Cloudflare Pages Git integration:
-
-- Root directory: `/`
-- Build command: `npm run build`
-- Build output directory: `build`
-- Deploy command: leave blank for Pages Git integration
-- Build variables: none required
-
-Do not use `npx wrangler deploy` for a Cloudflare Pages Git deployment. That command targets Workers deployment. If you are using Wrangler Direct Upload instead of Git integration, build first and deploy the build folder with:
-
-```bash
-npm install
-npm run build
-npx wrangler pages deploy build
-```
-
-The `build` script sets `CI=false` because Create React App otherwise treats warnings as hard build failures in Cloudflare's CI environment. A strict CI equivalent is available as:
-
-```bash
-npm run build:strict
-```
-
-SPA routing note: this package intentionally has no top-level `public/404.html`. Cloudflare Pages will then serve the React app for unknown client-side routes.
-
-## Cloudflare Workers Builds / Pages deploy command
-
-If the Cloudflare UI requires a deploy command, use:
-
-```txt
-npm run deploy
-```
-
-The deploy script uploads the generated `build/` directory with Wrangler Pages:
-
-```bash
-npx wrangler pages deploy build --project-name=${CLOUDFLARE_PAGES_PROJECT_NAME:-dkhp-fork} --branch=${CF_PAGES_BRANCH:-main}
-```
-
-Default project name is `dkhp-fork`. If your actual Cloudflare Pages project slug is different, set a build variable named `CLOUDFLARE_PAGES_PROJECT_NAME` to that slug, or edit the script in `package.json`.
-
-Recommended settings:
+Recommended settings for the Cloudflare UI you are using:
 
 ```txt
 Root directory: /
 Build command: npm run build
 Build output directory: build
 Deploy command: npm run deploy
-Build variables: optional CLOUDFLARE_PAGES_PROJECT_NAME if project slug is not dkhp-fork
 ```
+
+The deploy script uploads the generated `build/` folder with Wrangler Pages:
+
+```bash
+npx wrangler pages deploy build --project-name=${CLOUDFLARE_PAGES_PROJECT_NAME:-dkhp-fork} --branch=${CF_PAGES_BRANCH:-main}
+```
+
+If your Cloudflare Pages project slug is not `dkhp-fork`, set this build variable:
+
+```txt
+CLOUDFLARE_PAGES_PROJECT_NAME=your-project-slug
+```
+
+The API token used by Wrangler must allow Pages deploys:
+
+```txt
+Account → Cloudflare Pages → Edit
+User → User Details → Read
+```
+
+Do not use `npx wrangler deploy`; that targets Workers, not Pages static assets.

@@ -1,64 +1,56 @@
-# DESIGN.md — UIT Course Planner Design System
+# DESIGN.md — UIT Course Planner
 
 ## Source and precedence
-This visual system was derived from the uploaded ui-ux-pro-max design-system search for an academic student timetable/data-table utility, then constrained by the Intent product brief and Impeccable craft rules. Product clarity, accessibility, and privacy outrank decoration.
+Intent defines the product goal: import the UIT Excel timetable, plan classes without conflicts, then copy class codes or the registration script. ui-ux-pro-max provides the canonical visual direction. Impeccable is the implementation quality gate: remove clutter, preserve task focus, and reject decorative UI that does not help the workflow.
 
-## Register
-Professional academic productivity tool. Dense data is expected, but the UI should reduce anxiety through strong hierarchy, clear workflow state, and restrained motion.
-
-## Visual direction
-- Pattern: data-dense workflow dashboard with a persistent step navigation rail.
-- Style: precise, calm, table-first, light-mode utility.
-- Avoid: playful claymorphism, generic oversized card grids, decorative gradients that reduce legibility, exaggerated rounded corners, low-contrast pastel text, fake urgency, and telemetry-oriented copy.
+## Canonical visual direction
+Clean Vietnamese productivity dashboard, light mode, monochrome base with blue accent, compact spacing, restrained motion, and tactile micro-interactions.
 
 ## Tokens
-- Background: `#f8fafc`
-- Surface: `#ffffff`
-- Strong surface: `#f1f5f9`
-- Text: `#0f172a`
-- Muted text: `#475569`
-- Subtle text: `#64748b`
-- Border: `#dbe4ef`
-- Primary blue: `#1e40af`
-- Primary strong: `#1e3a8a`
-- Primary soft: `#dbeafe`
-- Accent amber: `#f59e0b`
-- Accent soft: `#fef3c7`
+- Primary: `#18181B`
+- Secondary: `#3F3F46`
+- CTA / active: `#2563EB`
+- Background: `#FAFAFA`
+- Text: `#09090B`
+- Surface: `#FFFFFF`
+- Muted surface: `#F4F4F5`
+- Border: `#E4E4E7`
 - Success: `#047857`
-- Success soft: `#d1fae5`
-- Error: `#b91c1c`
-- Error soft: `#fee2e2`
-- Radius: 12px for controls, 16px for panels.
+- Warning: `#B45309`
+- Error: `#B91C1C`
+- Radius: 10px for controls, 12px for major panels.
 
 ## Typography
-Use a Fira Sans-first system stack without external font loading:
-`"Fira Sans", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`.
+- Headings: Be Vietnam Pro, 700–800.
+- Body and controls: Noto Sans, 400–700.
+- Code/script fields: system monospace.
+- No display hero scale. Product UI uses compact fixed sizes.
 
-Headings use heavy weight, tight letter spacing, and responsive clamp sizing. Body copy remains 16px+ where practical. Data tables use 13px–14px for density while maintaining row height and hover feedback.
+## Information architecture
+Single page only:
+1. Import Excel.
+2. Xếp lớp.
+3. Mã lớp & script.
 
-## Layout system
-- Left navigation rail: dark academic blue, persistent, collapsible.
-- Main content: max width 1500px, centered, with a hero/workflow panel per step.
-- Metrics: compact status tiles for row count, selected classes, credits, mode, and outputs.
-- Dense data: Ag Grid remains the primary task surface and gets the largest vertical area.
-- Results: script fields and timetable sit in separate clear panels.
+The navigation is an in-page anchor bar with visible active state. It must not route users into separate screens.
+
+## Content rules
+- Vietnamese-first labels, buttons, empty states, errors, and confirmations.
+- No long helper paragraphs.
+- No marketing hero copy.
+- No status-card pileups.
+- No FAQ/video buttons in the primary interface.
+- Show only operational status: file name, row count, update time, selected class count, credit count.
 
 ## Interaction rules
-- Every click target must have a visible hover/focus state.
-- Destructive timetable actions use red affordance and tooltip copy.
-- The selected-credit status uses color plus explanatory tooltip/copy, never color alone.
-- Long table content may scroll horizontally; cards reflow on small screens.
-- Motion must be short and disabled by `prefers-reduced-motion`.
+- Show import loading state and disable upload while parsing.
+- Buttons and inputs require visible focus rings.
+- Motion is 120–150ms and non-essential.
+- Respect `prefers-reduced-motion`.
+- No emoji as icons; use SVG/MUI icons.
 
-## Component guidance
-- `PageShell`: step title, intent copy, progress chips, optional action.
-- `MetricCard`: compact feedback for counts/status.
-- `SectionCard`: task grouping, not generic decoration.
-- Ag Grid: blue header, amber filtered state, readable row hover/selection.
-- Timetable: white class cells, blue class identifiers, soft table border, overflow wrapper.
-
-## Cloudflare Pages assumptions
-- Project root is this ZIP root.
-- Build command: `npm run build`.
-- Output directory: `build`.
-- SPA fallback is handled by `public/_redirects`.
+## Cloudflare Pages
+- Root directory: `/`
+- Build command: `npm run build`
+- Build output directory: `build`
+- Deploy command where required: `npm run deploy`

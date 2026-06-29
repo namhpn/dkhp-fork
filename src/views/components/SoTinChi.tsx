@@ -5,8 +5,8 @@ import { getTongSoTcJudgement } from '../../utils';
 import { selectTongSoTcSelected, useTkbStore } from '../../zus';
 
 function SoTinChi(props: { tongSoTcSelected?: number }) {
-  const tongSoTcSelectedB2 = useTkbStore(selectTongSoTcSelected);
-  const tongSoTcSelected = props.tongSoTcSelected ?? tongSoTcSelectedB2;
+  const selectedCreditsFromStore = useTkbStore(selectTongSoTcSelected);
+  const tongSoTcSelected = props.tongSoTcSelected ?? selectedCreditsFromStore;
   const judgement = getTongSoTcJudgement(tongSoTcSelected);
 
   return (

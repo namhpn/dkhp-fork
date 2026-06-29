@@ -7,27 +7,6 @@ import { ClassModel, ClassModelOriginal } from '../types';
 import { calcTongSoTC, isSameAgGridRowId } from '../utils';
 
 
-type StoreState = {
-  isDrawerOpen: boolean;
-  toggleDrawer: () => void;
-};
-
-export const useDrawerStore = create<StoreState>()(
-  persist(
-    (set, get) => ({
-      isDrawerOpen: document.body.offsetWidth > 900,
-      toggleDrawer: () => {
-        const newState = !get().isDrawerOpen;
-        set({ isDrawerOpen: newState });
-      },
-    }),
-    {
-      name: 'drawer-state-storage',
-      storage: createJSONStorage(() => sessionStorage),
-    },
-  ),
-);
-
 type TkbStore = {
   dataExcel: {
     fileName: string;
@@ -41,7 +20,7 @@ type TkbStore = {
   agGridColumnState: ReturnType<ColumnApi['getColumnState']> | null;
   agGridFilterModel: ReturnType<GridApi['getFilterModel']> | null;
 
-  // in case Buoc 3 chi ve TKB chu khong dung Buoc 2 Xep Lop
+  // Manual class-code mode for timetable/script output
   isChiVeTkb: boolean;
   textareaChiVeTkb: string;
 
@@ -133,13 +112,13 @@ export const selectIsChiVeTkb = (state: TkbStore) =>
   state.isChiVeTkb || window.location.search.includes('self_selected'); // TODO: constant for self_selected
 export const selectTextareaChiVeTkb = (state: TkbStore) => {
   const searchParams = new URLSearchParams(window.location.search);
-  return searchParams.get('self_selected') || state.textareaChiVeTkb; // TODO: won't get notified when URLSearchParams change, currently we have to add search params when route change in LeftDrawer as a hack
+  return searchParams.get('self_selected') || state.textareaChiVeTkb;
 };
 export const selectFinalDataTkb = (state: TkbStore): ClassModel[] => {
   const dataExcel = selectDataExcel(state);
   return dataExcel?.data ?? [];
 };
-export const selectSelectedClassesBuoc3 = memoize((state: TkbStore): ClassModel[] => {
+export const selectSelectedClassesOutput = memoize((state: TkbStore): ClassModel[] => {
   const isChiVeTkb = selectIsChiVeTkb(state);
   const textareaChiVeTkb = selectTextareaChiVeTkb(state);
   const finalDataTkb = selectFinalDataTkb(state);
@@ -152,7 +131,7 @@ export const selectSelectedClassesBuoc3 = memoize((state: TkbStore): ClassModel[
   }
 });
 export const selectTongSoTcSelected = (state: TkbStore) => calcTongSoTC(selectSelectedClasses(state));
-export const selectTongSoTcBuoc3 = (state: TkbStore) => calcTongSoTC(selectSelectedClassesBuoc3(state));
+export const selectTongSoTcOutput = (state: TkbStore) => calcTongSoTC(selectSelectedClassesOutput(state));
 export const selectPhanLoaiHocTrenTruong = memoize((state: TkbStore): [ClassModel[], ClassModel[]] => {
-  return partition(selectSelectedClassesBuoc3(state), { Thu: '*' });
+  return partition(selectSelectedClassesOutput(state), { Thu: '*' });
 });

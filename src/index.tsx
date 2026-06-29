@@ -19,21 +19,21 @@ LicenseManager.setLicenseKey('I_<3_SCHOOL_NDEwMjMzMzIwMDAwMA==afc05c982fa05a2578
 const theme = createTheme({
   palette: {
     mode: 'light',
-    primary: { main: '#1e40af', contrastText: '#ffffff' },
-    secondary: { main: '#f59e0b', contrastText: '#111827' },
+    primary: { main: '#2563EB', contrastText: '#ffffff' },
+    secondary: { main: '#18181B', contrastText: '#ffffff' },
     success: { main: '#047857' },
     error: { main: '#b91c1c' },
     background: {
-      default: '#f8fafc',
+      default: '#FAFAFA',
       paper: '#ffffff',
     },
     text: {
-      primary: '#0f172a',
-      secondary: '#475569',
+      primary: '#09090B',
+      secondary: '#3F3F46',
     },
   },
   typography: {
-    fontFamily: `"Fira Sans", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`,
+    fontFamily: `'Noto Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`,
     button: {
       fontWeight: 800,
       textTransform: 'none',
@@ -47,8 +47,8 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          minHeight: 42,
-          borderRadius: 999,
+          minHeight: 38,
+          borderRadius: 10,
           boxShadow: 'none',
         },
         contained: {
@@ -59,7 +59,7 @@ const theme = createTheme({
     MuiIconButton: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 10,
         },
       },
     },
@@ -71,7 +71,7 @@ const theme = createTheme({
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 10,
           backgroundColor: '#ffffff',
         },
       },

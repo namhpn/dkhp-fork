@@ -2,13 +2,13 @@
   position: relative;
   width: max-content;
   max-width: 100%;
-  color: #0f172a;
+  color: #09090b;
 }
 
 #thoi-khoa-bieu th,
 #thoi-khoa-bieu td {
   padding: 0.65em 0.5em;
-  border: 1px solid #dbe4ef;
+  border: 1px solid #e4e4e7;
 }
 
 #thoi-khoa-bieu table {
@@ -16,17 +16,16 @@
   max-width: 1500px;
   min-height: 70vh;
   overflow: hidden;
-  border: 1px solid #dbe4ef;
-  border-radius: 16px;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
   border-spacing: 0;
   background: #ffffff;
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.055);
 }
 
 #thoi-khoa-bieu table thead tr th {
   width: 3%;
-  color: #1e3a8a;
-  background-color: #eff6ff;
+  color: #18181b;
+  background-color: #f4f4f5;
   text-align: center;
   font-size: 0.82rem;
   font-weight: 850;
@@ -35,14 +34,14 @@
 }
 
 #thoi-khoa-bieu table tr td {
-  background: #f8fafc !important;
-  border-bottom: 1px solid #dbe4ef;
+  background: #fafafa !important;
+  border-bottom: 1px solid #e4e4e7;
 }
 
 #thoi-khoa-bieu table tr td.cell-tiet {
   width: 10em;
-  color: #475569;
-  background: #f1f5f9 !important;
+  color: #3f3f46;
+  background: #f4f4f5 !important;
   text-align: center;
   font-size: 0.86rem;
   font-weight: 800;
@@ -51,7 +50,7 @@
 #thoi-khoa-bieu .cell-class {
   width: 230px;
   position: relative;
-  color: #0f172a;
+  color: #09090b;
   background-color: #ffffff !important;
   text-align: left;
   line-height: 1.48;
@@ -59,7 +58,7 @@
 }
 
 #thoi-khoa-bieu .cell-class strong:first-of-type {
-  color: #1e40af;
+  color: #2563eb;
 }
 
 #thoi-khoa-bieu .cell-class:hover {
@@ -88,10 +87,9 @@
   flex-direction: column;
   gap: 6px;
   padding: 6px;
-  border: 1px solid #dbe4ef;
-  border-radius: 14px;
+  border: 1px solid #e4e4e7;
+  border-radius: 10px;
   background: #ffffff;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
   transition: 0.12s ease-in-out;
 }
 

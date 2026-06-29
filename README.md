@@ -1,11 +1,11 @@
-- To change all `jsx` files under `./src` folder to `tsx`
+# UIT Course Planner
 
-```
-find ./src -type f |grep "\.jsx$" | while read line; do git mv -- $line ${line%.jsx}.tsx; done;
+Single-page React app for UIT course planning.
+
+Flow:
+
+```txt
+Import Excel → Xếp lớp → Mã lớp & script
 ```
 
-- To change all `js` files under `./src` folder to `ts`
-
-```
-find ./src -type f |grep "\.js$" | while read line; do git mv -- $line ${line%.js}.ts; done;
-```
+Deployment target: Cloudflare Pages. See `README_CLOUDFLARE_PAGES.md`.

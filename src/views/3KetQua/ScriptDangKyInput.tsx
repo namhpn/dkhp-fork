@@ -25,11 +25,7 @@ const getReadonlySx = (theme: Theme) => ({
 const CustomInputComponent: InputBaseProps['inputComponent'] = forwardRef<
   HTMLTextAreaElement,
   HTMLAttributes<HTMLTextAreaElement>
->((props, ref) => (
-  <Tooltip title="Xem video hướng dẫn ở B1 để biết cách dùng.">
-    <textarea ref={ref} style={{ resize: 'vertical', minHeight: 92 }} {...props} />
-  </Tooltip>
-));
+>((props, ref) => <textarea ref={ref} style={{ resize: 'vertical', minHeight: 92 }} {...props} />);
 
 const CustomInputComponent2: InputBaseProps['inputComponent'] = forwardRef<
   HTMLTextAreaElement,
@@ -87,7 +83,6 @@ export function ScriptDangKyInput() {
         disabled={!hasLop}
         inputProps={{ readOnly: true }}
         sx={getReadonlySx(theme)}
-        helperText="Sao chép và chạy trên trang đăng ký học phần của UIT theo hướng dẫn."
         InputProps={{
           inputComponent: CustomInputComponent,
           endAdornment: hasLop ? (
@@ -139,7 +134,6 @@ export function DanhSachLopInput() {
         value={dsLopInputValue}
         disabled={useToolXepLop && !hasLop}
         sx={useToolXepLop ? getReadonlySx(theme) : undefined}
-        helperText={useToolXepLop ? 'Được tạo từ các lớp đã chọn ở bước 2.' : 'Nhập mã lớp thủ công khi chỉ muốn vẽ TKB.'}
         InputProps={{
           inputComponent: CustomInputComponent2,
           endAdornment:
