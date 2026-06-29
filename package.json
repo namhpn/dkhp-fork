@@ -35,11 +35,12 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "cross-env GENERATE_SOURCEMAP=false react-scripts build",
+    "build": "cross-env CI=false GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,md}\"",
-    "lint:fix": "eslint --fix --color \"./src/**/*.{js,jsx,ts,tsx}\""
+    "lint:fix": "eslint --fix --color \"./src/**/*.{js,jsx,ts,tsx}\"",
+    "build:strict": "cross-env CI=true GENERATE_SOURCEMAP=false react-scripts build"
   },
   "eslintConfig": {
     "extends": "react-app"

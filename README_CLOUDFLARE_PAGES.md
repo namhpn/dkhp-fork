@@ -18,4 +18,10 @@ npm run build
 npx wrangler pages deploy build
 ```
 
+The `build` script sets `CI=false` because Create React App otherwise treats warnings as hard build failures in Cloudflare's CI environment. A strict CI equivalent is available as:
+
+```bash
+npm run build:strict
+```
+
 SPA routing note: this package intentionally has no top-level `public/404.html`. Cloudflare Pages will then serve the React app for unknown client-side routes.

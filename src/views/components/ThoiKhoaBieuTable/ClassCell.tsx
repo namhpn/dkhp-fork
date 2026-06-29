@@ -179,18 +179,14 @@ function ClassCell({ data, isOutsideTable = false, ...restProps }: Props) {
               color="inherit"
               size="small"
               onClick={(e) => {
-                let clickType: string;
                 const classesToRemove = (() => {
                   if (isWarning(data) && e.shiftKey) {
-                    clickType = 'shift_click';
                     return [data];
                   }
                   if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
-                    clickType = 'cmd_shift_click';
                     // easter eggs: Cmd + Shift + Click to remove all selected classes
                     return selectedClasses;
                   }
-                  clickType = 'click';
                   return cacLopChungMonDangChon;
                 })();
                 removeClasses(classesToRemove);
