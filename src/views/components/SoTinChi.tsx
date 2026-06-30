@@ -21,9 +21,9 @@ function SoTinChi(props: { tongSoTcSelected?: number }) {
           margin: 0,
           padding: '4px 10px',
           color: judgement.isOk ? COLORS.SUCCESS : COLORS.ERROR,
-          background: judgement.isOk ? '#d1fae5' : '#fee2e2',
+          background: judgement.isOk ? 'var(--success-soft, var(--success-soft-fallback))' : 'var(--error-soft, var(--error-soft-fallback))',
           borderRadius: 999,
-          fontWeight: 800,
+          fontWeight: 700,
         }}
       >
         Số tín chỉ: <b>{tongSoTcSelected}</b>
