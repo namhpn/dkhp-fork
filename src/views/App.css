@@ -1,22 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600;700;800&family=Noto+Sans:wght@400;500;600;700&display=swap');
+@import '../theme/tokens.css';
 
 :root {
-  --app-bg: #fafafa;
-  --app-surface: #ffffff;
-  --app-surface-muted: #f4f4f5;
-  --app-ink: #09090b;
-  --app-primary: #18181b;
-  --app-secondary: #3f3f46;
-  --app-muted: #52525b;
-  --app-border: #d4d4d8;
-  --app-border-soft: #e4e4e7;
-  --app-blue: #2563eb;
-  --app-blue-soft: #eff6ff;
-  --app-success: #047857;
-  --app-success-soft: #ecfdf5;
-  --app-warning: #b45309;
-  --app-warning-soft: #fffbeb;
-  --app-radius: 12px;
+  /* ── Map old --app-* vars to new tokens for backward compat ── */
+  --app-bg: var(--bg, var(--bg-fallback));
+  --app-surface: var(--surface, var(--surface-fallback));
+  --app-surface-muted: var(--surface-muted, var(--surface-muted-fallback));
+  --app-ink: var(--ink, var(--ink-fallback));
+  --app-primary: var(--ink-2, var(--ink-2-fallback));
+  --app-secondary: var(--ink-2, var(--ink-2-fallback));
+  --app-muted: var(--ink-3, var(--ink-3-fallback));
+  --app-border: var(--border, var(--border-fallback));
+  --app-border-soft: var(--border-soft, var(--border-soft-fallback));
+  --app-blue: var(--blue, var(--blue-fallback));
+  --app-blue-soft: var(--blue-soft, var(--blue-soft-fallback));
+  --app-success: var(--success, var(--success-fallback));
+  --app-success-soft: var(--success-soft, var(--success-soft-fallback));
+  --app-warning: var(--warning, var(--warning-fallback));
+  --app-warning-soft: var(--warning-soft, var(--warning-soft-fallback));
+  --app-radius: var(--radius-lg);
 }
 
 * {
@@ -126,10 +128,10 @@ textarea:focus-visible,
   padding: 0 11px;
   color: var(--app-secondary);
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   font-size: 0.86rem;
-  font-weight: 750;
-  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, transform 120ms ease;
+  font-weight: 700;
+  transition: background-color var(--duration-normal) var(--easing-default), border-color var(--duration-normal) var(--easing-default), color var(--duration-normal) var(--easing-default), transform var(--duration-fast) var(--easing-default);
 }
 
 .section-nav-item:hover {
@@ -145,7 +147,8 @@ textarea:focus-visible,
 .section-nav-item.active {
   color: var(--app-blue);
   background: var(--app-blue-soft);
-  border-color: rgba(37, 99, 235, 0.24);
+  border-color: var(--app-blue);
+  border-width: 2px;
 }
 
 .task-section {
@@ -210,7 +213,7 @@ textarea:focus-visible,
   color: var(--app-blue);
   background: var(--app-blue-soft);
   border: 1px solid rgba(37, 99, 235, 0.18);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
 }
 
 .upload-title {
@@ -255,19 +258,19 @@ textarea:focus-visible,
   border: 1px solid var(--app-border-soft);
   border-radius: 9px;
   font-size: 0.84rem;
-  font-weight: 750;
+  font-weight: 700;
 }
 
 .credit-pill.ok {
   color: var(--app-success) !important;
   background: var(--app-success-soft) !important;
-  border-color: rgba(4, 120, 87, 0.22) !important;
+  border-color: color-mix(in srgb, var(--app-success) 22%, transparent) !important;
 }
 
 .credit-pill.warn {
   color: var(--app-warning) !important;
   background: var(--app-warning-soft) !important;
-  border-color: rgba(180, 83, 9, 0.22) !important;
+  border-color: color-mix(in srgb, var(--app-warning) 22%, transparent) !important;
 }
 
 .grid-frame {
@@ -287,11 +290,12 @@ textarea:focus-visible,
   min-height: 88px;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   color: var(--app-muted);
   background: var(--app-surface);
   border: 1px dashed var(--app-border);
   border-radius: var(--app-radius);
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .manual-toggle {
@@ -347,9 +351,13 @@ textarea:focus-visible,
   animation: flash 1.2s ease-in-out 1;
 }
 
-.drop-shadow-blue:hover {
-  filter: none;
+@media (prefers-reduced-motion: reduce) {
+  .animated.flash {
+    animation: none;
+  }
 }
+
+/* dropped: .drop-shadow-blue:hover — dead rule removed */
 
 @media (max-width: 760px) {
   .single-page-flow {

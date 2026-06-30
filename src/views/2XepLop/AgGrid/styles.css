@@ -36,7 +36,7 @@
   padding-left: 12px;
   padding-right: 12px;
   color: #18181b;
-  font-weight: 850;
+  font-weight: 800;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   border-right: 1px solid #e4e4e7;
@@ -121,7 +121,7 @@
   background: #fafafa;
   border-top: 1px solid #e4e4e7;
   font-size: 13px;
-  font-weight: 750;
+  font-weight: 700;
 }
 
 .grid-credit.ok {
