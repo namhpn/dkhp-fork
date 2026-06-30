@@ -1,8 +1,5 @@
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import { IconButton, Tooltip } from '@mui/material';
 import clsx from 'clsx';
-import ImageIcon from '@mui/icons-material/Image';
-import { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { getDanhSachTiet } from '../../../utils';
 import ErrorBoundary from '../ErrorBoundary';
 import ClassCell, { ClassCellContext } from './ClassCell';
@@ -17,7 +14,12 @@ import {
 import './styles.css';
 import { timeLookup, tietOnline } from './utils';
 
-const GetCell = ({ data }) => {
+export interface TkbTableHandle {
+  saveTkbImage: () => void;
+  copyTkbImage: () => void;
+}
+
+const GetCell = ({ data }: any) => {
   if (data === CELL.NO_CLASS) return <td />;
   if (data === CELL.OCCUPIED) return null;
   return <ClassCell data={data} rowSpan={getDanhSachTiet(data.Tiet).length} />;
@@ -25,8 +27,8 @@ const GetCell = ({ data }) => {
 
 function RowHocTrenTruong({ row, index }: { row: RowData; index: number }) {
   const shouldBeHidden = useMemo(() => {
-    if (index < 10) return false; // Tiết 1-10 luôn luôn hiện,
-    return Object.values(row).every((cell) => cell === CELL.NO_CLASS); // Tiết buổi tối + Online nếu không có lớp thì ẩn đi
+    if (index < 10) return false;
+    return Object.values(row).every((cell) => cell === CELL.NO_CLASS);
   }, [row, index]);
 
   return (
@@ -42,34 +44,19 @@ function RowHocTrenTruong({ row, index }: { row: RowData; index: number }) {
   );
 }
 
-function Render() {
+const Render = React.forwardRef<TkbTableHandle, {}>((_props, ref) => {
   const { rowDataHocTrenTruong, khongHocTrenTruong, redundant } = usePhanLoaiHocTrenTruongContext();
 
   const { tkbTableRef, saveTkbImageToComputer, copyTkbImageToClipboard } = useProcessImageTkb();
 
-  const [areExtraButtonsShown, setAreExtraButtonsShown] = useState(false);
+  React.useImperativeHandle(ref, () => ({
+    saveTkbImage: saveTkbImageToComputer,
+    copyTkbImage: copyTkbImageToClipboard,
+  }));
 
   return (
     <ClassCellContext>
-      <div
-        id="thoi-khoa-bieu"
-        className={clsx({ compact: false })}
-        onMouseEnter={() => setAreExtraButtonsShown(true)}
-        onMouseLeave={() => setAreExtraButtonsShown(false)}
-      >
-        <div className={clsx('extra-buttons', { 'extra-buttons-shown': areExtraButtonsShown })}>
-          <Tooltip title="Tải hình ảnh TKB về máy" placement="left">
-            <IconButton onClick={saveTkbImageToComputer} color="primary">
-              <FileDownloadIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Sao chép hình ảnh TKB vào clipboard" placement="left">
-            <IconButton onClick={copyTkbImageToClipboard} color="primary">
-              <ImageIcon />
-            </IconButton>
-          </Tooltip>
-        </div>
-
+      <div id="thoi-khoa-bieu" className={clsx({ compact: false })}>
         <div style={{ display: 'flex' }}>
           {redundant
             .flatMap((it) => it.new)
@@ -95,18 +82,18 @@ function Render() {
       </div>
     </ClassCellContext>
   );
-}
+});
 
-function Index() {
+const Index = React.forwardRef<TkbTableHandle, {}>((_props, ref) => {
   return (
     <ErrorBoundary>
       <ClassCellContext>
         <PhanLoaiHocTrenTruongContext>
-          <Render />
+          <Render ref={ref} />
         </PhanLoaiHocTrenTruongContext>
       </ClassCellContext>
     </ErrorBoundary>
   );
-}
+});
 
 export default Index;

@@ -1,28 +1,10 @@
 import React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { ClassModel } from 'types';
-import { getAgGridRowId, getTongSoTcJudgement } from '../../../utils';
-import { selectSelectedClasses, selectTongSoTcSelected, useTkbStore } from '../../../zus';
+import { getAgGridRowId } from '../../../utils';
 import { useTrungTkbDialogContext } from '../TrungTkbDialog';
 import './styles.css';
 import { useGridOptions } from './utils';
-
-function GridStatusBar() {
-  const selectedClasses = useTkbStore(selectSelectedClasses);
-  const tongSoTC = useTkbStore(selectTongSoTcSelected);
-  const judgement = getTongSoTcJudgement(tongSoTC);
-
-  return (
-    <div className="grid-statusbar" aria-label="Trạng thái xếp lớp">
-      <span>
-        Lớp đã chọn: <b>{selectedClasses.length}</b>
-      </span>
-      <span className={judgement.isOk ? 'grid-credit ok' : 'grid-credit warn'}>
-        Số tín chỉ: <b>{tongSoTC}</b>
-      </span>
-    </div>
-  );
-}
 
 function AgGrid() {
   const {
@@ -90,7 +72,6 @@ function AgGrid() {
           onRowClicked={onRowClicked}
         />
       </div>
-      <GridStatusBar />
     </>
   );
 }

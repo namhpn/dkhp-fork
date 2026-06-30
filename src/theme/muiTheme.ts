@@ -94,6 +94,13 @@ const muiTheme = createTheme({
         },
       },
     },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          transition: 'none !important',
+        },
+      },
+    },
     MuiTextField: {
       defaultProps: {
         variant: 'outlined',
@@ -111,6 +118,7 @@ const muiTheme = createTheme({
         root: {
           borderRadius: 10,
           backgroundColor: '#ffffff',
+          transition: 'border-color 150ms ease, box-shadow 150ms ease',
           '&.Mui-focused': {
             outline: '3px solid rgba(37, 99, 235, 0.32)',
             outlineOffset: 2,
@@ -120,10 +128,23 @@ const muiTheme = createTheme({
           },
         },
         input: {
+          padding: '14px 16px',
+          transition: 'none',
           '&[readonly]': {
             backgroundColor: '#f4f4f4',
             cursor: 'default',
           },
+        },
+        inputMultiline: {
+          padding: '14px 16px',
+          transition: 'none',
+        },
+        multiline: {
+          padding: 0,
+          transition: 'none',
+        },
+        notchedOutline: {
+          transition: 'none',
         },
       },
     },

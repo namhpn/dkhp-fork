@@ -1,21 +1,18 @@
-import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
-import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import ImageIcon from '@mui/icons-material/Image';
 import SearchOffOutlinedIcon from '@mui/icons-material/SearchOffOutlined';
-import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
 import LinearProgress from '@mui/material/LinearProgress';
-import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, lazy, useMemo, useRef } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { getTongSoTcJudgement } from '../utils';
 import {
   selectFinalDataTkb,
   selectIsChiVeTkb,
   selectSelectedClassesOutput,
+  selectTextareaChiVeTkb,
   selectTongSoTcOutput,
   useTkbStore,
 } from '../zus';
@@ -23,60 +20,39 @@ import SelectExcelButton from './1ChonFileExcel/SelectExcelButton';
 import TrungTkbDialog, { TrungTkbDialogContext } from './2XepLop/TrungTkbDialog';
 import ErrorBoundary from './components/ErrorBoundary';
 import ScrollToTop from './components/ScrollToTop';
-import ThoiKhoaBieuTable from './components/ThoiKhoaBieuTable';
+import ThoiKhoaBieuTable, { TkbTableHandle } from './components/ThoiKhoaBieuTable';
 import ScriptDangKyInput, { DanhSachLopInput } from './3KetQua/ScriptDangKyInput';
 import './App.css';
 
 const AgGrid = lazy(() => import('./2XepLop/AgGrid'));
 
-const NAV_ITEMS = [
-  { id: 'import', label: 'Nhập Excel', Icon: FileUploadOutlinedIcon },
-  { id: 'plan', label: 'Xếp lớp', Icon: TableChartOutlinedIcon },
-  { id: 'output', label: 'Mã lớp & script', Icon: ListAltOutlinedIcon },
-] as const;
-
-type NavId = typeof NAV_ITEMS[number]['id'];
-
-function useActiveSection() {
-  const [active, setActive] = useState<NavId>('import');
-
-  useEffect(() => {
-    const sections = NAV_ITEMS.map((item) => document.getElementById(item.id)).filter(Boolean) as HTMLElement[];
-    if (!sections.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible?.target?.id) setActive(visible.target.id as NavId);
-      },
-      { rootMargin: '-18% 0px -70% 0px', threshold: [0.1, 0.35, 0.6] },
-    );
-
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, []);
-
-  return active;
-}
-
 function PageHeader() {
-  const active = useActiveSection();
+  const setIsChiVeTkb = useTkbStore((s) => s.setIsChiVeTkb);
+  const isChiVeTkb = useTkbStore(selectIsChiVeTkb);
 
   return (
-    <div className="page-header">
+    <div className="header-minimal">
       <Typography component="h1" className="app-title">
         Courses
       </Typography>
-      <nav className="section-nav" aria-label="Điều hướng trong trang">
-        {NAV_ITEMS.map(({ id, label, Icon }) => (
-          <a key={id} className={active === id ? 'section-nav-item active' : 'section-nav-item'} href={`#${id}`}>
-            <Icon fontSize="small" aria-hidden="true" />
-            <span>{label}</span>
-          </a>
-        ))}
-      </nav>
+      <div className="header-mode-toggle">
+        <Tooltip title="Chọn lớp từ danh sách">
+          <button
+            className={'mode-btn' + (!isChiVeTkb ? ' mode-btn-active' : '')}
+            onClick={() => setIsChiVeTkb(false)}
+          >
+            Xếp lớp
+          </button>
+        </Tooltip>
+        <Tooltip title="Nhập mã lớp thủ công">
+          <button
+            className={'mode-btn' + (isChiVeTkb ? ' mode-btn-active' : '')}
+            onClick={() => setIsChiVeTkb(true)}
+          >
+            Nhập mã lớp
+          </button>
+        </Tooltip>
+      </div>
     </div>
   );
 }
@@ -102,17 +78,45 @@ function ImportSection() {
 }
 
 function SchedulePanel() {
+  const tkbRef = useRef<TkbTableHandle>(null);
   const selectedClasses = useTkbStore(selectSelectedClassesOutput);
+  const selectedCount = useTkbStore(selectSelectedClassesOutput);
+  const tongSoTC = useTkbStore(selectTongSoTcOutput);
+  const creditJudgement = useMemo(() => getTongSoTcJudgement(tongSoTC), [tongSoTC]);
 
   if (!selectedClasses.length) return null;
 
   return (
     <div className="schedule-panel" aria-label="Thời khóa biểu">
-      <Typography component="h3" className="subsection-title">
-        Thời khóa biểu
-      </Typography>
+      <div className="schedule-panel-header">
+        <Typography component="h3" className="subsection-title">
+          Thời khóa biểu
+        </Typography>
+        <div className="schedule-panel-actions">
+          <Tooltip title="Tải hình ảnh TKB về máy">
+            <IconButton onClick={() => tkbRef.current?.saveTkbImage()} size="small" className="panel-action-btn">
+              <FileDownloadIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Sao chép hình ảnh TKB vào clipboard">
+            <IconButton onClick={() => tkbRef.current?.copyTkbImage()} size="small" className="panel-action-btn">
+              <ImageIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </div>
+      </div>
+      <div className="grid-statusbar-v2">
+        <div className="sb2-stat">
+          <span className="sb2-value">{selectedCount.length}</span>
+          <span className="sb2-label">Lớp đã chọn</span>
+        </div>
+        <div className={'sb2-stat' + (creditJudgement.isOk ? ' ok' : ' warn')}>
+          <span className="sb2-value">{tongSoTC}</span>
+          <span className="sb2-label">Số tín chỉ</span>
+        </div>
+      </div>
       <div id="thoi-khoa-bieu-wrapper">
-        <ThoiKhoaBieuTable />
+        <ThoiKhoaBieuTable ref={tkbRef} />
       </div>
     </div>
   );
@@ -120,6 +124,22 @@ function SchedulePanel() {
 
 function PlanSection() {
   const allClasses = useTkbStore(selectFinalDataTkb);
+  const isChiVeTkb = useTkbStore(selectIsChiVeTkb);
+  const textareaChiVeTkb = useTkbStore(selectTextareaChiVeTkb);
+
+  if (isChiVeTkb) {
+    return (
+      <section id="plan" className="task-section plan-section" aria-labelledby="plan-title">
+        <SectionHeader id="plan-title" title="Xếp lớp" />
+        {!textareaChiVeTkb && (
+          <div className="manual-input-notice">
+            <span>Hãy nhập vào ô Danh sách mã lớp để xếp thời khoá biểu</span>
+          </div>
+        )}
+        <SchedulePanel />
+      </section>
+    );
+  }
 
   return (
     <section id="plan" className="task-section plan-section" aria-labelledby="plan-title">
@@ -146,42 +166,20 @@ function PlanSection() {
 }
 
 function OutputSection() {
-  const setIsChiVeTkb = useTkbStore((s) => s.setIsChiVeTkb);
-  const khongXepLop = useTkbStore(selectIsChiVeTkb);
-  const tongSoTC = useTkbStore(selectTongSoTcOutput);
-  const judgement = useMemo(() => getTongSoTcJudgement(tongSoTC), [tongSoTC]);
 
   return (
     <section id="output" className="task-section output-section" aria-labelledby="output-title">
       <SectionHeader
         id="output-title"
         title="Mã lớp & script"
-        actions={
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems={{ xs: 'flex-start', sm: 'center' }}>
-            <span className={judgement.isOk ? 'credit-pill ok' : 'credit-pill warn'}>{tongSoTC} tín chỉ</span>
-            <Tooltip title="Bật để nhập mã lớp thủ công">
-              <FormControlLabel
-                className="manual-toggle"
-                control={
-                  <Checkbox
-                    checked={khongXepLop}
-                    onChange={(e) => setIsChiVeTkb(e.target.checked)}
-                    name="chiVeTkb"
-                    color="primary"
-                    size="small"
-                  />
-                }
-                label="Nhập mã lớp"
-              />
-            </Tooltip>
-          </Stack>
-        }
       />
 
-      <Grid container spacing={1.5} className="script-grid-compact">
-        <DanhSachLopInput />
-        <ScriptDangKyInput />
-      </Grid>
+      <div className="output-panel">
+        <div className="output-fields-row">
+          <DanhSachLopInput />
+          <ScriptDangKyInput />
+        </div>
+      </div>
     </section>
   );
 }

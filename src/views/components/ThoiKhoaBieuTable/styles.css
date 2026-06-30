@@ -52,9 +52,9 @@
   position: relative;
   color: var(--ink, var(--ink-fallback));
   background-color: var(--surface, var(--surface-fallback)) !important;
-  text-align: left;
+  text-align: center;
   line-height: 1.48;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 #thoi-khoa-bieu .cell-class strong:first-of-type {
@@ -76,30 +76,7 @@
   opacity: 1;
 }
 
-#thoi-khoa-bieu .extra-buttons {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 3;
-  opacity: 0;
-  transform: translateX(calc(100% + 8px));
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 6px;
-  border: 1px solid var(--border-soft, var(--border-soft-fallback));
-  border-radius: var(--radius-md);
-  background: var(--surface, var(--surface-fallback));
-  transition: opacity var(--duration-fast) ease-in-out;
-}
 
-#thoi-khoa-bieu .extra-buttons.extra-buttons-shown {
-  opacity: 1;
-}
-
-#thoi-khoa-bieu.compact .extra-buttons {
-  display: none;
-}
 
 .MuiTooltip-tooltipPlacementBottom {
   margin-top: 0 !important;

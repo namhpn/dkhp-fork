@@ -1,5 +1,4 @@
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { IconButton, Tooltip } from '@mui/material';
 import clsx from 'clsx';
 import constate from 'constate';
@@ -47,28 +46,21 @@ const useMonChonRoi = () => {
 export const [ClassCellContext, useClassCellContext] = constate(() => {
   const [cellHovering, setCellHovering] = useState<ClassModel | null>(null);
   const [isHoveringOnRemoveIcon, setIsHoveringOnRemoveIcon] = useState(false);
-  const [isHoveringOnWarningIcon, setIsHoveringOnWarningIcon] = useState(false);
   const { isWarning, getWarningColor } = useMonChonRoi();
   const isHoveringOnThisCell = (data: ClassModel, fieldCompare: keyof ClassModel) => {
     return cellHovering?.[fieldCompare] === data?.[fieldCompare];
   };
   const isHoveringOnThisCellRemoveIcon = (data: ClassModel) =>
     isHoveringOnThisCell(data, 'MaMH') && isHoveringOnRemoveIcon;
-  const isHoveringOnThisCellWarningIcon = (data: ClassModel) => {
-    return !!cellHovering && getMonChonRoiKey(data) === getMonChonRoiKey(cellHovering) && isHoveringOnWarningIcon;
-  };
   const onRemoveClass = () => {
     setCellHovering(null);
     setIsHoveringOnRemoveIcon(false);
-    setIsHoveringOnWarningIcon(false);
   };
   return {
     isHoveringOnThisCell,
     isHoveringOnThisCellRemoveIcon,
-    isHoveringOnThisCellWarningIcon,
     setCellHovering,
     setIsHoveringOnRemoveIcon,
-    setIsHoveringOnWarningIcon,
     isWarning,
     getWarningColor,
     onRemoveClass,
@@ -83,12 +75,9 @@ function ClassCell({ data, isOutsideTable = false, ...restProps }: Props) {
   const {
     isHoveringOnThisCell,
     isHoveringOnThisCellRemoveIcon,
-    isHoveringOnThisCellWarningIcon,
-    setIsHoveringOnWarningIcon,
     setCellHovering,
     setIsHoveringOnRemoveIcon,
     isWarning,
-    getWarningColor,
     onRemoveClass,
   } = useClassCellContext();
 
@@ -116,6 +105,9 @@ function ClassCell({ data, isOutsideTable = false, ...restProps }: Props) {
         })}
         style={{
           boxShadow: isRedundantRelated ? `inset 0 0 0 3px ${randomColors[redundantIndex]}` : undefined,
+          outline: isWarning(data) ? '2px solid #EA580C' : undefined,
+          outlineOffset: isWarning(data) ? '-2px' : undefined,
+          backgroundColor: isWarning(data) ? '#FFF7ED' : undefined,
         }}
         onMouseEnter={() => setCellHovering(data)}
         onMouseLeave={() => setCellHovering(null)}
@@ -161,18 +153,13 @@ function ClassCell({ data, isOutsideTable = false, ...restProps }: Props) {
             </IconButton>
           </Tooltip>
         )}
-        <strong>
-          {MaLop}
+        <strong style={{ color: isWarning(data) ? '#EA580C' : undefined, display: 'inline-flex', flexDirection: 'column', alignItems: 'center' }}>
           {isWarning(data) && (
-            <Tooltip open={isHoveringOnThisCellWarningIcon(data)} title="Có vẻ như bạn đang chọn thừa cho môn này">
-              <WarningAmberIcon
-                onMouseEnter={() => setIsHoveringOnWarningIcon(true)}
-                onMouseLeave={() => setIsHoveringOnWarningIcon(false)}
-                style={{ color: getWarningColor(data) }}
-              />
-            </Tooltip>
-          )}{' '}
-          - {NgonNgu}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#EA580C" style={{ marginBottom: 2 }}>
+              <path d="M12 2L1 21h22L12 2zm-1 14h2v2h-2v-2zm0-8h2v6h-2V8z"/>
+            </svg>
+          )}
+          <span>{MaLop}{' - '}{NgonNgu}</span>
         </strong>
         <br />
         {TenMH}

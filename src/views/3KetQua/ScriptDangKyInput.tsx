@@ -3,7 +3,6 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ShareIcon from '@mui/icons-material/Share';
 import { IconButton, Tooltip, useTheme } from '@mui/material';
 import type { InputBaseProps, Theme } from '@mui/material';
-import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import { enqueueSnackbar } from 'notistack';
 import { forwardRef, useMemo, useState } from 'react';
@@ -99,9 +98,23 @@ export function ScriptDangKyInput() {
   const { hasLop, scriptInputValue } = useCommon();
 
   return (
-    <Grid item xs={12} md={6} style={{ paddingRight: 0 }}>
+    <div className="field-with-action">
+      <div className="field-label-row">
+        <label className="field-label">Script đăng ký nhanh</label>
+        {hasLop && (
+          <Tooltip title={isCopied ? COPIED_TOOLTIP : DEFAULT_TOOLTIP}>
+            <IconButton
+              aria-label="Sao chép script đăng ký nhanh"
+              onClick={() => copy(scriptInputValue)}
+              size="small"
+              className="field-action-btn"
+            >
+              {isCopied ? <CheckIcon fontSize="small" /> : <ContentCopyIcon fontSize="small" />}
+            </IconButton>
+          </Tooltip>
+        )}
+      </div>
       <TextField
-        label="Script đăng ký nhanh"
         fullWidth
         multiline
         minRows={4}
@@ -112,21 +125,9 @@ export function ScriptDangKyInput() {
         sx={getReadonlySx(theme)}
         InputProps={{
           inputComponent: CustomInputComponent,
-          endAdornment: hasLop ? (
-            <Tooltip title={isCopied ? COPIED_TOOLTIP : DEFAULT_TOOLTIP}>
-              <IconButton
-                aria-label="Sao chép script đăng ký nhanh"
-                onClick={() => copy(scriptInputValue)}
-                edge="end"
-                size="small"
-              >
-                {isCopied ? <CheckIcon color="primary" fontSize="small" /> : <ContentCopyIcon fontSize="small" />}
-              </IconButton>
-            </Tooltip>
-          ) : undefined,
         }}
       />
-    </Grid>
+    </div>
   );
 }
 
@@ -138,9 +139,28 @@ export function DanhSachLopInput() {
   const useToolXepLop = !isChiVeTkb;
 
   return (
-    <Grid item xs={12} md={6}>
+    <div className="field-with-action">
+      <div className="field-label-row">
+        <label className="field-label">Danh sách mã lớp</label>
+        {hasLop && (
+          <Tooltip title={isShareCopied ? 'Đã sao chép link' : 'Chia sẻ TKB'}>
+            <IconButton
+              aria-label="Tạo link chia sẻ thời khóa biểu"
+              size="small"
+              className="field-action-btn"
+              onClick={() => {
+                const newUrl =
+                  window.location.origin + window.location.pathname + '?self_selected=' + dsLopInputValue;
+                shareCopy(newUrl);
+                window.open(newUrl, Math.random()?.toString());
+              }}
+            >
+              {isShareCopied ? <CheckIcon fontSize="small" /> : <ShareIcon fontSize="small" />}
+            </IconButton>
+          </Tooltip>
+        )}
+      </div>
       <TextField
-        label="Danh sách mã lớp"
         fullWidth
         multiline
         inputProps={{ readOnly: useToolXepLop, style: { resize: 'vertical', minHeight: 92 } }}
@@ -151,30 +171,19 @@ export function DanhSachLopInput() {
         }}
         value={dsLopInputValue}
         disabled={useToolXepLop && !hasLop}
-        sx={useToolXepLop ? getReadonlySx(theme) : undefined}
+        sx={isChiVeTkb ? {
+          '& .MuiOutlinedInput-root': {
+            backgroundColor: '#ffffff',
+          },
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'var(--blue, #2563EB)',
+          },
+        } : getReadonlySx(theme)}
         InputProps={{
           inputComponent: CustomInputComponent2,
-          endAdornment:
-            useToolXepLop && hasLop ? (
-              <Tooltip title={isShareCopied ? 'Đã sao chép link' : 'Chia sẻ TKB'}>
-                <IconButton
-                  aria-label="Tạo link chia sẻ thời khóa biểu"
-                  edge="end"
-                  size="small"
-                  onClick={() => {
-                    const newUrl =
-                      window.location.origin + window.location.pathname + '?self_selected=' + dsLopInputValue;
-                    shareCopy(newUrl);
-                    window.open(newUrl, Math.random()?.toString());
-                  }}
-                >
-                  {isShareCopied ? <CheckIcon color="primary" fontSize="small" /> : <ShareIcon fontSize="small" />}
-                </IconButton>
-              </Tooltip>
-            ) : null,
         }}
       />
-    </Grid>
+    </div>
   );
 }
 
