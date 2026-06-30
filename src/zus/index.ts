@@ -135,3 +135,15 @@ export const selectTongSoTcOutput = (state: TkbStore) => calcTongSoTC(selectSele
 export const selectPhanLoaiHocTrenTruong = memoize((state: TkbStore): [ClassModel[], ClassModel[]] => {
   return partition(selectSelectedClassesOutput(state), { Thu: '*' });
 });
+
+export const selectUnmatchedMaLop = memoize((state: TkbStore): string[] => {
+  const isChiVeTkb = selectIsChiVeTkb(state);
+  const textareaChiVeTkb = selectTextareaChiVeTkb(state);
+  const finalDataTkb = selectFinalDataTkb(state);
+
+  if (!isChiVeTkb || !textareaChiVeTkb.trim()) return [];
+
+  const listMaLop = textareaChiVeTkb.split(/\s+|\+|,/).filter(Boolean);
+  const existingCodes = new Set(finalDataTkb.map((it) => it.MaLop));
+  return listMaLop.filter((code) => !existingCodes.has(code));
+});

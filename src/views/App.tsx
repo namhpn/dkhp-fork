@@ -185,6 +185,7 @@ function OutputSection() {
 }
 
 function AppContent() {
+  const isChiVeTkb = useTkbStore(selectIsChiVeTkb);
   return (
     <div className="app-shell">
       <a href="#main-content" className="skip-link">
@@ -193,8 +194,17 @@ function AppContent() {
       <main id="main-content" className="single-page-flow">
         <PageHeader />
         <ImportSection />
-        <PlanSection />
-        <OutputSection />
+        {isChiVeTkb ? (
+          <>
+            <OutputSection />
+            <PlanSection />
+          </>
+        ) : (
+          <>
+            <PlanSection />
+            <OutputSection />
+          </>
+        )}
       </main>
     </div>
   );

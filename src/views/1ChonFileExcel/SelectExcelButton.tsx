@@ -7,16 +7,14 @@ import { enqueueSnackbar } from 'notistack';
 import React, { ChangeEventHandler, DragEventHandler, useState } from 'react';
 import XLSX from 'xlsx';
 import { selectDataExcel, useTkbStore } from '../../zus';
-import { arrayToTkbObject, getLastUpdateString, sheetJSFT, toDateTimeString } from './utils';
+import { arrayToTkbObject, sheetJSFT, toDateTimeString } from './utils';
 
 function SelectExcelButton() {
   const dataExcel = useTkbStore(selectDataExcel);
   const setDataExcel = useTkbStore((s) => s.setDataExcel);
   const [isImporting, setIsImporting] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
-  const lastUpdateString = getLastUpdateString(dataExcel);
   const hasFile = !!dataExcel?.data?.length;
-  const rowCount = dataExcel?.data?.length ?? 0;
 
   const processFile = React.useCallback(
     (file: File) => {
@@ -140,11 +138,7 @@ function SelectExcelButton() {
                 ? 'Vui lòng đợi…'
                 : dataExcel?.fileName || 'Kéo thả file Excel vào đây'}
             </Typography>
-            {hasFile && !isImporting && (
-              <Typography className="upload-status">
-                {rowCount} lớp học{lastUpdateString ? ` · ${lastUpdateString}` : ''}
-              </Typography>
-            )}
+
           </div>
         </div>
 

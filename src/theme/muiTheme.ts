@@ -118,6 +118,7 @@ const muiTheme = createTheme({
         root: {
           borderRadius: 10,
           backgroundColor: '#ffffff',
+          overflow: 'hidden',
           transition: 'border-color 150ms ease, box-shadow 150ms ease',
           '&.Mui-focused': {
             outline: '3px solid rgba(37, 99, 235, 0.32)',

@@ -210,20 +210,17 @@ textarea:focus-visible,
 
 .upload-main {
   display: grid;
-  min-width: 0;
   justify-items: center;
-  gap: 10px;
+  gap: 12px;
+  min-width: 0;
 }
 
 .upload-icon-box {
   display: grid;
-  width: 48px;
-  height: 48px;
+  width: 28px;
+  height: 28px;
   place-items: center;
-  color: var(--app-blue);
-  background: var(--app-blue-soft);
-  border: 1px solid rgba(37, 99, 235, 0.18);
-  border-radius: var(--radius-lg);
+  color: var(--ink-2, var(--ink-2-fallback));
 }
 
 .upload-title {
@@ -241,13 +238,6 @@ textarea:focus-visible,
   font-size: 0.85rem !important;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.upload-status {
-  margin-top: 4px !important;
-  color: var(--app-secondary) !important;
-  font-size: 0.82rem !important;
-  font-weight: 700 !important;
 }
 
 .upload-actions {
@@ -353,6 +343,8 @@ textarea:focus-visible,
   gap: 6px;
 }
 
+
+
 .field-label-row {
   display: flex;
   align-items: center;
@@ -361,12 +353,17 @@ textarea:focus-visible,
 }
 
 .field-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-family: 'Noto Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--ink-2, var(--ink-2-fallback));
   letter-spacing: -0.01em;
 }
+
+
 
 .field-action-btn {
   width: 28px !important;

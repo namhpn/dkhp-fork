@@ -8,7 +8,7 @@ import { enqueueSnackbar } from 'notistack';
 import { forwardRef, useMemo, useState } from 'react';
 import type { HTMLAttributes } from 'react';
 import { extractListMaLop } from '../../utils';
-import { selectIsChiVeTkb, selectPhanLoaiHocTrenTruong, selectTextareaChiVeTkb, useTkbStore } from '../../zus';
+import { selectIsChiVeTkb, selectPhanLoaiHocTrenTruong, selectTextareaChiVeTkb, selectUnmatchedMaLop, useTkbStore } from '../../zus';
 import { getScriptDkhp } from './utils';
 
 const DEFAULT_TOOLTIP = 'Click để sao chép';
@@ -135,13 +135,17 @@ export function DanhSachLopInput() {
   const theme = useTheme();
   const { isCopied: isShareCopied, copy: shareCopy } = useCopyButton();
   const setTextareChiVeTkb = useTkbStore((s) => s.setTextareChiVeTkb);
+  const unmatchedCodes = useTkbStore(selectUnmatchedMaLop);
   const { hasLop, dsLopInputValue, isChiVeTkb } = useCommon();
   const useToolXepLop = !isChiVeTkb;
+  const hasErrors = isChiVeTkb && unmatchedCodes.length > 0;
 
   return (
     <div className="field-with-action">
       <div className="field-label-row">
-        <label className="field-label">Danh sách mã lớp</label>
+        <label className="field-label">
+          Danh sách mã lớp
+        </label>
         {hasLop && (
           <Tooltip title={isShareCopied ? 'Đã sao chép link' : 'Chia sẻ TKB'}>
             <IconButton
@@ -161,6 +165,7 @@ export function DanhSachLopInput() {
         )}
       </div>
       <TextField
+        error={hasErrors}
         fullWidth
         multiline
         inputProps={{ readOnly: useToolXepLop, style: { resize: 'vertical', minHeight: 92 } }}
@@ -171,14 +176,21 @@ export function DanhSachLopInput() {
         }}
         value={dsLopInputValue}
         disabled={useToolXepLop && !hasLop}
-        sx={isChiVeTkb ? {
-          '& .MuiOutlinedInput-root': {
-            backgroundColor: '#ffffff',
+        helperText={hasErrors ? `Không tìm thấy: ${unmatchedCodes.join(', ')}` : ' '}
+        FormHelperTextProps={{
+          sx: {
+            marginLeft: 0,
+            fontWeight: 600,
+            fontSize: '0.8rem',
+            lineHeight: 1.4,
+            color: hasErrors ? 'var(--error, #B91C1C)' : 'transparent',
           },
+        }}
+        sx={isChiVeTkb && !hasErrors ? {
           '& .MuiOutlinedInput-notchedOutline': {
             borderColor: 'var(--blue, #2563EB)',
           },
-        } : getReadonlySx(theme)}
+        } : isChiVeTkb && hasErrors ? {} : getReadonlySx(theme)}
         InputProps={{
           inputComponent: CustomInputComponent2,
         }}
