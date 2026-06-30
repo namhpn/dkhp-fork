@@ -9,6 +9,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import constate from 'constate';
 import React from 'react';
 import { ClassModel } from '../../types';
+import { getAgGridRowId } from '../../utils';
 
 export type TTrungTkb = {
   existing: ClassModel;
@@ -18,17 +19,36 @@ export type TTrungTkb = {
 export const [TrungTkbDialogContext, useTrungTkbDialogContext] = constate(() => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [trungTkbs, setTrungTkbs] = React.useState<TTrungTkb[]>([]);
+  const [conflictRowIds, setConflictRowIds] = React.useState<string[]>([]);
+
+  const clearFlashTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const openTrungTkbDialog = React.useCallback((trungTkbData: TTrungTkb[]) => {
     setTrungTkbs(trungTkbData);
     setIsDialogOpen(true);
+
+    // Collect conflict row IDs for grid flash
+    const ids = new Set<string>();
+    trungTkbData.forEach(({ existing, new: newClasses }) => {
+      ids.add(getAgGridRowId(existing));
+      newClasses.forEach((c) => ids.add(getAgGridRowId(c)));
+    });
+    setConflictRowIds(Array.from(ids));
+
+    // Clear flash after 2 cycles (800ms × 2 = 1600ms)
+    if (clearFlashTimerRef.current) {
+      clearTimeout(clearFlashTimerRef.current);
+    }
+    clearFlashTimerRef.current = setTimeout(() => {
+      setConflictRowIds([]);
+    }, 1600);
   }, []);
 
   const closeDialog = React.useCallback(() => {
     setIsDialogOpen(false);
   }, []);
 
-  return { isDialogOpen, trungTkbs, openTrungTkbDialog, closeDialog };
+  return { isDialogOpen, trungTkbs, conflictRowIds, openTrungTkbDialog, closeDialog };
 });
 
 function TrungTkbDialog() {

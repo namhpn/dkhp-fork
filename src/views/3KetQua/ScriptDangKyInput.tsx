@@ -1,3 +1,4 @@
+import CheckIcon from '@mui/icons-material/Check';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ShareIcon from '@mui/icons-material/Share';
 import { IconButton, Tooltip, useTheme } from '@mui/material';
@@ -67,10 +68,36 @@ const useCommon = () => {
   };
 };
 
+function useCopyButton() {
+  const [isCopying, setIsCopying] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+
+  const copy = (text: string) => {
+    if (isCopying) return;
+    setIsCopying(true);
+    navigator.clipboard.writeText(text).then(
+      () => {
+        setIsCopied(true);
+        setTimeout(() => {
+          setIsCopied(false);
+          setIsCopying(false);
+        }, 3000);
+      },
+      () => {
+        enqueueSnackbar('Không thể sao chép', { variant: 'error' });
+        setIsCopying(false);
+      },
+    );
+  };
+
+  return { isCopied, copy };
+}
+
 export function ScriptDangKyInput() {
   const theme = useTheme();
-  const [isCopying, setIsCopying] = useState(false);
+  const { isCopied, copy } = useCopyButton();
   const { hasLop, scriptInputValue } = useCommon();
+
   return (
     <Grid item xs={12} md={6} style={{ paddingRight: 0 }}>
       <TextField
@@ -86,24 +113,14 @@ export function ScriptDangKyInput() {
         InputProps={{
           inputComponent: CustomInputComponent,
           endAdornment: hasLop ? (
-            <Tooltip title={isCopying ? COPIED_TOOLTIP : DEFAULT_TOOLTIP}>
+            <Tooltip title={isCopied ? COPIED_TOOLTIP : DEFAULT_TOOLTIP}>
               <IconButton
                 aria-label="Sao chép script đăng ký nhanh"
-                onClick={() => {
-                  navigator.clipboard.writeText(scriptInputValue).then(
-                    () => {
-                      setIsCopying(true);
-                      setTimeout(() => setIsCopying(false), 3000);
-                    },
-                    () => {
-                      enqueueSnackbar('Không thể sao chép', { variant: 'error' });
-                    },
-                  );
-                }}
+                onClick={() => copy(scriptInputValue)}
                 edge="end"
                 size="small"
               >
-                <ContentCopyIcon color={isCopying ? 'primary' : undefined} />
+                {isCopied ? <CheckIcon color="primary" fontSize="small" /> : <ContentCopyIcon fontSize="small" />}
               </IconButton>
             </Tooltip>
           ) : undefined,
@@ -115,6 +132,7 @@ export function ScriptDangKyInput() {
 
 export function DanhSachLopInput() {
   const theme = useTheme();
+  const { isCopied: isShareCopied, copy: shareCopy } = useCopyButton();
   const setTextareChiVeTkb = useTkbStore((s) => s.setTextareChiVeTkb);
   const { hasLop, dsLopInputValue, isChiVeTkb } = useCommon();
   const useToolXepLop = !isChiVeTkb;
@@ -138,7 +156,7 @@ export function DanhSachLopInput() {
           inputComponent: CustomInputComponent2,
           endAdornment:
             useToolXepLop && hasLop ? (
-              <Tooltip title="Chia sẻ TKB">
+              <Tooltip title={isShareCopied ? 'Đã sao chép link' : 'Chia sẻ TKB'}>
                 <IconButton
                   aria-label="Tạo link chia sẻ thời khóa biểu"
                   edge="end"
@@ -146,11 +164,11 @@ export function DanhSachLopInput() {
                   onClick={() => {
                     const newUrl =
                       window.location.origin + window.location.pathname + '?self_selected=' + dsLopInputValue;
-                    navigator.clipboard.writeText(newUrl);
+                    shareCopy(newUrl);
                     window.open(newUrl, Math.random()?.toString());
                   }}
                 >
-                  <ShareIcon />
+                  {isShareCopied ? <CheckIcon color="primary" fontSize="small" /> : <ShareIcon fontSize="small" />}
                 </IconButton>
               </Tooltip>
             ) : null,

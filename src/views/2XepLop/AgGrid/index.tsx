@@ -1,7 +1,9 @@
+import React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { ClassModel } from 'types';
-import { getTongSoTcJudgement } from '../../../utils';
+import { getAgGridRowId, getTongSoTcJudgement } from '../../../utils';
 import { selectSelectedClasses, selectTongSoTcSelected, useTkbStore } from '../../../zus';
+import { useTrungTkbDialogContext } from '../TrungTkbDialog';
 import './styles.css';
 import { useGridOptions } from './utils';
 
@@ -40,6 +42,18 @@ function AgGrid() {
     getRowId,
   } = useGridOptions();
 
+  const { conflictRowIds } = useTrungTkbDialogContext();
+
+  // Apply conflict-flash class to rows matching conflict IDs
+  const rowClassRules = React.useMemo(() => {
+    const idSet = new Set(conflictRowIds);
+    return {
+      'conflict-flash': (params: any) => {
+        return params.data ? idSet.has(getAgGridRowId(params.data)) : false;
+      },
+    };
+  }, [conflictRowIds]);
+
   return (
     <>
       <div className="ag-theme-alpine course-grid">
@@ -63,6 +77,7 @@ function AgGrid() {
           rowGroupPanelShow="never"
           suppressDragLeaveHidesColumns={true}
           rowClass="ag-cell-normal"
+          rowClassRules={rowClassRules}
           onColumnVisible={onColumnChanged}
           onColumnPinned={onColumnChanged}
           onColumnResized={onColumnChanged}

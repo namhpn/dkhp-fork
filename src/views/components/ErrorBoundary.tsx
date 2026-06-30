@@ -67,10 +67,10 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                     p: 1.25,
                     overflow: 'auto',
                     maxHeight: 260,
-                    border: '1px solid #E4E4E7',
+                    border: '1px solid var(--border-soft, var(--border-soft-fallback))',
                     borderRadius: 1,
-                    bgcolor: '#FAFAFA',
-                    color: '#3F3F46',
+                    bgcolor: 'var(--bg, var(--bg-fallback))',
+                    color: 'var(--ink-2, var(--ink-2-fallback))',
                     fontSize: 12,
                     whiteSpace: 'pre-wrap',
                   }}

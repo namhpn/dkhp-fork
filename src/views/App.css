@@ -196,6 +196,12 @@ textarea:focus-visible,
   background: var(--app-surface);
   border: 1px solid var(--app-border-soft);
   border-radius: var(--app-radius);
+  transition: border-color var(--duration-fast) ease, background-color var(--duration-fast) ease;
+}
+
+.upload-drop-panel.drag-over {
+  border-color: var(--app-blue);
+  background: var(--app-blue-soft);
 }
 
 .upload-main {

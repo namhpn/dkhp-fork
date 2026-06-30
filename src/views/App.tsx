@@ -1,5 +1,7 @@
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
+import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
 import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
+import SearchOffOutlinedIcon from '@mui/icons-material/SearchOffOutlined';
 import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -134,7 +136,11 @@ function PlanSection() {
           <TrungTkbDialog />
         </TrungTkbDialogContext>
       ) : (
-        <div className="empty-inline">Nạp file Excel để xem danh sách lớp.</div>
+        <div className="empty-inline">
+          <SearchOffOutlinedIcon fontSize="small" aria-hidden="true" />
+          <span>Nạp file Excel để xem danh sách lớp.</span>
+          <a href="#import" style={{ fontSize: '0.85rem', fontWeight: 600 }}>Đi tới nhập file</a>
+        </div>
       )}
     </section>
   );
