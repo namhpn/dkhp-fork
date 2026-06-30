@@ -17,7 +17,7 @@ const COPIED_TOOLTIP = 'Đã sao chép';
 const getReadonlySx = (theme: Theme) => ({
   '& .MuiInputBase-input': {
     color: theme.palette.text.secondary,
-    backgroundColor: '#f8fafc',
+    backgroundColor: 'var(--surface-muted, var(--surface-muted-fallback))',
     cursor: 'default',
   },
 });

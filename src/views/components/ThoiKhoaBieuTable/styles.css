@@ -2,13 +2,13 @@
   position: relative;
   width: max-content;
   max-width: 100%;
-  color: #09090b;
+  color: var(--ink, var(--ink-fallback));
 }
 
 #thoi-khoa-bieu th,
 #thoi-khoa-bieu td {
   padding: 0.65em 0.5em;
-  border: 1px solid #e4e4e7;
+  border: 1px solid var(--border-soft, var(--border-soft-fallback));
 }
 
 #thoi-khoa-bieu table {
@@ -16,16 +16,16 @@
   max-width: 1500px;
   min-height: 70vh;
   overflow: hidden;
-  border: 1px solid #e4e4e7;
-  border-radius: 12px;
+  border: 1px solid var(--border-soft, var(--border-soft-fallback));
+  border-radius: var(--radius-lg);
   border-spacing: 0;
-  background: #ffffff;
+  background: var(--surface, var(--surface-fallback));
 }
 
 #thoi-khoa-bieu table thead tr th {
   width: 3%;
-  color: #18181b;
-  background-color: #f4f4f5;
+  color: var(--ink, var(--ink-fallback));
+  background-color: var(--surface-muted, var(--surface-muted-fallback));
   text-align: center;
   font-size: 0.82rem;
   font-weight: 800;
@@ -34,14 +34,14 @@
 }
 
 #thoi-khoa-bieu table tr td {
-  background: #fafafa !important;
-  border-bottom: 1px solid #e4e4e7;
+  background: var(--bg, var(--bg-fallback)) !important;
+  border-bottom: 1px solid var(--border-soft, var(--border-soft-fallback));
 }
 
 #thoi-khoa-bieu table tr td.cell-tiet {
   width: 10em;
-  color: #3f3f46;
-  background: #f4f4f5 !important;
+  color: var(--ink-2, var(--ink-2-fallback));
+  background: var(--surface-muted, var(--surface-muted-fallback)) !important;
   text-align: center;
   font-size: 0.86rem;
   font-weight: 700;
@@ -50,26 +50,26 @@
 #thoi-khoa-bieu .cell-class {
   width: 230px;
   position: relative;
-  color: #09090b;
-  background-color: #ffffff !important;
+  color: var(--ink, var(--ink-fallback));
+  background-color: var(--surface, var(--surface-fallback)) !important;
   text-align: left;
   line-height: 1.48;
   vertical-align: top;
 }
 
 #thoi-khoa-bieu .cell-class strong:first-of-type {
-  color: #2563eb;
+  color: var(--blue, var(--blue-fallback));
 }
 
 #thoi-khoa-bieu .cell-class:hover {
-  background: #eff6ff !important;
+  background: var(--blue-soft, var(--blue-soft-fallback)) !important;
 }
 
 #thoi-khoa-bieu .cell-class .remove-class-btn {
   opacity: 0;
-  color: #b91c1c;
-  background: #fee2e2;
-  transition: opacity 0.12s ease-in-out;
+  color: var(--error, var(--error-fallback));
+  background: var(--error-soft, var(--error-soft-fallback));
+  transition: opacity var(--duration-fast) ease-in-out;
 }
 
 #thoi-khoa-bieu .cell-class-hovering .remove-class-btn {
@@ -87,10 +87,10 @@
   flex-direction: column;
   gap: 6px;
   padding: 6px;
-  border: 1px solid #e4e4e7;
-  border-radius: 10px;
-  background: #ffffff;
-  transition: 0.12s ease-in-out;
+  border: 1px solid var(--border-soft, var(--border-soft-fallback));
+  border-radius: var(--radius-md);
+  background: var(--surface, var(--surface-fallback));
+  transition: opacity var(--duration-fast) ease-in-out;
 }
 
 #thoi-khoa-bieu .extra-buttons.extra-buttons-shown {
