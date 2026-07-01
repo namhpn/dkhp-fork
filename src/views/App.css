@@ -114,22 +114,33 @@ textarea:focus-visible,
 }
 
 .header-minimal {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
+  gap: 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--app-border-soft);
 }
 
-.header-mode-toggle {
+.app-title {
+  justify-self: start;
+}
+
+/* ── Centered mode toggle (accepted from live) ── */
+.mode-toggle-centered {
   display: flex;
+  justify-content: center;
+}
+
+.mode-toggle-centered .mtc-root {
+  display: inline-flex;
   background: var(--surface-muted, var(--surface-muted-fallback));
-  border: 1px solid var(--app-border-soft);
+  border: 1px solid var(--border-soft, var(--border-soft-fallback));
   border-radius: 8px;
   overflow: hidden;
 }
 
-.mode-btn {
+.mode-toggle-centered .mtc-btn {
   all: unset;
   cursor: pointer;
   padding: 5px 12px;
@@ -137,22 +148,28 @@ textarea:focus-visible,
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--ink-3, var(--ink-3-fallback));
-  transition: color var(--duration-fast) ease, background var(--duration-fast) ease;
+  transition: color 220ms cubic-bezier(0.16, 1, 0.3, 1), background 220ms cubic-bezier(0.16, 1, 0.3, 1), border-radius 220ms cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
 }
 
-.mode-btn:hover {
+.mode-toggle-centered .mtc-btn:hover {
   color: var(--ink, var(--ink-fallback));
 }
 
-.mode-btn-active {
-  color: var(--app-surface) !important;
+.mode-toggle-centered .mtc-active {
+  color: var(--app-surface);
   background: var(--app-ink);
   border-radius: 6px;
 }
 
-.mode-btn-active:hover {
-  color: var(--app-surface) !important;
+.mode-toggle-centered .mtc-active:hover {
+  color: var(--app-surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mode-toggle-centered .mtc-btn {
+    transition: none !important;
+  }
 }
 
 .task-section {
@@ -341,6 +358,240 @@ textarea:focus-visible,
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+/* ── Suggestion Panel: step wizard (accepted V3) ── */
+
+.suggestion-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.suggestion-panel .hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.suggestion-panel .hdr label {
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--ink);
+}
+
+.suggestion-panel .hdr button {
+  font-size: 0.72rem;
+  color: var(--blue, #2563EB);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 5px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--font-body);
+}
+
+.suggestion-panel .hdr button:hover {
+  background: var(--blue-soft, var(--blue-soft-fallback));
+}
+
+.suggestion-panel .sbj {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border-soft, #ebebeb);
+  padding-bottom: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.suggestion-panel .sub {
+  font-size: 0.64rem;
+  color: var(--ink-3, #737373);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.suggestion-panel .step-dots {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.suggestion-panel .step-dots .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  transition: background 150ms;
+}
+
+.suggestion-panel .step-dots .dot--done {
+  background: var(--blue, #2563EB);
+}
+
+.suggestion-panel .step-dots .dot--cur {
+  background: var(--blue, #2563EB);
+  box-shadow: 0 0 0 2px var(--blue-soft, var(--blue-soft-fallback));
+}
+
+.suggestion-panel .step-dots .dot--aft {
+  background: var(--border, #dcdcdc);
+}
+
+.suggestion-panel .co {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.suggestion-panel .co .ci {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 90ms;
+  font-size: 0.8rem;
+}
+
+.suggestion-panel .co .ci:hover {
+  background: var(--surface-muted, #f4f4f4);
+}
+
+.suggestion-panel .co .ci--on {
+  background: var(--blue-soft, var(--blue-soft-fallback));
+}
+
+.suggestion-panel .co .ci .ch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1.5px solid var(--border, #dcdcdc);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 100ms;
+  flex-shrink: 0;
+}
+
+.suggestion-panel .co .ci--on .ch {
+  border-color: var(--blue, #2563EB);
+  background: var(--blue, #2563EB);
+}
+
+.suggestion-panel .co .ci .th {
+  font-size: 0.68rem;
+  color: var(--ink-3, #737373);
+  margin-left: 2px;
+}
+
+.suggestion-panel .nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.suggestion-panel .mt {
+  font-size: 0.76rem;
+  color: var(--ink-3, #737373);
+  line-height: 1.5;
+}
+
+.suggestion-panel .mt--ok {
+  color: var(--success, #047857);
+}
+
+/* ── Suggestion Panel tag selector (accepted variant) ── */
+.suggestion-panel .sp-tags-wrap {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+  padding: 6px 0;
+}
+
+.suggestion-panel .sp-tag-opt {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px;
+  background: var(--surface-muted, #f4f4f4);
+  border: 1px solid var(--border-soft, #ebebeb);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 120ms ease;
+  user-select: none;
+  font-weight: 600; font-size: 0.85rem;
+  color: var(--ink-2, #4a4a4a);
+}
+
+.suggestion-panel .sp-tag-opt:hover {
+  border-color: var(--blue, #2563eb);
+  color: var(--blue, #2563eb);
+}
+
+.suggestion-panel .sp-tag-opt--on {
+  background: var(--blue, #2563eb);
+  border-color: var(--blue, #2563eb);
+  color: #fff;
+}
+
+.suggestion-panel .sp-tag-opt--on:hover {
+  color: #fff;
+}
+
+.suggestion-panel .sp-tag-prac {
+  font-size: 0.72rem; font-weight: 500; opacity: 0.7;
+}
+
+.suggestion-panel .sp-tag-opt--on .sp-tag-prac { opacity: 0.85; }
+
+@media (prefers-reduced-motion: reduce) {
+  .suggestion-panel .sp-tag-opt { transition: none; }
+}
+
+/* ── Suggestion Panel nav buttons (inline variant) ── */
+.suggestion-panel .sp-inline-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; border: none;
+  border-radius: 6px; background: transparent;
+  cursor: pointer; transition: all 120ms ease;
+  color: var(--ink-3, #737373); padding: 0;
+}
+
+.suggestion-panel .sp-inline-btn:hover:not(:disabled) {
+  color: var(--blue, #2563eb);
+  background: var(--blue-soft, var(--blue-soft-fallback));
+}
+
+.suggestion-panel .sp-inline-btn:disabled {
+  opacity: 0.2; cursor: default;
+}
+
+.suggestion-panel .sp-inline-subj {
+  font-weight: 700; font-size: 0.88rem;
+  color: var(--ink); min-width: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .suggestion-panel .sp-inline-btn { transition: none; }
+}
+
+
+
+/* Fade + slide animation on step change */
+.suggestion-panel .step-pane {
+  animation: sp-fade-in 200ms ease-out;
+}
+
+@keyframes sp-fade-in {
+  0% { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .suggestion-panel .step-pane { animation: none; }
 }
 
 

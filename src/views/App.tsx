@@ -9,6 +9,7 @@ import React, { Suspense, lazy, useMemo, useRef } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { getTongSoTcJudgement } from '../utils';
 import {
+  getUrlResolvedMaLop,
   selectFinalDataTkb,
   selectIsChiVeTkb,
   selectSelectedClassesOutput,
@@ -21,7 +22,7 @@ import TrungTkbDialog, { TrungTkbDialogContext } from './2XepLop/TrungTkbDialog'
 import ErrorBoundary from './components/ErrorBoundary';
 import ScrollToTop from './components/ScrollToTop';
 import ThoiKhoaBieuTable, { TkbTableHandle } from './components/ThoiKhoaBieuTable';
-import ScriptDangKyInput, { DanhSachLopInput } from './3KetQua/ScriptDangKyInput';
+import ScriptDangKyInput, { DanhSachLopInput, SuggestionPanel } from './3KetQua/ScriptDangKyInput';
 import './App.css';
 
 const AgGrid = lazy(() => import('./2XepLop/AgGrid'));
@@ -35,24 +36,16 @@ function PageHeader() {
       <Typography component="h1" className="app-title">
         Courses
       </Typography>
-      <div className="header-mode-toggle">
-        <Tooltip title="Chọn lớp từ danh sách">
-          <button
-            className={'mode-btn' + (!isChiVeTkb ? ' mode-btn-active' : '')}
-            onClick={() => setIsChiVeTkb(false)}
-          >
-            Xếp lớp
-          </button>
-        </Tooltip>
-        <Tooltip title="Nhập mã lớp thủ công">
-          <button
-            className={'mode-btn' + (isChiVeTkb ? ' mode-btn-active' : '')}
-            onClick={() => setIsChiVeTkb(true)}
-          >
-            Nhập mã lớp
-          </button>
-        </Tooltip>
+
+
+      <div className="mode-toggle-centered">
+        <div className="mtc-root">
+          <button className={`mtc-btn${!isChiVeTkb ? ' mtc-active' : ''}`} onClick={() => setIsChiVeTkb(false)}>Xếp lớp</button>
+          <button className={`mtc-btn${isChiVeTkb ? ' mtc-active' : ''}`} onClick={() => setIsChiVeTkb(true)}>Nhập mã lớp</button>
+        </div>
       </div>
+
+
     </div>
   );
 }
@@ -126,12 +119,13 @@ function PlanSection() {
   const allClasses = useTkbStore(selectFinalDataTkb);
   const isChiVeTkb = useTkbStore(selectIsChiVeTkb);
   const textareaChiVeTkb = useTkbStore(selectTextareaChiVeTkb);
+  const hasUrlResolved = getUrlResolvedMaLop() !== null;
 
   if (isChiVeTkb) {
     return (
       <section id="plan" className="task-section plan-section" aria-labelledby="plan-title">
         <SectionHeader id="plan-title" title="Xếp lớp" />
-        {!textareaChiVeTkb && (
+        {!textareaChiVeTkb && !hasUrlResolved && (
           <div className="manual-input-notice">
             <span>Hãy nhập vào ô Danh sách mã lớp để xếp thời khoá biểu</span>
           </div>
@@ -166,6 +160,7 @@ function PlanSection() {
 }
 
 function OutputSection() {
+  const isChiVeTkb = useTkbStore(selectIsChiVeTkb);
 
   return (
     <section id="output" className="task-section output-section" aria-labelledby="output-title">
@@ -177,7 +172,7 @@ function OutputSection() {
       <div className="output-panel">
         <div className="output-fields-row">
           <DanhSachLopInput />
-          <ScriptDangKyInput />
+          {isChiVeTkb ? <SuggestionPanel /> : <ScriptDangKyInput />}
         </div>
       </div>
     </section>
