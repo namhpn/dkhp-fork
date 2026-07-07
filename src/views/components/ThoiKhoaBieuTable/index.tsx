@@ -16,7 +16,6 @@ import { timeLookup, tietOnline } from './utils';
 
 export interface TkbTableHandle {
   saveTkbImage: () => void;
-  copyTkbImage: () => void;
 }
 
 const GetCell = ({ data }: any) => {
@@ -47,11 +46,10 @@ function RowHocTrenTruong({ row, index }: { row: RowData; index: number }) {
 const Render = React.forwardRef<TkbTableHandle, {}>((_props, ref) => {
   const { rowDataHocTrenTruong, khongHocTrenTruong, redundant } = usePhanLoaiHocTrenTruongContext();
 
-  const { tkbTableRef, saveTkbImageToComputer, copyTkbImageToClipboard } = useProcessImageTkb();
+  const { tkbTableRef, saveTkbImageToComputer } = useProcessImageTkb();
 
   React.useImperativeHandle(ref, () => ({
     saveTkbImage: saveTkbImageToComputer,
-    copyTkbImage: copyTkbImageToClipboard,
   }));
 
   return (

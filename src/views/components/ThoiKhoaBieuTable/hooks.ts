@@ -92,27 +92,21 @@ export const useProcessImageTkb = () => {
   const tkbTableRef = React.useRef<HTMLTableElement>(null);
 
   const saveTkbImageToComputer = React.useCallback(async () => {
-    if (!tkbTableRef.current) return;
-    const canvas = await html2canvas(tkbTableRef.current);
-    downloadFromCanvas(canvas, 'thoikhoabieu.png');
-  }, []);
-
-  const copyTkbImageToClipboard = React.useCallback(async () => {
-    if (!tkbTableRef.current) return;
-    const canvas = await html2canvas(tkbTableRef.current);
-    canvas.toBlob((blob) => {
-      if (blob === null) {
-        enqueueSnackbar('Sao chép vào clipboard thất bại, vui lòng thử lại.', { variant: 'error' });
-        return;
-      }
-      navigator.clipboard.write([new window.ClipboardItem({ [blob.type]: blob })]);
-      enqueueSnackbar('Sao chép vào clipboard thành công.', { variant: 'success' });
-    });
+    try {
+      if (!tkbTableRef.current) return;
+      const canvas = await html2canvas(tkbTableRef.current);
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      downloadFromCanvas(canvas, `tkb-courses-${yyyy}-${mm}-${dd}.png`);
+    } catch {
+      enqueueSnackbar('Tải ảnh TKB thất bại, vui lòng thử lại.', { variant: 'error' });
+    }
   }, []);
 
   return {
     tkbTableRef,
     saveTkbImageToComputer,
-    copyTkbImageToClipboard,
   };
 };

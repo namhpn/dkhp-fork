@@ -95,9 +95,14 @@ function ClassCell({ data, isOutsideTable = false, ...restProps }: Props) {
     );
   });
   const isRedundantRelated = redundantIndex > -1;
+  const detailTooltip = (
+    <span style={{ whiteSpace: 'pre-line' }}>
+      {isRedundantRelated ? `Bị trùng TKB\nBĐ: ${NBD}\nKT: ${NKT}` : `BĐ: ${NBD}\nKT: ${NKT}`}
+    </span>
+  );
 
   return (
-    <Tooltip title={isRedundantRelated ? 'Bị trùng TKB' : null}>
+    <Tooltip title={detailTooltip}>
       <td
         {...restProps}
         className={clsx('cell-class', {
@@ -105,8 +110,6 @@ function ClassCell({ data, isOutsideTable = false, ...restProps }: Props) {
         })}
         style={{
           boxShadow: isRedundantRelated ? `inset 0 0 0 3px ${randomColors[redundantIndex]}` : undefined,
-          outline: isWarning(data) ? '2px solid #EA580C' : undefined,
-          outlineOffset: isWarning(data) ? '-2px' : undefined,
           backgroundColor: isWarning(data) ? '#FFF7ED' : undefined,
         }}
         onMouseEnter={() => setCellHovering(data)}
@@ -128,6 +131,7 @@ function ClassCell({ data, isOutsideTable = false, ...restProps }: Props) {
             open={isHoveringOnThisCellRemoveIcon(data)}
           >
             <IconButton
+              aria-label={`Xóa ${MaLop}`}
               onMouseEnter={() => setIsHoveringOnRemoveIcon(true)}
               onMouseLeave={() => setIsHoveringOnRemoveIcon(false)}
               style={{ position: 'absolute', top: 0, right: 0 }}
@@ -153,13 +157,10 @@ function ClassCell({ data, isOutsideTable = false, ...restProps }: Props) {
             </IconButton>
           </Tooltip>
         )}
-        <strong style={{ color: isWarning(data) ? '#EA580C' : undefined, display: 'inline-flex', flexDirection: 'column', alignItems: 'center' }}>
-          {isWarning(data) && (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="#EA580C" style={{ marginBottom: 2 }}>
-              <path d="M12 2L1 21h22L12 2zm-1 14h2v2h-2v-2zm0-8h2v6h-2V8z"/>
-            </svg>
-          )}
-          <span>{MaLop}{' - '}{NgonNgu}</span>
+        <strong style={{ color: isWarning(data) ? '#EA580C' : undefined }}>
+          {MaLop}
+          {' - '}
+          {NgonNgu}
         </strong>
         <br />
         {TenMH}
@@ -167,10 +168,6 @@ function ClassCell({ data, isOutsideTable = false, ...restProps }: Props) {
         <strong>{TenGV}</strong>
         <br />
         {PhongHoc}
-        <br />
-        BĐ: {NBD}
-        <br />
-        KT: {NKT}
         <br />
         {isOutsideTable && (
           <>

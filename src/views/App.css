@@ -739,6 +739,81 @@ textarea:focus-visible,
   margin-bottom: 10px;
 }
 
+.timetable-panel-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px 16px;
+  width: 100%;
+}
+
+.timetable-panel-stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.timetable-stat {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--ink-2, var(--ink-2-fallback));
+}
+
+.timetable-stat-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink, var(--ink-fallback));
+}
+
+.timetable-stat--warn .timetable-stat-value,
+.timetable-stat--warn .timetable-stat-label {
+  color: var(--app-warning);
+}
+
+.timetable-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.timetable-toolbar-btn {
+  min-height: 32px !important;
+  text-transform: none !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  border-color: var(--border-soft, var(--border-soft-fallback)) !important;
+  color: var(--ink-2, var(--ink-2-fallback)) !important;
+}
+
+.timetable-toolbar-btn:hover:not(:disabled) {
+  border-color: var(--blue, var(--blue-fallback)) !important;
+  color: var(--blue, var(--blue-fallback)) !important;
+  background: var(--blue-soft, var(--blue-soft-fallback)) !important;
+}
+
+.timetable-toolbar-btn:disabled {
+  opacity: 0.45;
+}
+
+.timetable-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  padding: 24px 16px;
+  color: var(--ink-3, var(--ink-3-fallback));
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  border: 1px dashed var(--border-soft, var(--border-soft-fallback));
+  border-radius: var(--radius-sm, 8px);
+  background: var(--surface-muted, var(--surface-muted-fallback));
+}
+
 .schedule-panel-actions {
   display: flex;
   gap: 4px;
