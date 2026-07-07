@@ -5,74 +5,20 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import { enqueueSnackbar } from 'notistack';
 import React, { ChangeEventHandler, DragEventHandler, useState } from 'react';
-import XLSX from 'xlsx';
 import { selectDataExcel, useTkbStore } from '../../zus';
-import { arrayToTkbObject, sheetJSFT, toDateTimeString } from './utils';
+import { useExcelImport } from './useExcelImport';
 
 function SelectExcelButton() {
   const dataExcel = useTkbStore(selectDataExcel);
-  const setDataExcel = useTkbStore((s) => s.setDataExcel);
-  const [isImporting, setIsImporting] = useState(false);
+  const { isImporting, processFile, handleFileChange, sheetJSFT } = useExcelImport();
   const [isDragOver, setIsDragOver] = useState(false);
   const hasFile = !!dataExcel?.data?.length;
 
-  const processFile = React.useCallback(
-    (file: File) => {
-      if (isImporting) return;
-      setIsImporting(true);
-
-      const reader = new FileReader();
-      const rABS = !!reader.readAsBinaryString;
-
-      reader.onload = (e) => {
-        try {
-          const bstr = e?.target?.result;
-          const wb = XLSX.read(bstr, { type: rABS ? 'binary' : 'array' });
-          const wsLyThuyet = wb.Sheets[wb.SheetNames[0]];
-          const wsThucHanh = wb.Sheets[wb.SheetNames[1]];
-          const dataLyThuyet = XLSX.utils.sheet_to_json<any[][]>(wsLyThuyet, { header: 1 });
-          const dataThucHanh = XLSX.utils.sheet_to_json<any[][]>(wsThucHanh, { header: 1 });
-          const dataInArray = [...dataLyThuyet, ...dataThucHanh].filter((row) => typeof row[0] === 'number');
-
-          if (!dataInArray.length) {
-            enqueueSnackbar('File không đúng định dạng thời khóa biểu.', { variant: 'error' });
-            return;
-          }
-
-          const now = new Date();
-          setDataExcel({
-            data: dataInArray.map((array) => arrayToTkbObject(array)),
-            fileName: file.name,
-            lastUpdateTimestamp: now.getTime(),
-            lastUpdate: toDateTimeString(now),
-          });
-          enqueueSnackbar(`Đã nhập ${file.name}.`, { variant: 'success' });
-        } catch {
-          enqueueSnackbar('Không đọc được file Excel.', { variant: 'error' });
-        } finally {
-          setIsImporting(false);
-        }
-      };
-
-      reader.onerror = () => {
-        setIsImporting(false);
-        enqueueSnackbar('Không đọc được file Excel.', { variant: 'error' });
-      };
-
-      if (rABS) reader.readAsBinaryString(file);
-      else reader.readAsArrayBuffer(file);
-    },
-    [isImporting, setDataExcel],
-  );
-
   const handleUploadFileExcel = React.useCallback<ChangeEventHandler<HTMLInputElement>>(
     (event) => {
-      const file = event.target.files?.[0];
-      if (!file) return;
-      processFile(file);
-      event.target.value = '';
+      handleFileChange(event);
     },
-    [processFile],
+    [handleFileChange],
   );
 
   const handleDragOver = React.useCallback<DragEventHandler<HTMLDivElement>>((e) => {
@@ -96,7 +42,6 @@ function SelectExcelButton() {
       const file = e.dataTransfer?.files?.[0];
       if (!file) return;
 
-      // Validate file extension
       const validExtensions = ['.xlsx', '.xlsb', '.xlsm', '.xls', '.csv'];
       const ext = '.' + file.name.split('.').pop()?.toLowerCase();
       if (!validExtensions.includes(ext)) {
@@ -138,7 +83,6 @@ function SelectExcelButton() {
                 ? 'Vui lòng đợi…'
                 : dataExcel?.fileName || 'Kéo thả file Excel vào đây'}
             </Typography>
-
           </div>
         </div>
 
