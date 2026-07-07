@@ -36,6 +36,7 @@ type TkbStore = {
   manualResolvedMaLop: string[];
 
   setDataExcel: (data: TkbStore['dataExcel']) => void;
+  removeDataExcel: () => void;
   setSelectedClasses: (data: TkbStore['selectedClasses']) => void;
   removeClasses: (data: ClassModel[]) => void;
   setAgGridColumnState: (data: TkbStore['agGridColumnState']) => void;
@@ -61,16 +62,20 @@ export const useTkbStore = create<TkbStore>()(
 
       // TODO: move actions outside of store
       setDataExcel: (data) => {
-        const newDataExcel = data?.data ?? [];
-        const currentSelectedClasses = get().selectedClasses;
-        // When the user uploads a new excel file:
-        // - when it's a new semester, the AgGridRowId will be different => selectedClasses will be cleared
-        // - when it's an updated excel file of the same semester, the AgGridRowId will be the same => keep selectedClasses
-        const newSelectedClasses = newDataExcel.filter((newClass) =>
-          currentSelectedClasses.some((selectedClass) => isSameAgGridRowId(selectedClass, newClass)),
-        );
-        // Clear filters when uploading a new excel file (but keep selections)
-        set({ dataExcel: data, selectedClasses: newSelectedClasses, agGridFilterModel: null });
+        set({
+          dataExcel: data,
+          selectedClasses: [],
+          manualResolvedMaLop: [],
+          agGridFilterModel: null,
+        });
+      },
+      removeDataExcel: () => {
+        set({
+          dataExcel: null,
+          selectedClasses: [],
+          manualResolvedMaLop: [],
+          agGridFilterModel: null,
+        });
       },
       setSelectedClasses: (data) => {
         set({ selectedClasses: data });
@@ -175,15 +180,10 @@ export const selectManualRecommendations = memoize((state: TkbStore): Recommenda
   return generateRecommendations(parseResult.tokens, bundles, finalDataTkb);
 });
 
-export const selectSelectedClassesOutput = memoize((state: TkbStore): ClassModel[] => {
-  const isChiVeTkb = selectIsChiVeTkb(state);
+export const selectGridModeOutputClasses = (state: TkbStore) => selectSelectedClasses(state);
+
+export const selectManualModeOutputClasses = memoize((state: TkbStore): ClassModel[] => {
   const finalDataTkb = selectFinalDataTkb(state);
-
-  if (!isChiVeTkb) {
-    return selectSelectedClasses(state);
-  }
-
-  // Manual mode
   const parseResult = selectManualParseResult(state);
   const bundles = selectBundles(state);
   const storeResolved = state.manualResolvedMaLop;
@@ -235,6 +235,30 @@ export const selectSelectedClassesOutput = memoize((state: TkbStore): ClassModel
 
   return rows;
 });
+
+export const selectSelectedClassesOutput = memoize((state: TkbStore): ClassModel[] => {
+  const isChiVeTkb = selectIsChiVeTkb(state);
+
+  if (!isChiVeTkb) {
+    return selectGridModeOutputClasses(state);
+  }
+
+  return selectManualModeOutputClasses(state);
+});
+
+export const selectActiveTimetableClasses = selectSelectedClassesOutput;
+
+export const selectActiveOutputMaLop = memoize((state: TkbStore): string[] => {
+  return selectActiveTimetableClasses(state).map((it) => it.MaLop);
+});
+
+export const selectHasDestructiveFileState = (state: TkbStore): boolean => {
+  return (
+    state.selectedClasses.length > 0 ||
+    state.manualResolvedMaLop.length > 0 ||
+    selectSelectedClassesOutput(state).length > 0
+  );
+};
 export const selectTongSoTcSelected = (state: TkbStore) => calcTongSoTC(selectSelectedClasses(state));
 export const selectTongSoTcOutput = (state: TkbStore) => calcTongSoTC(selectSelectedClassesOutput(state));
 export const selectPhanLoaiHocTrenTruong = memoize((state: TkbStore): [ClassModel[], ClassModel[]] => {
