@@ -210,6 +210,208 @@ textarea:focus-visible,
   gap: 14px;
 }
 
+/* ── Manual resolution workspace ── */
+.manual-resolution-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.manual-resolution-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.manual-resolution-progress {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-3, #737373);
+}
+
+.manual-resolution-queue-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.manual-resolution-queue-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border: 1px solid var(--border-soft, #ebebeb);
+  border-radius: 999px;
+  background: var(--surface-muted, #f4f4f4);
+  color: var(--ink-2, #4a4a4a);
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+}
+
+.manual-resolution-queue-item:hover {
+  border-color: var(--blue, #2563eb);
+  color: var(--blue, #2563eb);
+}
+
+.manual-resolution-queue-item--active {
+  border-color: var(--blue, #2563eb);
+  background: var(--blue-soft, var(--blue-soft-fallback));
+  color: var(--blue, #2563eb);
+}
+
+.manual-resolution-queue-item--resolved:not(.manual-resolution-queue-item--active) {
+  color: var(--success, #047857);
+  border-color: color-mix(in srgb, var(--success, #047857) 25%, var(--border-soft, #ebebeb));
+}
+
+.manual-resolution-queue-item__check {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.manual-resolution-cards__header {
+  margin-bottom: 8px;
+}
+
+.manual-resolution-cards__title {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.manual-resolution-cards__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.manual-resolution-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border-soft, #ebebeb);
+  border-radius: 10px;
+  background: var(--app-surface, #fff);
+  text-align: left;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease, box-shadow 120ms ease;
+}
+
+.manual-resolution-card:hover {
+  border-color: var(--blue, #2563eb);
+}
+
+.manual-resolution-card--selected {
+  border-color: var(--blue, #2563eb);
+  background: var(--blue-soft, var(--blue-soft-fallback));
+}
+
+.manual-resolution-card__icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  color: var(--ink-3, #737373);
+}
+
+.manual-resolution-card--selected .manual-resolution-card__icon {
+  color: var(--blue, #2563eb);
+}
+
+.manual-resolution-card__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.manual-resolution-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.manual-resolution-card__code {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ink);
+  word-break: break-word;
+}
+
+.manual-resolution-card__detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.manual-resolution-card__course {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-2, #4a4a4a);
+}
+
+.manual-resolution-card__meta {
+  font-size: 0.76rem;
+  color: var(--ink-3, #737373);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.manual-resolution-card__meta--muted {
+  font-style: italic;
+}
+
+@media (min-width: 768px) {
+  .manual-resolution-body {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .manual-resolution-queue {
+    flex: 0 0 38%;
+    max-width: 40%;
+    min-width: 0;
+  }
+
+  .manual-resolution-queue-list {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 4px;
+  }
+
+  .manual-resolution-queue-item {
+    width: 100%;
+    border-radius: 8px;
+    justify-content: flex-start;
+  }
+
+  .manual-resolution-cards {
+    flex: 1 1 62%;
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .manual-resolution-queue-item,
+  .manual-resolution-card {
+    transition: none;
+  }
+}
+
 @media (min-width: 1280px) {
   .workspace {
     display: grid;
