@@ -1,8 +1,6 @@
 import React from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { ClassModel } from 'types';
-import { getAgGridRowId } from '../../../utils';
-import { useTrungTkbDialogContext } from '../TrungTkbDialog';
 import './styles.css';
 import { useGridOptions } from './utils';
 
@@ -22,26 +20,41 @@ function AgGrid() {
     onRowClicked,
     rowData,
     getRowId,
+    gridContext,
+    quickFilterText,
+    onQuickFilterChange,
+    visibleCount,
+    totalCount,
+    hasNoVisibleRows,
   } = useGridOptions();
 
-  const { conflictRowIds } = useTrungTkbDialogContext();
-
-  // Apply conflict-flash class to rows matching conflict IDs
-  const rowClassRules = React.useMemo(() => {
-    const idSet = new Set(conflictRowIds);
-    return {
-      'conflict-flash': (params: any) => {
-        return params.data ? idSet.has(getAgGridRowId(params.data)) : false;
-      },
-    };
-  }, [conflictRowIds]);
-
   return (
-    <>
+    <div className="grid-with-toolbar">
+      <div className="grid-toolbar">
+        <input
+          type="search"
+          className="grid-search-input"
+          value={quickFilterText}
+          onChange={(event) => onQuickFilterChange(event.target.value)}
+          placeholder="Tìm lớp, môn học, giảng viên…"
+          aria-label="Tìm lớp, môn học, giảng viên"
+        />
+        <span className="grid-result-summary" aria-live="polite">
+          {visibleCount} / {totalCount} lớp
+        </span>
+      </div>
+
+      {hasNoVisibleRows ? (
+        <div className="grid-empty-filter" role="status">
+          Không có lớp phù hợp
+        </div>
+      ) : null}
+
       <div className="ag-theme-alpine course-grid">
         <AgGridReact<ClassModel>
           ref={agGridRef}
           rowData={rowData}
+          context={gridContext}
           isRowSelectable={isRowSelectable}
           defaultColDef={defaultColDef}
           columnDefs={columnDefs}
@@ -50,8 +63,8 @@ function AgGrid() {
           rowHeight={34}
           enableCellTextSelection={true}
           suppressAnimationFrame={true}
+          suppressRowClickSelection={true}
           rowSelection="multiple"
-          rowMultiSelectWithClick={true}
           groupSelectsChildren={true}
           groupSelectsFiltered={true}
           getMainMenuItems={getMainMenuItems}
@@ -59,7 +72,6 @@ function AgGrid() {
           rowGroupPanelShow="never"
           suppressDragLeaveHidesColumns={true}
           rowClass="ag-cell-normal"
-          rowClassRules={rowClassRules}
           onColumnVisible={onColumnChanged}
           onColumnPinned={onColumnChanged}
           onColumnResized={onColumnChanged}
@@ -72,7 +84,7 @@ function AgGrid() {
           onRowClicked={onRowClicked}
         />
       </div>
-    </>
+    </div>
   );
 }
 

@@ -1,6 +1,10 @@
 import uniqBy from 'lodash/uniqBy';
 import { Buoi, ClassModel } from 'types';
-import { TTrungTkb } from './views/2XepLop/TrungTkbDialog';
+
+export type TTrungTkb = {
+  existing: ClassModel;
+  new: ClassModel[];
+};
 
 export function uniqMaLop(classes: ClassModel[]): ClassModel[] {
   return uniqBy(classes, 'MaLop'); // Có nhiều lớp học nhiều buổi 1 tuần, xuất hiện nhiều lần, nhưng chỉ nên cộng 1 lần
@@ -68,6 +72,18 @@ export const hasOverlapSchedule = (classAs: ClassModel[], classB: ClassModel) =>
     const classATimeSlots = getTimeSlots(classA);
     return isTimeSlotsOverlap(classATimeSlots, classBTimeSlots);
   });
+};
+
+export const getConflictMaLop = (selectedClasses: ClassModel[], candidate: ClassModel): string | null => {
+  const candidateTimeSlots = getTimeSlots(candidate);
+  for (const selected of selectedClasses) {
+    if (isSameAgGridRowId(selected, candidate)) continue;
+    const selectedTimeSlots = getTimeSlots(selected);
+    if (isTimeSlotsOverlap(selectedTimeSlots, candidateTimeSlots)) {
+      return selected.MaLop;
+    }
+  }
+  return null;
 };
 
 // Thường thì MaLop alone is enough because most of the classes only appear once a week or once every 2 weeks, nhưng mà có thể có môn Anh Văn học 1 tuần tới 2 buổi, nên cần có thêm Thu và Tiet

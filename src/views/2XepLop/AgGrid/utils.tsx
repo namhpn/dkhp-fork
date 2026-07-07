@@ -1,9 +1,9 @@
-import { Button } from '@mui/material';
 import {
   AgGridEvent,
   CellStyle,
   FilterChangedEvent,
   GetContextMenuItemsParams,
+  GridApi,
   GridOptions,
   GridReadyEvent,
   IRowNode,
@@ -14,14 +14,14 @@ import {
 } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import sortBy from 'lodash/sortBy';
-import { closeSnackbar, enqueueSnackbar } from 'notistack';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Buoi, ClassModel } from 'types';
 import { useDebouncedCallback } from 'use-debounce';
 import {
   findOverlapedClasses,
   getAgGridRowId,
   getBuoiFromTiet,
+  getConflictMaLop,
   hasOverlapSchedule,
   isSameAgGridRowId,
   log,
@@ -34,7 +34,7 @@ import {
   selectSelectedClasses,
   useTkbStore,
 } from '../../../zus';
-import { useTrungTkbDialogContext } from '../TrungTkbDialog';
+import SelectionToggleCell, { GridSelectionContext } from './SelectionToggleCell';
 
 type FormattedBuoiValid = 'Sáng' | 'Chiều' | 'Tối';
 type FormattedBuoi = FormattedBuoiValid | '*';
@@ -80,7 +80,37 @@ const HTGD_ORDER_PRIORITY: Record<ClassModel['HTGD'], number> = {
 
 const BOLD_CELL_STYLE: CellStyle = { fontWeight: 600 };
 
-const columnDefs: GridOptions['columnDefs'] = [
+const buildColumnDefs = (): GridOptions['columnDefs'] => [
+  {
+    colId: 'action',
+    headerName: '',
+    width: 52,
+    minWidth: 52,
+    maxWidth: 52,
+    pinned: 'left',
+    sortable: false,
+    filter: false,
+    suppressMenu: true,
+    suppressNavigable: true,
+    lockPosition: true,
+    cellRenderer: SelectionToggleCell,
+  },
+  {
+    colId: 'TrangThai',
+    headerName: 'TRẠNG THÁI',
+    initialWidth: 150,
+    pinned: 'left',
+    sortable: false,
+    filter: false,
+    valueGetter: ({ data, context }: ValueGetterParams<ClassModel, string>): string => {
+      if (!data) return '';
+      const gridContext = context as GridSelectionContext;
+      if (gridContext.isRowSelected(data)) return 'Đã chọn';
+      const conflictMaLop = gridContext.getConflictMaLop(data);
+      if (conflictMaLop) return `Trùng ${conflictMaLop}`;
+      return '';
+    },
+  },
   {
     headerName: 'STT',
     field: 'STT',
@@ -116,7 +146,6 @@ const columnDefs: GridOptions['columnDefs'] = [
     field: 'MaLop',
     initialWidth: 200,
     filter: 'agTextColumnFilter',
-    checkboxSelection: true,
   },
   {
     headerName: 'MÃ GIẢNG VIÊN',
@@ -137,7 +166,6 @@ const columnDefs: GridOptions['columnDefs'] = [
     initialWidth: 150,
     enableRowGroup: true,
     hide: true,
-    // originally had valueGetter as a raw number, then used valueFormatter to format it, but it turned out to be troublesome so I changed to this
     valueGetter: ({ data }: ValueGetterParams<ClassModel, number>): FormattedThuBuoi => {
       if (!data?.Thu || data.Thu === '*') return '*';
       const buoi = getBuoiFromTiet(data.Tiet);
@@ -172,22 +200,22 @@ const columnDefs: GridOptions['columnDefs'] = [
     },
   },
   {
+    headerName: 'PHÒNG HỌC',
+    field: 'PhongHoc',
+    initialWidth: 130,
+    filter: false,
+  },
+  {
     headerName: 'SỐ TC',
     field: 'SoTc',
     initialWidth: 90,
     filter: false,
   },
   {
-    headerName: 'HỆ ĐT',
-    field: 'HeDT',
-    initialWidth: 90,
-    // TODO: check isMonChung
-  },
-  {
-    headerName: 'KHOA QL',
-    field: 'KhoaQL',
-    initialWidth: 120,
-    enableRowGroup: true,
+    headerName: 'SỈ SỐ',
+    field: 'SiSo',
+    initialWidth: 80,
+    filter: false,
   },
   {
     headerName: 'HTGD',
@@ -196,6 +224,24 @@ const columnDefs: GridOptions['columnDefs'] = [
     comparator: (a: ClassModel['HTGD'], b: ClassModel['HTGD']) => {
       return HTGD_ORDER_PRIORITY[a] - HTGD_ORDER_PRIORITY[b];
     },
+  },
+  {
+    headerName: 'NGÔN NGỮ',
+    field: 'NgonNgu',
+    initialWidth: 120,
+  },
+  {
+    headerName: 'HỆ ĐT',
+    field: 'HeDT',
+    initialWidth: 90,
+    hide: true,
+  },
+  {
+    headerName: 'KHOA QL',
+    field: 'KhoaQL',
+    initialWidth: 120,
+    enableRowGroup: true,
+    hide: true,
   },
   {
     headerName: 'THỰC HÀNH',
@@ -208,56 +254,46 @@ const columnDefs: GridOptions['columnDefs'] = [
     field: 'CachTuan',
     initialWidth: 125,
     filter: false,
-  },
-  {
-    headerName: 'SỈ SỐ',
-    field: 'SiSo',
-    initialWidth: 80,
-    filter: false,
-  },
-  {
-    headerName: 'PHÒNG HỌC',
-    field: 'PhongHoc',
-    initialWidth: 130,
-    filter: false,
+    hide: true,
   },
   {
     headerName: 'KHÓA HỌC',
     field: 'KhoaHoc',
     initialWidth: 120,
+    hide: true,
   },
   {
     headerName: 'HỌC KỲ',
     field: 'HocKy',
     initialWidth: 100,
     filter: false,
+    hide: true,
   },
   {
     headerName: 'NĂM HỌC',
     field: 'NamHoc',
     initialWidth: 110,
     filter: false,
+    hide: true,
   },
   {
     headerName: 'NBD',
     field: 'NBD',
     initialWidth: 110,
     filter: false,
+    hide: true,
   },
   {
     headerName: 'NKT',
     field: 'NKT',
     initialWidth: 110,
     filter: false,
+    hide: true,
   },
   {
     headerName: 'GHI CHÚ',
     field: 'GhiChu',
-  },
-  {
-    headerName: 'NGÔN NGỮ',
-    field: 'NgonNgu',
-    initialWidth: 120,
+    hide: true,
   },
 ];
 
@@ -269,7 +305,6 @@ const defaultColDef: GridOptions['defaultColDef'] = {
   menuTabs: ['generalMenuTab'],
 };
 
-// Sort after grouping: https://www.ag-grid.com/javascript-data-grid/row-sorting/#custom-sorting-groups-example
 const autoGroupColumnDef: GridOptions['autoGroupColumnDef'] = {
   sort: 'asc',
   comparator: (a, b) => {
@@ -290,6 +325,14 @@ const getMainMenuItems: GridOptions['getMainMenuItems'] = () => {
 const getRowId: GridOptions<ClassModel>['getRowId'] = ({ data }) => {
   return getAgGridRowId(data);
 };
+
+function getVisibleLeafCount(api: GridApi<ClassModel>) {
+  let count = 0;
+  api.forEachNodeAfterFilter((node) => {
+    if (!node.group && node.data) count += 1;
+  });
+  return count;
+}
 
 function getContextMenuItemsBuilder() {
   type MenuItem = string | MenuItemDef;
@@ -318,19 +361,44 @@ function getContextMenuItemsBuilder() {
 const PROGRAMMATICALLY_CHANGE_SELECTION = 'api';
 export const useGridOptions = () => {
   const agGridRef = useRef<AgGridReact<ClassModel>>(null);
-  const { openTrungTkbDialog } = useTrungTkbDialogContext();
   const selectedClasses = useTkbStore(selectSelectedClasses);
   const setSelectedClasses = useTkbStore((s) => s.setSelectedClasses);
+  const [quickFilterText, setQuickFilterText] = useState('');
+  const [visibleCount, setVisibleCount] = useState(0);
+  const [hasActiveFilter, setHasActiveFilter] = useState(false);
 
-  const updateNodesSelectionToAgGrid = useCallback((selectedClasses: ClassModel[]) => {
+  const columnDefs = useMemo(() => buildColumnDefs(), []);
+
+  const isRowSelected = useCallback(
+    (row: ClassModel) => selectedClasses.some((selected) => isSameAgGridRowId(selected, row)),
+    [selectedClasses],
+  );
+
+  const getRowConflictMaLop = useCallback(
+    (row: ClassModel) => getConflictMaLop(selectedClasses, row),
+    [selectedClasses],
+  );
+
+  const refreshSelectionColumns = useCallback(() => {
+    agGridRef.current?.api?.refreshCells({ columns: ['action', 'TrangThai'], force: true });
+  }, []);
+
+  const updateVisibleCount = useCallback(() => {
+    const api = agGridRef.current?.api;
+    if (!api) return;
+    setVisibleCount(getVisibleLeafCount(api));
+    setHasActiveFilter(api.isColumnFilterPresent() || !!quickFilterText.trim());
+  }, [quickFilterText]);
+
+  const updateNodesSelectionToAgGrid = useCallback((nextSelectedClasses: ClassModel[]) => {
     if (!agGridRef.current?.api) return;
     const { api } = agGridRef.current;
 
-    api.deselectAll(PROGRAMMATICALLY_CHANGE_SELECTION); // clear old selection
+    api.deselectAll(PROGRAMMATICALLY_CHANGE_SELECTION);
 
     const toSelectNodes: IRowNode<ClassModel>[] = [];
     api.forEachNode((node) => {
-      if (selectedClasses.find((it) => node.data && isSameAgGridRowId(it, node.data))) {
+      if (node.data && nextSelectedClasses.find((it) => isSameAgGridRowId(it, node.data!))) {
         toSelectNodes.push(node);
       }
     });
@@ -339,6 +407,27 @@ export const useGridOptions = () => {
     }
   }, []);
 
+  const onToggleRowSelection = useCallback(
+    (row: ClassModel) => {
+      if (isRowSelected(row)) {
+        setSelectedClasses(selectedClasses.filter((selected) => !isSameAgGridRowId(selected, row)));
+        return;
+      }
+      if (hasOverlapSchedule(selectedClasses, row)) return;
+      setSelectedClasses([...selectedClasses, row]);
+    },
+    [isRowSelected, selectedClasses, setSelectedClasses],
+  );
+
+  const gridContext = useMemo<GridSelectionContext>(
+    () => ({
+      isRowSelected,
+      getConflictMaLop: getRowConflictMaLop,
+      onToggleRowSelection,
+    }),
+    [getRowConflictMaLop, isRowSelected, onToggleRowSelection],
+  );
+
   const onSelectionChanged = useCallback(
     ({ source, api }: SelectionChangedEvent<ClassModel>) => {
       if (source === PROGRAMMATICALLY_CHANGE_SELECTION) return;
@@ -346,23 +435,17 @@ export const useGridOptions = () => {
       const oldSelectedClasses = selectedClasses;
       const newSelectedClasses = api.getSelectedRows();
 
-      // we don't have the case when an action is a mix of add and remove yet
       const isRemoving = newSelectedClasses.length < oldSelectedClasses.length;
       if (isRemoving) {
         setSelectedClasses(newSelectedClasses);
         return;
       }
 
-      const { kept: finalSelectedClasses, redundant } = findOverlapedClasses(
-        oldSelectedClasses.concat(newSelectedClasses),
-      );
-      if (redundant.length) {
-        openTrungTkbDialog(redundant);
-      }
+      const { kept: finalSelectedClasses } = findOverlapedClasses(oldSelectedClasses.concat(newSelectedClasses));
       setSelectedClasses(finalSelectedClasses);
       updateNodesSelectionToAgGrid(finalSelectedClasses);
     },
-    [openTrungTkbDialog, selectedClasses, setSelectedClasses, updateNodesSelectionToAgGrid],
+    [selectedClasses, setSelectedClasses, updateNodesSelectionToAgGrid],
   );
 
   const DEBOUNCE_TIME = 500;
@@ -371,9 +454,9 @@ export const useGridOptions = () => {
   const onFilterChanged: GridOptions['onFilterChanged'] = useDebouncedCallback((e: FilterChangedEvent) => {
     log('>>onFilterChanged', e);
     setAgGridFilterModel(e.api.getFilterModel());
+    updateVisibleCount();
   }, DEBOUNCE_TIME);
 
-  // onColumnResized will be called too much without debounce
   const onColumnChanged = useDebouncedCallback(({ columnApi }: AgGridEvent) => {
     log('>>onColumnChanged');
     setAgGridColumnState(columnApi.getColumnState());
@@ -392,33 +475,28 @@ export const useGridOptions = () => {
       if (selectedClasses.length) {
         updateNodesSelectionToAgGrid(selectedClasses);
       }
+      updateVisibleCount();
     },
-    [agGridColumnState, agGridFilterModel, selectedClasses, updateNodesSelectionToAgGrid],
+    [agGridColumnState, agGridFilterModel, selectedClasses, updateNodesSelectionToAgGrid, updateVisibleCount],
   );
 
   const onRowClicked = useCallback(({ node }: RowClickedEvent<ClassModel>) => {
-    log('>>onRowClicked', { node });
     if (node.group) {
       node.setExpanded(!node.expanded);
     }
-    if (node.data && !node.selectable) {
-      enqueueSnackbar(`Không thể chọn lớp ${node.data.MaLop} do bị trùng TKB với lớp đã chọn`, {
-        variant: 'warning',
-        preventDuplicate: true,
-        action: (key) => (
-          <Button
-            size="small"
-            color="inherit"
-            onClick={() => {
-              closeSnackbar(key);
-            }}
-          >
-            Đã hiểu
-          </Button>
-        ),
-      });
-    }
   }, []);
+
+  const onQuickFilterChange = useCallback(
+    (value: string) => {
+      setQuickFilterText(value);
+      const api = agGridRef.current?.api;
+      if (!api) return;
+      api.setQuickFilter(value);
+      setVisibleCount(getVisibleLeafCount(api));
+      setHasActiveFilter(api.isColumnFilterPresent() || !!value.trim());
+    },
+    [],
+  );
 
   const getContextMenuItems = useCallback(
     ({ value, column, api, columnApi }: GetContextMenuItemsParams<ClassModel>): (string | MenuItemDef)[] => {
@@ -447,8 +525,8 @@ export const useGridOptions = () => {
                 ...api.getFilterModel(),
                 [column.getColId()]: {
                   type: 'contains',
-                  filter: value, // text filter
-                  values: [value], // set filter
+                  filter: value,
+                  values: [value],
                 },
               });
             },
@@ -497,8 +575,7 @@ export const useGridOptions = () => {
       }
       endOfBlock();
 
-      const final = constructFinal();
-      return final;
+      return constructFinal();
     },
     [],
   );
@@ -508,14 +585,14 @@ export const useGridOptions = () => {
     return sortBy(dataTkb, ['KhoaQL', 'MaLop', 'Thu', 'Tiet']);
   }, [dataTkb]);
 
-  // Clear filters when a new Excel file is uploaded (but keep selections)
+  const totalCount = rowData?.length ?? 0;
+  const hasNoVisibleRows = totalCount > 0 && visibleCount === 0 && hasActiveFilter;
+
   const dataExcel = useTkbStore(selectDataExcel);
   const prevLastUpdateRef = useRef<number | string | undefined>(undefined);
   useEffect(() => {
     if (!agGridRef.current?.api || !dataExcel?.fileName) return;
 
-    // Use lastUpdateTimestamp if available (new format with epoch precision),
-    // otherwise fallback to lastUpdate string (backward compatibility)
     const currentValue = dataExcel.lastUpdateTimestamp ?? dataExcel.lastUpdate;
 
     if (!currentValue) return;
@@ -528,16 +605,19 @@ export const useGridOptions = () => {
     }
   }, [dataExcel?.lastUpdateTimestamp, dataExcel?.lastUpdate, dataExcel?.fileName]);
 
-  // TODO: try handle via event, better way than useEffect
   useEffect(() => {
-    // update o buoc 3, thay doi agGrid
     const gridLength = agGridRef.current?.api?.getSelectedRows().length;
     const stateLength = selectedClasses.length;
     if (gridLength !== stateLength) {
       log('>>useEffect: selectedClasses changed');
       updateNodesSelectionToAgGrid(selectedClasses);
     }
-  }, [selectedClasses, setSelectedClasses, updateNodesSelectionToAgGrid]);
+    refreshSelectionColumns();
+  }, [selectedClasses, updateNodesSelectionToAgGrid, refreshSelectionColumns]);
+
+  useEffect(() => {
+    updateVisibleCount();
+  }, [rowData, updateVisibleCount]);
 
   const isRowSelectable = useCallback(
     (node: IRowNode<ClassModel>): boolean => {
@@ -546,7 +626,6 @@ export const useGridOptions = () => {
     [selectedClasses],
   );
 
-  // https://stackoverflow.com/a/64023627/9787887
   useEffect(() => {
     agGridRef.current?.api?.forEachLeafNode((node) => {
       const oldSelectable = node.selectable;
@@ -556,7 +635,8 @@ export const useGridOptions = () => {
       // @ts-ignore
       node.setRowSelectable(isRowSelectable(node));
     });
-  }, [selectedClasses, isRowSelectable]);
+    refreshSelectionColumns();
+  }, [selectedClasses, isRowSelectable, refreshSelectionColumns]);
 
   return {
     agGridRef,
@@ -573,5 +653,11 @@ export const useGridOptions = () => {
     onRowClicked,
     rowData,
     getRowId,
+    gridContext,
+    quickFilterText,
+    onQuickFilterChange,
+    visibleCount,
+    totalCount,
+    hasNoVisibleRows,
   };
 };
