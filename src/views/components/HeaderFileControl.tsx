@@ -30,12 +30,23 @@ function HeaderFileControl() {
     triggerFileInput();
   };
 
+  const restoreFocusAfterRemove = () => {
+    requestAnimationFrame(() => {
+      const uploadBtn = document.querySelector<HTMLButtonElement>(
+        '.header-file-control button:not([disabled])',
+      );
+      const mainWorkspace = document.getElementById('main-workspace');
+      (uploadBtn ?? mainWorkspace)?.focus();
+    });
+  };
+
   const handleRemoveClick = () => {
     if (hasDestructiveFileState) {
       setPendingAction('remove');
       return;
     }
     removeFile();
+    restoreFocusAfterRemove();
   };
 
   const handleConfirm = () => {
@@ -47,6 +58,7 @@ function HeaderFileControl() {
     if (pendingAction === 'remove') {
       setPendingAction(null);
       removeFile();
+      restoreFocusAfterRemove();
     }
   };
 
