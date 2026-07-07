@@ -8,7 +8,7 @@ function Workspace() {
   const isChiVeTkb = useTkbStore(selectIsChiVeTkb);
 
   return (
-    <main id="main-workspace" className="workspace">
+    <main id="main-workspace" className="workspace" tabIndex={-1}>
       <section className="workspace-main" aria-label="Khu vực làm việc">
         {isChiVeTkb ? <ManualWorkspace /> : <GridWorkspace />}
       </section>

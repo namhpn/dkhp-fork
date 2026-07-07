@@ -103,7 +103,7 @@
   height: min(760px, calc(100vh - 420px));
   min-height: 480px;
   --ag-font-family: var(--font-body);
-  --ag-font-size: 13px;
+  --ag-font-size: 14px;
   --ag-foreground-color: var(--ink, var(--ink-fallback));
   --ag-secondary-foreground-color: var(--ink-2, var(--ink-2-fallback));
   --ag-background-color: var(--surface, var(--surface-fallback));

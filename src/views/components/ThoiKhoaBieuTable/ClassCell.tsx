@@ -150,6 +150,14 @@ function ClassCell({ data, isOutsideTable = false, ...restProps }: Props) {
                 })();
                 removeClasses(classesToRemove);
                 onRemoveClass();
+
+                requestAnimationFrame(() => {
+                  const toolbarBtn = document.querySelector<HTMLButtonElement>(
+                    '.timetable-toolbar button:not([disabled])',
+                  );
+                  const mainWorkspace = document.getElementById('main-workspace');
+                  (toolbarBtn ?? mainWorkspace)?.focus();
+                });
               }}
               className="remove-class-btn"
             >

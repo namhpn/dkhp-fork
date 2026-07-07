@@ -66,7 +66,12 @@ function HeaderFileControl() {
       />
 
       {isImporting ? (
-        <Button variant="outlined" disabled startIcon={<CircularProgress size={14} color="inherit" />}>
+        <Button
+          variant="outlined"
+          disabled
+          aria-busy="true"
+          startIcon={<CircularProgress size={14} color="inherit" />}
+        >
           Đang đọc file…
         </Button>
       ) : !hasFile ? (
@@ -86,7 +91,11 @@ function HeaderFileControl() {
           <Button variant="outlined" size="small" onClick={handleReplaceClick}>
             Đổi file
           </Button>
-          <IconButton size="small" aria-label="Gỡ file" onClick={handleRemoveClick}>
+          <IconButton
+            className="header-file-remove-btn"
+            aria-label="Gỡ file"
+            onClick={handleRemoveClick}
+          >
             <CloseIcon fontSize="small" />
           </IconButton>
         </div>

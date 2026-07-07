@@ -86,6 +86,19 @@
   --max-width: 1540px;
   --content-padding: 32px;
   --content-padding-mobile: 20px;
+
+  /* ── Semantic aliases ── */
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink-2);
+  --text-muted: var(--ink-3);
+
+  --primary: var(--blue);
+  --primary-subtle: var(--blue-soft);
+
+  --danger: var(--error);
+  --danger-subtle: var(--error-soft);
+
+  --border-strong: var(--border);
 }
 
 /* ── Convenience: use var() with fallback ── */

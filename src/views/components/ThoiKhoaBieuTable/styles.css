@@ -66,10 +66,18 @@
 }
 
 #thoi-khoa-bieu .cell-class .remove-class-btn {
+  width: 44px !important;
+  height: 44px !important;
   opacity: 0;
-  color: var(--error, var(--error-fallback));
-  background: var(--error-soft, var(--error-soft-fallback));
+  color: var(--danger, var(--error-fallback));
+  background: var(--danger-subtle, var(--error-soft-fallback));
   transition: opacity var(--duration-fast) ease-in-out;
+}
+
+#thoi-khoa-bieu .cell-class .remove-class-btn:focus-visible {
+  opacity: 1;
+  outline: 2px solid var(--primary, var(--blue-fallback));
+  outline-offset: 2px;
 }
 
 #thoi-khoa-bieu .cell-class-hovering .remove-class-btn {
