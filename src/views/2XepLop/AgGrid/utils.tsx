@@ -2,7 +2,9 @@ import {
   AgGridEvent,
   CellStyle,
   FilterChangedEvent,
+  FirstDataRenderedEvent,
   GetContextMenuItemsParams,
+  GetQuickFilterTextParams,
   GridApi,
   GridOptions,
   GridReadyEvent,
@@ -35,6 +37,7 @@ import {
   useTkbStore,
 } from '../../../zus';
 import SelectionToggleCell, { GridSelectionContext } from './SelectionToggleCell';
+import TrangThaiCell, { getTrangThaiCellValue } from './TrangThaiCell';
 
 type FormattedBuoiValid = 'Sáng' | 'Chiều' | 'Tối';
 type FormattedBuoi = FormattedBuoiValid | '*';
@@ -80,6 +83,18 @@ const HTGD_ORDER_PRIORITY: Record<ClassModel['HTGD'], number> = {
 
 const BOLD_CELL_STYLE: CellStyle = { fontWeight: 600 };
 
+const TRANG_THAI_COL_WIDTH = 240;
+const TRANG_THAI_COL_MIN_WIDTH = 168;
+const TRANG_THAI_COL_MAX_WIDTH = 360;
+
+const QUICK_FILTER_FIELDS = new Set(['MonHoc', 'MaLop', 'TenGV']);
+
+const getQuickFilterText = ({ colDef, value }: GetQuickFilterTextParams<ClassModel>): string => {
+  const field = colDef.field;
+  if (!field || !QUICK_FILTER_FIELDS.has(field)) return '';
+  return value == null || value === '' ? '' : String(value);
+};
+
 const buildColumnDefs = (): GridOptions['columnDefs'] => [
   {
     colId: 'action',
@@ -98,18 +113,17 @@ const buildColumnDefs = (): GridOptions['columnDefs'] => [
   {
     colId: 'TrangThai',
     headerName: 'TRẠNG THÁI',
-    initialWidth: 150,
+    width: TRANG_THAI_COL_WIDTH,
+    minWidth: TRANG_THAI_COL_MIN_WIDTH,
+    maxWidth: TRANG_THAI_COL_MAX_WIDTH,
     pinned: 'left',
     sortable: false,
     filter: false,
-    valueGetter: ({ data, context }: ValueGetterParams<ClassModel, string>): string => {
-      if (!data) return '';
-      const gridContext = context as GridSelectionContext;
-      if (gridContext.isRowSelected(data)) return 'Đã chọn';
-      const conflictMaLop = gridContext.getConflictMaLop(data);
-      if (conflictMaLop) return `Trùng ${conflictMaLop}`;
-      return '';
-    },
+    resizable: true,
+    wrapText: true,
+    autoHeight: true,
+    cellRenderer: TrangThaiCell,
+    valueGetter: (params: ValueGetterParams<ClassModel, string>) => getTrangThaiCellValue(params),
   },
   {
     headerName: 'STT',
@@ -134,7 +148,8 @@ const buildColumnDefs = (): GridOptions['columnDefs'] => [
   {
     headerName: 'MÔN HỌC',
     field: 'MonHoc',
-    initialWidth: 350,
+    flex: 1,
+    minWidth: 200,
     cellStyle: BOLD_CELL_STYLE,
     enableRowGroup: true,
     valueGetter: ({ data }: ValueGetterParams<ClassModel, string>): string => {
@@ -144,7 +159,8 @@ const buildColumnDefs = (): GridOptions['columnDefs'] => [
   {
     headerName: 'MÃ LỚP',
     field: 'MaLop',
-    initialWidth: 200,
+    width: 160,
+    minWidth: 120,
     filter: 'agTextColumnFilter',
   },
   {
@@ -157,7 +173,8 @@ const buildColumnDefs = (): GridOptions['columnDefs'] => [
   {
     headerName: 'TÊN GIẢNG VIÊN',
     field: 'TenGV',
-    initialWidth: 250,
+    width: 180,
+    minWidth: 140,
     filter: 'agTextColumnFilter',
   },
   {
@@ -178,7 +195,8 @@ const buildColumnDefs = (): GridOptions['columnDefs'] => [
   {
     headerName: 'THỨ',
     field: 'Thu',
-    initialWidth: 85,
+    width: 72,
+    minWidth: 64,
     cellStyle: BOLD_CELL_STYLE,
     enableRowGroup: true,
     comparator: (a: ClassModel['Thu'], b: ClassModel['Thu']) => {
@@ -188,7 +206,8 @@ const buildColumnDefs = (): GridOptions['columnDefs'] => [
   {
     headerName: 'TIẾT',
     field: 'Tiet',
-    initialWidth: 80,
+    width: 72,
+    minWidth: 64,
     cellStyle: BOLD_CELL_STYLE,
     comparator: (tietA: ClassModel['Tiet'], tietB: ClassModel['Tiet']) => {
       const buoiA = getBuoiFromTiet(tietA);
@@ -202,25 +221,29 @@ const buildColumnDefs = (): GridOptions['columnDefs'] => [
   {
     headerName: 'PHÒNG HỌC',
     field: 'PhongHoc',
-    initialWidth: 130,
+    width: 110,
+    minWidth: 90,
     filter: false,
   },
   {
     headerName: 'SỐ TC',
     field: 'SoTc',
-    initialWidth: 90,
+    width: 72,
+    minWidth: 64,
     filter: false,
   },
   {
     headerName: 'SỈ SỐ',
     field: 'SiSo',
-    initialWidth: 80,
+    width: 72,
+    minWidth: 64,
     filter: false,
   },
   {
     headerName: 'HTGD',
     field: 'HTGD',
-    initialWidth: 85,
+    width: 72,
+    minWidth: 64,
     comparator: (a: ClassModel['HTGD'], b: ClassModel['HTGD']) => {
       return HTGD_ORDER_PRIORITY[a] - HTGD_ORDER_PRIORITY[b];
     },
@@ -228,7 +251,8 @@ const buildColumnDefs = (): GridOptions['columnDefs'] => [
   {
     headerName: 'NGÔN NGỮ',
     field: 'NgonNgu',
-    initialWidth: 120,
+    width: 96,
+    minWidth: 80,
   },
   {
     headerName: 'HỆ ĐT',
@@ -300,9 +324,10 @@ const buildColumnDefs = (): GridOptions['columnDefs'] => [
 const defaultColDef: GridOptions['defaultColDef'] = {
   resizable: true,
   filter: true,
-  floatingFilter: true,
+  floatingFilter: false,
   filterParams: { buttons: ['reset'], defaultToNothingSelected: true },
   menuTabs: ['generalMenuTab'],
+  getQuickFilterText,
 };
 
 const autoGroupColumnDef: GridOptions['autoGroupColumnDef'] = {
@@ -467,7 +492,14 @@ export const useGridOptions = () => {
   const onGridReady = useCallback(
     ({ api, columnApi }: GridReadyEvent<ClassModel, any>) => {
       if (agGridColumnState?.length) {
-        columnApi.applyColumnState({ state: agGridColumnState });
+        const sanitizedColumnState = agGridColumnState.map((column) => {
+          if (column.colId !== 'TrangThai' || typeof column.width !== 'number') return column;
+          return {
+            ...column,
+            width: Math.min(Math.max(column.width, TRANG_THAI_COL_MIN_WIDTH), TRANG_THAI_COL_MAX_WIDTH),
+          };
+        });
+        columnApi.applyColumnState({ state: sanitizedColumnState });
       }
       if (agGridFilterModel && Object.keys(agGridFilterModel).length) {
         api.setFilterModel(agGridFilterModel);
@@ -478,6 +510,14 @@ export const useGridOptions = () => {
       updateVisibleCount();
     },
     [agGridColumnState, agGridFilterModel, selectedClasses, updateNodesSelectionToAgGrid, updateVisibleCount],
+  );
+
+  const onFirstDataRendered = useCallback(
+    ({ api, columnApi }: FirstDataRenderedEvent) => {
+      if (agGridColumnState?.length) return;
+      columnApi.autoSizeColumns(['MonHoc'], false);
+    },
+    [agGridColumnState],
   );
 
   const onRowClicked = useCallback(({ node }: RowClickedEvent<ClassModel>) => {
@@ -650,6 +690,7 @@ export const useGridOptions = () => {
     onFilterChanged,
     onColumnChanged,
     onGridReady,
+    onFirstDataRendered,
     onRowClicked,
     rowData,
     getRowId,

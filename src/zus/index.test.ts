@@ -91,6 +91,17 @@ describe('useTkbStore', () => {
       expect(selectIsChiVeTkb(useTkbStore.getState())).toBe(true);
     });
 
+    it('setIsChiVeTkb(false) removes self_selected from URL and unlocks grid mode', () => {
+      setLocationSearch('?self_selected=IT002.O213.1,IT002.O213');
+      useTkbStore.getState().setManualResolvedMaLop(['IT002.O213.1', 'IT002.O213']);
+
+      useTkbStore.getState().setIsChiVeTkb(false);
+
+      expect(window.location.search).toBe('');
+      expect(selectIsChiVeTkb(useTkbStore.getState())).toBe(false);
+      expect(useTkbStore.getState().manualResolvedMaLop).toEqual([]);
+    });
+
     it('populates manual textarea and resolved output like ScriptDangKyInput on load', () => {
       setLocationSearch('?self_selected=EC201.Q21,EC201.Q21.1');
       useTkbStore.getState().setDataExcel(SAMPLE_DATA_EXCEL);

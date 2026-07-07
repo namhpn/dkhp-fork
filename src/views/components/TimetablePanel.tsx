@@ -71,18 +71,8 @@ function TimetablePanel() {
     void copyText(script, 'Đã sao chép script');
   }, [copyText, hasClasses, script]);
 
-  const handleShare = useCallback(async () => {
+  const handleShare = useCallback(() => {
     if (!shareUrl) return;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({ url: shareUrl });
-        return;
-      } catch (err) {
-        if (err instanceof DOMException && err.name === 'AbortError') return;
-      }
-    }
-
     void copyText(shareUrl, 'Đã sao chép link');
   }, [copyText, shareUrl]);
 
@@ -140,7 +130,7 @@ function TimetablePanel() {
           variant="outlined"
           className="timetable-toolbar-btn"
           disabled={!hasClasses}
-          onClick={() => void handleShare()}
+          onClick={handleShare}
         >
           Chia sẻ
         </Button>

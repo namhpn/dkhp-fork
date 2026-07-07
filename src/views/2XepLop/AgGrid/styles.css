@@ -97,6 +97,20 @@
   padding-right: 4px;
 }
 
+.course-grid .ag-cell[col-id='TrangThai'] {
+  align-items: flex-start;
+  line-height: 1.25;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  white-space: normal;
+}
+
+.trang-thai-cell-text {
+  display: block;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .course-grid.ag-theme-alpine {
   flex: 1 1 auto;
   width: 100%;

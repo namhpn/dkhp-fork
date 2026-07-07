@@ -97,7 +97,12 @@ export const useTkbStore = create<TkbStore>()(
         set({ agGridFilterModel: data });
       },
       setIsChiVeTkb: (data) => {
-        set({ isChiVeTkb: data });
+        if (!data) {
+          clearSelfSelectedFromUrl();
+          set({ isChiVeTkb: false, manualResolvedMaLop: [] });
+          return;
+        }
+        set({ isChiVeTkb: true });
       },
       setTextareChiVeTkb: (data) => {
         set({ textareaChiVeTkb: data.toUpperCase(), manualResolvedMaLop: [] });
@@ -136,8 +141,20 @@ export const selectDataExcel = (state: TkbStore) => state.dataExcel;
 export const selectSelectedClasses = (state: TkbStore) => state.selectedClasses;
 export const selectAgGridColumnState = (state: TkbStore) => state.agGridColumnState;
 export const selectAgGridFilterModel = (state: TkbStore) => state.agGridFilterModel;
+export const SELF_SELECTED_PARAM = 'self_selected';
+
 export const selectIsChiVeTkb = (state: TkbStore) =>
-  state.isChiVeTkb || window.location.search.includes('self_selected'); // TODO: constant for self_selected
+  state.isChiVeTkb || window.location.search.includes(SELF_SELECTED_PARAM);
+
+export function clearSelfSelectedFromUrl() {
+  const searchParams = new URLSearchParams(window.location.search);
+  if (!searchParams.has(SELF_SELECTED_PARAM)) return;
+
+  searchParams.delete(SELF_SELECTED_PARAM);
+  const search = searchParams.toString();
+  const nextUrl = `${window.location.pathname}${search ? `?${search}` : ''}${window.location.hash}`;
+  window.history.replaceState({}, '', nextUrl);
+}
 
 /**
  * Resolved MaLop codes loaded from URL (?self_selected=...).
@@ -145,7 +162,7 @@ export const selectIsChiVeTkb = (state: TkbStore) =>
  */
 export function getUrlResolvedMaLop(): string[] | null {
   const searchParams = new URLSearchParams(window.location.search);
-  const val = searchParams.get('self_selected');
+  const val = searchParams.get(SELF_SELECTED_PARAM);
   if (!val) return null;
   return val
     .split(',')

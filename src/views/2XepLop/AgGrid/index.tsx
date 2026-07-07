@@ -17,6 +17,7 @@ function AgGrid() {
     onFilterChanged,
     onColumnChanged,
     onGridReady,
+    onFirstDataRendered,
     onRowClicked,
     rowData,
     getRowId,
@@ -80,6 +81,7 @@ function AgGrid() {
           onFilterChanged={onFilterChanged}
           onSelectionChanged={onSelectionChanged}
           onGridReady={onGridReady}
+          onFirstDataRendered={onFirstDataRendered}
           getRowId={getRowId}
           onRowClicked={onRowClicked}
         />
