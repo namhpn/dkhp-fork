@@ -47,15 +47,23 @@ describe('useTkbStore', () => {
       expect(state.dataExcel?.fileName).toBe('test.xlsx');
     });
 
-    it('preserves textareaChiVeTkb and isChiVeTkb on file replacement', () => {
-      useTkbStore.getState().setIsChiVeTkb(false);
+    it('preserves textareaChiVeTkb and manual mode on file replacement when codes are typed', () => {
+      useTkbStore.getState().setIsChiVeTkb(true);
       useTkbStore.getState().setTextareChiVeTkb('ec201, it003.o21');
 
       useTkbStore.getState().setDataExcel(SAMPLE_DATA_EXCEL);
 
       const state = useTkbStore.getState();
-      expect(state.isChiVeTkb).toBe(false);
+      expect(state.isChiVeTkb).toBe(true);
       expect(state.textareaChiVeTkb).toBe('EC201, IT003.O21');
+    });
+
+    it('switches to grid mode on file import when manual textarea is empty', () => {
+      useTkbStore.getState().setIsChiVeTkb(true);
+
+      useTkbStore.getState().setDataExcel(SAMPLE_DATA_EXCEL);
+
+      expect(useTkbStore.getState().isChiVeTkb).toBe(false);
     });
   });
 

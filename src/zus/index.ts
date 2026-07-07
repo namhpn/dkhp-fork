@@ -56,17 +56,20 @@ export const useTkbStore = create<TkbStore>()(
       agGridColumnState: null,
       agGridFilterModel: null,
 
-      isChiVeTkb: true,
+      isChiVeTkb: false,
       textareaChiVeTkb: '',
       manualResolvedMaLop: [],
 
       // TODO: move actions outside of store
       setDataExcel: (data) => {
+        const { isChiVeTkb, textareaChiVeTkb } = get();
+        const shouldPreserveManualMode = isChiVeTkb && textareaChiVeTkb.trim().length > 0;
         set({
           dataExcel: data,
           selectedClasses: [],
           manualResolvedMaLop: [],
           agGridFilterModel: null,
+          ...(!shouldPreserveManualMode ? { isChiVeTkb: false } : {}),
         });
       },
       removeDataExcel: () => {
