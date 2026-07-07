@@ -37,7 +37,6 @@ import {
   useTkbStore,
 } from '../../../zus';
 import SelectionToggleCell, { GridSelectionContext } from './SelectionToggleCell';
-import TrangThaiCell, { getTrangThaiCellValue } from './TrangThaiCell';
 
 type FormattedBuoiValid = 'Sáng' | 'Chiều' | 'Tối';
 type FormattedBuoi = FormattedBuoiValid | '*';
@@ -83,10 +82,6 @@ const HTGD_ORDER_PRIORITY: Record<ClassModel['HTGD'], number> = {
 
 const BOLD_CELL_STYLE: CellStyle = { fontWeight: 600 };
 
-const TRANG_THAI_COL_WIDTH = 240;
-const TRANG_THAI_COL_MIN_WIDTH = 168;
-const TRANG_THAI_COL_MAX_WIDTH = 360;
-
 const QUICK_FILTER_FIELDS = new Set(['MonHoc', 'MaLop', 'TenGV']);
 
 const getQuickFilterText = ({ colDef, value }: GetQuickFilterTextParams<ClassModel>): string => {
@@ -109,21 +104,6 @@ const buildColumnDefs = (): GridOptions['columnDefs'] => [
     suppressNavigable: true,
     lockPosition: true,
     cellRenderer: SelectionToggleCell,
-  },
-  {
-    colId: 'TrangThai',
-    headerName: 'TRẠNG THÁI',
-    width: TRANG_THAI_COL_WIDTH,
-    minWidth: TRANG_THAI_COL_MIN_WIDTH,
-    maxWidth: TRANG_THAI_COL_MAX_WIDTH,
-    pinned: 'left',
-    sortable: false,
-    filter: false,
-    resizable: true,
-    wrapText: true,
-    autoHeight: true,
-    cellRenderer: TrangThaiCell,
-    valueGetter: (params: ValueGetterParams<ClassModel, string>) => getTrangThaiCellValue(params),
   },
   {
     headerName: 'STT',
@@ -405,7 +385,7 @@ export const useGridOptions = () => {
   );
 
   const refreshSelectionColumns = useCallback(() => {
-    agGridRef.current?.api?.refreshCells({ columns: ['action', 'TrangThai'], force: true });
+    agGridRef.current?.api?.refreshCells({ columns: ['action'], force: true });
   }, []);
 
   const updateVisibleCount = useCallback(() => {
@@ -492,13 +472,7 @@ export const useGridOptions = () => {
   const onGridReady = useCallback(
     ({ api, columnApi }: GridReadyEvent<ClassModel, any>) => {
       if (agGridColumnState?.length) {
-        const sanitizedColumnState = agGridColumnState.map((column) => {
-          if (column.colId !== 'TrangThai' || typeof column.width !== 'number') return column;
-          return {
-            ...column,
-            width: Math.min(Math.max(column.width, TRANG_THAI_COL_MIN_WIDTH), TRANG_THAI_COL_MAX_WIDTH),
-          };
-        });
+        const sanitizedColumnState = agGridColumnState.filter((column) => column.colId !== 'TrangThai');
         columnApi.applyColumnState({ state: sanitizedColumnState });
       }
       if (agGridFilterModel && Object.keys(agGridFilterModel).length) {

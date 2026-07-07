@@ -1,4 +1,5 @@
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { IconButton, Tooltip } from '@mui/material';
 import clsx from 'clsx';
 import constate from 'constate';
@@ -25,6 +26,8 @@ const randomColors = [
 type Props = {
   data: ClassModel;
   isOutsideTable?: boolean;
+  /** Static clone for html2canvas export — no tooltips or shared hover state. */
+  forExport?: boolean;
 } & React.TdHTMLAttributes<HTMLTableCellElement>;
 
 const getMonChonRoiKey = (data: ClassModel) => `${data.MaMH}-${data.ThucHanh}`;
@@ -67,7 +70,7 @@ export const [ClassCellContext, useClassCellContext] = constate(() => {
   };
 });
 
-function ClassCell({ data, isOutsideTable = false, ...restProps }: Props) {
+function ClassCell({ data, isOutsideTable = false, forExport = false, ...restProps }: Props) {
   const { MaLop, NgonNgu, TenMH, TenGV, PhongHoc, NBD, NKT, Thu, Tiet } = data;
   const removeClasses = useTkbStore((s) => s.removeClasses);
   const selectedClasses = useTkbStore(selectSelectedClasses);
@@ -101,94 +104,111 @@ function ClassCell({ data, isOutsideTable = false, ...restProps }: Props) {
     </span>
   );
 
-  return (
-    <Tooltip title={detailTooltip}>
-      <td
-        {...restProps}
-        className={clsx('cell-class', {
-          'cell-class-hovering': isHoveringOnThisCell(data, 'MaMH'),
-        })}
-        style={{
-          boxShadow: isRedundantRelated ? `inset 0 0 0 3px ${randomColors[redundantIndex]}` : undefined,
-          backgroundColor: isWarning(data) ? '#FFF7ED' : undefined,
-        }}
-        onMouseEnter={() => setCellHovering(data)}
-        onMouseLeave={() => setCellHovering(null)}
-      >
-        {!isChiVeTkb && (
-          <Tooltip
-            title={
-              <>
-                Xoá môn này
-                {isWarning(data) && isHoveringOnThisCell(data, 'MaLop') && (
-                  <>
-                    <br />
-                    hoặc Shift+Click để chỉ xoá slot thừa này
-                  </>
-                )}
-              </>
-            }
-            open={isHoveringOnThisCellRemoveIcon(data)}
-          >
-            <IconButton
-              aria-label={`Xóa ${MaLop}`}
-              onMouseEnter={() => setIsHoveringOnRemoveIcon(true)}
-              onMouseLeave={() => setIsHoveringOnRemoveIcon(false)}
-              style={{ position: 'absolute', top: 0, right: 0 }}
-              color="inherit"
-              size="small"
-              onClick={(e) => {
-                const classesToRemove = (() => {
-                  if (isWarning(data) && e.shiftKey) {
-                    return [data];
-                  }
-                  if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
-                    // easter eggs: Cmd + Shift + Click to remove all selected classes
-                    return selectedClasses;
-                  }
-                  return cacLopChungMonDangChon;
-                })();
-                removeClasses(classesToRemove);
-                onRemoveClass();
+  const warningBorder = isWarning(data) ? 'inset 0 0 0 2px rgb(234, 88, 12)' : null;
+  const redundantBorder = isRedundantRelated ? `inset 0 0 0 3px ${randomColors[redundantIndex]}` : null;
+  const cellBorder = [warningBorder, redundantBorder].filter(Boolean).join(', ') || undefined;
 
-                requestAnimationFrame(() => {
-                  const toolbarBtn = document.querySelector<HTMLButtonElement>(
-                    '.timetable-toolbar button:not([disabled])',
-                  );
-                  const mainWorkspace = document.getElementById('main-workspace');
-                  (toolbarBtn ?? mainWorkspace)?.focus();
-                });
-              }}
-              className="remove-class-btn"
-            >
-              <DeleteOutlineIcon />
-            </IconButton>
-          </Tooltip>
-        )}
-        <strong style={{ color: isWarning(data) ? '#EA580C' : undefined }}>
-          {MaLop}
-          {' - '}
-          {NgonNgu}
-        </strong>
-        <br />
-        {TenMH}
-        <br />
-        <strong>{TenGV}</strong>
-        <br />
-        {PhongHoc}
-        <br />
-        {isOutsideTable && (
-          <>
-            <br />
-            <strong>
-              Thứ {Thu} Tiết {Tiet}
-            </strong>
-            <br />
-          </>
-        )}
-      </td>
-    </Tooltip>
+  const cell = (
+    <td
+      {...restProps}
+      className={clsx('cell-class', {
+        'cell-class-hovering': !forExport && isHoveringOnThisCell(data, 'MaMH'),
+      })}
+      style={{
+        boxShadow: cellBorder,
+        backgroundColor: isWarning(data) ? '#FFF7ED' : undefined,
+      }}
+      onMouseEnter={forExport ? undefined : () => setCellHovering(data)}
+      onMouseLeave={forExport ? undefined : () => setCellHovering(null)}
+    >
+      {!isChiVeTkb && !forExport && (
+        <Tooltip
+          title={
+            <>
+              Xoá môn này
+              {isWarning(data) && isHoveringOnThisCell(data, 'MaLop') && (
+                <>
+                  <br />
+                  hoặc Shift+Click để chỉ xoá slot thừa này
+                </>
+              )}
+            </>
+          }
+          open={isHoveringOnThisCellRemoveIcon(data)}
+        >
+          <IconButton
+            aria-label={`Xóa ${MaLop}`}
+            onMouseEnter={() => setIsHoveringOnRemoveIcon(true)}
+            onMouseLeave={() => setIsHoveringOnRemoveIcon(false)}
+            style={{ position: 'absolute', top: 0, right: 0 }}
+            color="inherit"
+            size="small"
+            onClick={(e) => {
+              const classesToRemove = (() => {
+                if (isWarning(data) && e.shiftKey) {
+                  return [data];
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+                  // easter eggs: Cmd + Shift + Click to remove all selected classes
+                  return selectedClasses;
+                }
+                return cacLopChungMonDangChon;
+              })();
+              removeClasses(classesToRemove);
+              onRemoveClass();
+
+              requestAnimationFrame(() => {
+                const toolbarBtn = document.querySelector<HTMLButtonElement>(
+                  '.timetable-toolbar button:not([disabled])',
+                );
+                const mainWorkspace = document.getElementById('main-workspace');
+                (toolbarBtn ?? mainWorkspace)?.focus();
+              });
+            }}
+            className="remove-class-btn"
+          >
+            <DeleteOutlineIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+      {isWarning(data) && <WarningAmberIcon className="cell-class-warning-icon" aria-hidden />}
+      <strong>
+        {MaLop}
+        {' - '}
+        {NgonNgu}
+      </strong>
+      <br />
+      {TenMH}
+      <br />
+      <strong>{TenGV}</strong>
+      <br />
+      {PhongHoc}
+      <br />
+      {forExport && (
+        <>
+          BĐ: {NBD}
+          <br />
+          KT: {NKT}
+          <br />
+        </>
+      )}
+      {isOutsideTable && (
+        <>
+          <br />
+          <strong>
+            Thứ {Thu} Tiết {Tiet}
+          </strong>
+          <br />
+        </>
+      )}
+    </td>
   );
+
+  if (forExport) {
+    return cell;
+  }
+
+  return <Tooltip title={detailTooltip}>{cell}</Tooltip>;
 }
 
 export default ClassCell;

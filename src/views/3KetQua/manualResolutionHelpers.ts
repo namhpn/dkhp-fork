@@ -143,6 +143,55 @@ export const countUnresolvedSubjects = (
   }).length;
 };
 
+export const countResolvedSubjects = (
+  queueOrder: string[],
+  selectedCombo: Record<string, string[]>,
+  subjectCombos: Record<string, SuggestionCombo[]>,
+): number => {
+  return queueOrder.filter((subject) => {
+    const combos = subjectCombos[subject];
+    if (!combos) return false;
+    return combos.some((combo) => isSelectedCombo(subject, combo, selectedCombo));
+  }).length;
+};
+
+const isUnresolvedSubject = (
+  subject: string,
+  subjectCombos: Record<string, SuggestionCombo[]>,
+  selectedCombo: Record<string, string[]>,
+): boolean => {
+  const combos = subjectCombos[subject];
+  if (!combos) return false;
+  return !combos.some((combo) => isSelectedCombo(subject, combo, selectedCombo));
+};
+
+export const findNextUnresolvedSubject = (
+  queueOrder: string[],
+  subjectCombos: Record<string, SuggestionCombo[]>,
+  selectedCombo: Record<string, string[]>,
+  afterSubject?: string,
+): string | null => {
+  if (queueOrder.length === 0) return null;
+
+  let startIndex = 0;
+  if (afterSubject) {
+    const idx = queueOrder.indexOf(afterSubject);
+    startIndex = idx === -1 ? 0 : idx + 1;
+  }
+
+  for (let i = startIndex; i < queueOrder.length; i++) {
+    const subject = queueOrder[i];
+    if (isUnresolvedSubject(subject, subjectCombos, selectedCombo)) return subject;
+  }
+
+  for (let i = 0; i < startIndex; i++) {
+    const subject = queueOrder[i];
+    if (isUnresolvedSubject(subject, subjectCombos, selectedCombo)) return subject;
+  }
+
+  return null;
+};
+
 export const formatComboCodeLabel = (combo: SuggestionCombo): string => {
   if (combo.practiceLabels.length === 0) return combo.baseCode;
   return `${combo.baseCode} + ${combo.practiceLabels.join(' + ')}`;
@@ -151,6 +200,27 @@ export const formatComboCodeLabel = (combo: SuggestionCombo): string => {
 export const formatClassSchedule = (row: ClassModel): string => {
   if (!row.Thu || row.Thu === '*') return '—';
   return `Thứ ${row.Thu} · Tiết ${row.Tiet}`;
+};
+
+export const formatClassKindPrefix = (row: ClassModel): string => {
+  return row.ThucHanh > 0 ? 'Thực hành:' : 'Lý thuyết:';
+};
+
+export const formatClassRowMeta = (row: ClassModel): string => {
+  const details = [row.TenGV, formatClassSchedule(row), row.PhongHoc].filter(Boolean).join(' · ');
+  return `${formatClassKindPrefix(row)} ${details}`;
+};
+
+export const getSubjectCourseName = (
+  combos: SuggestionCombo[],
+  classByMaLop: Map<string, ClassModel>,
+): string | null => {
+  for (const combo of combos) {
+    const rows = getComboClassRows(combo, classByMaLop);
+    const name = rows.find((row) => row.TenMH)?.TenMH;
+    if (name) return name;
+  }
+  return null;
 };
 
 export const getComboClassRows = (

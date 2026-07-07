@@ -1,3 +1,7 @@
+/** Fixed PNG width per product spec (prompt_v3 / ui_diff). */
+export const TKB_EXPORT_WIDTH_PX = 800;
+export const TKB_EXPORT_TIET_COL_PX = 88;
+
 export const tietOnline = {
   index: 13,
   stringValue: '*',

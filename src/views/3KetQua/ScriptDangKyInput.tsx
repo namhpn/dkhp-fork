@@ -64,7 +64,7 @@ export function DanhSachLopInput() {
   }, []);
 
   return (
-    <div className="field-with-action">
+    <div className={'field-with-action manual-class-input' + (isChiVeTkb ? ' manual-class-input--active' : '')}>
       <div className="field-label-row">
         <label className="field-label" htmlFor="manual-class-input">
           Nhập mã môn hoặc mã lớp
@@ -72,48 +72,34 @@ export function DanhSachLopInput() {
       </div>
       <TextField
         id="manual-class-input"
+        className="manual-class-input-field"
         error={hasErrors}
         fullWidth
         multiline
         placeholder={isChiVeTkb ? MANUAL_PLACEHOLDER : undefined}
         inputProps={{
           readOnly: useToolXepLop,
-          style: { resize: 'vertical', minHeight: 92 },
+          style: { resize: 'vertical' },
         }}
-        minRows={4}
-        maxRows={10}
+        minRows={isChiVeTkb ? 2 : 4}
+        maxRows={isChiVeTkb ? 5 : 10}
         onChange={(e) => {
           setTextareChiVeTkb(e.target.value);
         }}
         value={dsLopInputValue}
         disabled={useToolXepLop && !hasLop}
-        helperText={
-          hasErrors ? (
-            <span>{parseErrorMessages.join('; ')}</span>
-          ) : (
-            <span>&nbsp;</span>
-          )
-        }
+        helperText={hasErrors ? parseErrorMessages.join('; ') : undefined}
         FormHelperTextProps={{
           sx: {
             marginLeft: 0,
+            marginTop: '6px',
             fontWeight: 600,
             fontSize: '0.8rem',
             lineHeight: 1.4,
-            color: hasErrors ? 'var(--error, #B91C1C)' : 'transparent',
+            color: 'var(--error, #B91C1C)',
           },
         }}
-        sx={
-          isChiVeTkb && !hasErrors
-            ? {
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'var(--blue, #2563EB)',
-                },
-              }
-            : isChiVeTkb && hasErrors
-            ? {}
-            : getReadonlySx(theme)
-        }
+        sx={isChiVeTkb ? undefined : getReadonlySx(theme)}
       />
     </div>
   );

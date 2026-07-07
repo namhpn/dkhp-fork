@@ -8,7 +8,7 @@ import { useExcelImport } from '../1ChonFileExcel/useExcelImport';
 import { selectDataExcel, selectHasDestructiveFileState, useTkbStore } from '../../zus';
 import ConfirmDialog from './ConfirmDialog';
 
-type PendingAction = 'replace' | 'remove' | null;
+type PendingAction = 'remove' | null;
 
 const DESTRUCTIVE_BODY =
   'Thao tác này sẽ xóa các lớp đang chọn và kết quả đã ghép từ mã lớp.';
@@ -21,14 +21,6 @@ function HeaderFileControl() {
   const [pendingAction, setPendingAction] = React.useState<PendingAction>(null);
 
   const hasFile = !!dataExcel?.data?.length;
-
-  const handleReplaceClick = () => {
-    if (hasDestructiveFileState) {
-      setPendingAction('replace');
-      return;
-    }
-    triggerFileInput();
-  };
 
   const restoreFocusAfterRemove = () => {
     requestAnimationFrame(() => {
@@ -50,11 +42,6 @@ function HeaderFileControl() {
   };
 
   const handleConfirm = () => {
-    if (pendingAction === 'replace') {
-      setPendingAction(null);
-      triggerFileInput();
-      return;
-    }
     if (pendingAction === 'remove') {
       setPendingAction(null);
       removeFile();
@@ -100,12 +87,9 @@ function HeaderFileControl() {
           >
             {dataExcel?.fileName}
           </Typography>
-          <Button variant="outlined" size="small" onClick={handleReplaceClick}>
-            Đổi file
-          </Button>
           <IconButton
             className="header-file-remove-btn"
-            aria-label="Gỡ file"
+            aria-label="Xóa file"
             onClick={handleRemoveClick}
           >
             <CloseIcon fontSize="small" />
@@ -114,18 +98,10 @@ function HeaderFileControl() {
       )}
 
       <ConfirmDialog
-        open={pendingAction === 'replace'}
-        title="Đổi file?"
-        body={DESTRUCTIVE_BODY}
-        confirmLabel="Đổi file"
-        onConfirm={handleConfirm}
-        onCancel={handleCancel}
-      />
-      <ConfirmDialog
         open={pendingAction === 'remove'}
-        title="Gỡ file?"
+        title="Xóa file?"
         body={DESTRUCTIVE_BODY}
-        confirmLabel="Gỡ file"
+        confirmLabel="Xóa file"
         onConfirm={handleConfirm}
         onCancel={handleCancel}
       />

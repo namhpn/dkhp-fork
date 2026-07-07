@@ -1,3 +1,4 @@
+import Tooltip from '@mui/material/Tooltip';
 import { ICellRendererParams } from 'ag-grid-community';
 import React from 'react';
 import { ClassModel } from 'types';
@@ -56,7 +57,7 @@ function SelectionToggleCell(params: ICellRendererParams<ClassModel, unknown, Gr
     ? `Không thể chọn ${data.MaLop}: trùng ${conflictMaLop}`
     : `Chọn ${data.MaLop}`;
 
-  return (
+  const button = (
     <button
       type="button"
       className={`grid-selection-toggle${selected ? ' is-selected' : ''}${disabled ? ' is-disabled' : ''}`}
@@ -73,6 +74,18 @@ function SelectionToggleCell(params: ICellRendererParams<ClassModel, unknown, Gr
       </span>
     </button>
   );
+
+  if (disabled) {
+    return (
+      <Tooltip title={`Trùng ${conflictMaLop}`} describeChild>
+        <span className="grid-selection-toggle-wrap">{button}</span>
+      </Tooltip>
+    );
+  }
+
+  return button;
 }
+
+SelectionToggleCell.refresh = () => true;
 
 export default SelectionToggleCell;

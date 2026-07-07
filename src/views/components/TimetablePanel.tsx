@@ -33,7 +33,14 @@ const EMPTY_STATE_MESSAGES: Record<Exclude<PanelState, 'has-classes'>, string> =
   'no-manual-classes': 'Chưa có lớp',
 };
 
-function TimetablePanel() {
+type TimetablePanelProps = {
+  compact?: boolean;
+};
+
+const TimetablePanel = React.forwardRef<HTMLDivElement, TimetablePanelProps>(function TimetablePanel(
+  { compact = false },
+  ref,
+) {
   const tkbRef = useRef<TkbTableHandle>(null);
   const dataExcel = useTkbStore(selectDataExcel);
   const isChiVeTkb = useTkbStore(selectIsChiVeTkb);
@@ -81,7 +88,7 @@ function TimetablePanel() {
   }, []);
 
   return (
-    <div className="schedule-panel timetable-panel">
+    <div ref={ref} className="schedule-panel timetable-panel">
       <div className="schedule-panel-header">
         <div className="timetable-panel-title-row">
           <Typography component="h2" className="subsection-title">
@@ -148,7 +155,7 @@ function TimetablePanel() {
 
       {panelState === 'has-classes' ? (
         <div id="thoi-khoa-bieu-wrapper">
-          <ThoiKhoaBieuTable ref={tkbRef} />
+          <ThoiKhoaBieuTable ref={tkbRef} compact={compact} />
         </div>
       ) : (
         <div className="timetable-empty-state" role="status">
@@ -157,6 +164,6 @@ function TimetablePanel() {
       )}
     </div>
   );
-}
+});
 
 export default TimetablePanel;

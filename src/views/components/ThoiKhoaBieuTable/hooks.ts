@@ -5,7 +5,7 @@ import { enqueueSnackbar } from 'notistack';
 import { ClassModel } from '../../../types';
 import { findOverlapedClasses, getDanhSachTiet } from '../../../utils';
 import { selectPhanLoaiHocTrenTruong, useTkbStore } from '../../../zus';
-import { downloadFromCanvas, getTietIndex } from './utils';
+import { downloadFromCanvas, getTietIndex, TKB_EXPORT_WIDTH_PX } from './utils';
 
 /* // Uncomment to see how rowData can be conducted:
 const rowDataExample = [
@@ -39,6 +39,27 @@ export type RowData = {
   Thu7: CellData;
 };
 type TableData = RowData[];
+
+const MIN_VISIBLE_ROWS = 10;
+const MAX_ROWS = 14;
+const ROW_BUFFER_AFTER_LAST = 1;
+
+export const isRowEmpty = (row: RowData): boolean =>
+  Object.values(row).every((cell) => cell === CELL.NO_CLASS);
+
+export const getLastOccupiedRowIndex = (rows: TableData): number => {
+  for (let i = rows.length - 1; i >= 0; i--) {
+    if (!isRowEmpty(rows[i])) return i;
+  }
+  return -1;
+};
+
+/** Show rows with content + 1 buffer, at least MIN_VISIBLE_ROWS for context. */
+export const getVisibleRowCount = (rows: TableData): number => {
+  const lastOccupied = getLastOccupiedRowIndex(rows);
+  if (lastOccupied < 0) return MIN_VISIBLE_ROWS;
+  return Math.min(MAX_ROWS, Math.max(MIN_VISIBLE_ROWS, lastOccupied + 1 + ROW_BUFFER_AFTER_LAST));
+};
 
 const initTableData = () => {
   const tableData: TableData = [];
@@ -89,12 +110,32 @@ const usePhanLoaiHocTrenTruong = () => {
 export const [PhanLoaiHocTrenTruongContext, usePhanLoaiHocTrenTruongContext] = constate(usePhanLoaiHocTrenTruong);
 
 export const useProcessImageTkb = () => {
-  const tkbTableRef = React.useRef<HTMLTableElement>(null);
+  const tkbTableRef = React.useRef<HTMLDivElement>(null);
 
   const saveTkbImageToComputer = React.useCallback(async () => {
     try {
       if (!tkbTableRef.current) return;
-      const canvas = await html2canvas(tkbTableRef.current);
+      const canvas = await html2canvas(tkbTableRef.current, {
+        backgroundColor: '#ffffff',
+        scale: Math.min(window.devicePixelRatio || 1, 2),
+        onclone: (clonedDoc) => {
+          clonedDoc.documentElement.style.backgroundColor = '#ffffff';
+          clonedDoc.body.style.backgroundColor = '#ffffff';
+
+          const exportRoot = clonedDoc.getElementById('thoi-khoa-bieu-export');
+          const exportTable = exportRoot?.querySelector('table');
+          if (exportRoot) {
+            exportRoot.style.width = `${TKB_EXPORT_WIDTH_PX}px`;
+            exportRoot.style.maxWidth = `${TKB_EXPORT_WIDTH_PX}px`;
+          }
+          if (exportTable instanceof HTMLTableElement) {
+            exportTable.style.width = `${TKB_EXPORT_WIDTH_PX}px`;
+            exportTable.style.minWidth = `${TKB_EXPORT_WIDTH_PX}px`;
+            exportTable.style.maxWidth = `${TKB_EXPORT_WIDTH_PX}px`;
+            exportTable.style.tableLayout = 'fixed';
+          }
+        },
+      });
       const today = new Date();
       const yyyy = today.getFullYear();
       const mm = String(today.getMonth() + 1).padStart(2, '0');
