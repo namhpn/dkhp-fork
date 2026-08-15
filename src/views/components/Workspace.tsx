@@ -6,6 +6,8 @@ import ManualWorkspace from './ManualWorkspace';
 import TimetablePanel from './TimetablePanel';
 import { useWorkspaceLayout } from './useWorkspaceLayout';
 
+export const WORKSPACE_PANEL_ID = 'workspace-panel';
+
 function Workspace() {
   const isChiVeTkb = useTkbStore(selectIsChiVeTkb);
   const timetableRef = useRef<HTMLDivElement>(null);
@@ -13,7 +15,12 @@ function Workspace() {
 
   return (
     <main id="main-workspace" className={clsx('workspace', isStacked && 'workspace--stacked')} tabIndex={-1}>
-      <section className="workspace-main" aria-label="Khu vực làm việc">
+      <section
+        id={WORKSPACE_PANEL_ID}
+        role="tabpanel"
+        aria-labelledby={isChiVeTkb ? 'mode-tab-manual' : 'mode-tab-grid'}
+        className="workspace-main"
+      >
         {isChiVeTkb ? <ManualWorkspace /> : <GridWorkspace />}
       </section>
       <TimetablePanel ref={timetableRef} compact={isCompact} />

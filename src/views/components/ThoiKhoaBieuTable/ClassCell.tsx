@@ -62,7 +62,8 @@ export const [ClassCellContext, useClassCellContext] = constate(() => {
 });
 
 function ClassCell({ data, isOutsideTable = false, forExport = false, ...restProps }: Props) {
-  const { MaLop, NgonNgu, TenMH, TenGV, PhongHoc, KhoaHoc, NBD, NKT, Thu, Tiet } = data;
+  const { MaLop, TenMH, TenGV, PhongHoc, KhoaHoc, NBD, NKT, Thu, Tiet } = data;
+  const ngonNgu = String(data.NgonNgu ?? '').trim();
   const removeClasses = useTkbStore((s) => s.removeClasses);
   const selectedClasses = useTkbStore(selectSelectedClasses);
   const isChiVeTkb = useTkbStore(selectIsChiVeTkb);
@@ -95,7 +96,7 @@ function ClassCell({ data, isOutsideTable = false, forExport = false, ...restPro
     </span>
   );
 
-  const warningBorder = isWarning(data) ? 'inset 0 0 0 2px rgb(234, 88, 12)' : null;
+  const warningBorder = isWarning(data) ? 'inset 0 0 0 2px var(--warning, var(--warning-fallback))' : null;
   const redundantBorder = isRedundantRelated ? `inset 0 0 0 3px ${randomColors[redundantIndex]}` : null;
   const cellBorder = [warningBorder, redundantBorder].filter(Boolean).join(', ') || undefined;
 
@@ -107,7 +108,7 @@ function ClassCell({ data, isOutsideTable = false, forExport = false, ...restPro
       })}
       style={{
         boxShadow: cellBorder,
-        backgroundColor: isWarning(data) ? '#FFF7ED' : undefined,
+        backgroundColor: isWarning(data) ? 'var(--warning-soft, var(--warning-soft-fallback))' : undefined,
       }}
       onMouseEnter={forExport ? undefined : () => setCellHovering(data)}
       onMouseLeave={forExport ? undefined : () => setCellHovering(null)}
@@ -115,15 +116,15 @@ function ClassCell({ data, isOutsideTable = false, forExport = false, ...restPro
       {!isChiVeTkb && !forExport && (
         <Tooltip
           title={
-            <>
-              Xoá môn này
-              {isWarning(data) && isHoveringOnThisCell(data, 'MaLop') && (
+            <span style={{ whiteSpace: 'pre-line' }}>
+              {'Xoá môn này'}
+              {isWarning(data) && (
                 <>
-                  <br />
-                  hoặc Shift+Click để chỉ xoá slot thừa này
+                  {'\nShift+Click: chỉ xoá ô thừa này'}
                 </>
               )}
-            </>
+              {'\nCtrl/Cmd+Shift+Click: xoá tất cả lớp đã chọn'}
+            </span>
           }
           open={isHoveringOnThisCellRemoveIcon(data)}
         >
@@ -149,11 +150,11 @@ function ClassCell({ data, isOutsideTable = false, forExport = false, ...restPro
               onRemoveClass();
 
               requestAnimationFrame(() => {
-                const toolbarBtn = document.querySelector<HTMLButtonElement>(
-                  '.timetable-toolbar button:not([disabled])',
+                const actionBtn = document.querySelector<HTMLButtonElement>(
+                  '.timetable-panel-actions button:not([disabled])',
                 );
                 const mainWorkspace = document.getElementById('main-workspace');
-                (toolbarBtn ?? mainWorkspace)?.focus();
+                (actionBtn ?? mainWorkspace)?.focus();
               });
             }}
             className="remove-class-btn"
@@ -165,8 +166,7 @@ function ClassCell({ data, isOutsideTable = false, forExport = false, ...restPro
       {isWarning(data) && <WarningAmberIcon className="cell-class-warning-icon" aria-hidden />}
       <strong>
         {MaLop}
-        {' - '}
-        {NgonNgu}
+        {ngonNgu ? ` - ${ngonNgu}` : ''}
       </strong>
       <br />
       {TenMH}

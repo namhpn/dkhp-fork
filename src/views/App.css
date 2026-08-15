@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;600;700;800&family=Noto+Sans:wght@400;500;600;700&display=swap');
+/* Fonts load via <link> in public/index.html (non-render-blocking @import was here) */
 @import '../theme/tokens.css';
 
 :root {
@@ -65,8 +65,8 @@ input:focus-visible,
 textarea:focus-visible,
 .MuiButtonBase-root:focus-visible,
 .MuiOutlinedInput-root.Mui-focused {
-  outline: 3px solid rgba(37, 99, 235, 0.32);
-  outline-offset: 2px;
+  outline: var(--focus-ring, 2px solid #2563eb);
+  outline-offset: var(--focus-ring-offset, 2px);
 }
 
 .skip-link {
@@ -191,7 +191,7 @@ textarea:focus-visible,
 .mode-tab--active:hover {
   color: var(--app-surface);
   background: var(--app-ink);
-  border-radius: 6px;
+  border-radius: var(--radius-sm, 8px);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -267,8 +267,8 @@ textarea:focus-visible,
   min-height: min(280px, 42vh);
   margin-top: 2px;
   padding: 14px;
-  background: var(--surface-muted, #F4F4F5);
-  border: 1px solid var(--border-soft, #E4E4E7);
+  background: var(--surface-muted, #f4f4f4);
+  border: 1px solid var(--border-soft, #ebebeb);
   border-radius: var(--radius-md, 10px);
 }
 
@@ -283,7 +283,7 @@ textarea:focus-visible,
   position: sticky;
   top: 0;
   z-index: 1;
-  background: var(--surface-muted, #F4F4F5);
+  background: var(--surface-muted, #f4f4f4);
   padding-bottom: 6px;
 }
 
@@ -306,10 +306,10 @@ textarea:focus-visible,
   gap: 4px;
   min-height: 30px;
   padding: 5px 12px;
-  border: 1px solid var(--border-soft, #E4E4E7);
+  border: 1px solid var(--border-soft, #ebebeb);
   border-radius: 6px;
   background: var(--app-surface, #fff);
-  color: var(--ink-2, #3F3F46);
+  color: var(--ink-2, #4a4a4a);
   font-size: 0.82rem;
   font-weight: 600;
   font-family: var(--font-body);
@@ -400,7 +400,7 @@ textarea:focus-visible,
   gap: 10px;
   width: 100%;
   padding: 13px 15px;
-  border: 1px solid var(--border-soft, #E4E4E7);
+  border: 1px solid var(--border-soft, #ebebeb);
   border-radius: 10px;
   background: var(--app-surface, #fff);
   text-align: left;
@@ -415,8 +415,8 @@ textarea:focus-visible,
 
 .manual-resolution-card:focus-visible,
 .manual-resolution-subject:focus-visible {
-  outline: 3px solid rgba(37, 99, 235, 0.32);
-  outline-offset: 2px;
+  outline: var(--focus-ring, 2px solid #2563eb);
+  outline-offset: var(--focus-ring-offset, 2px);
 }
 
 .manual-resolution-card--selected {
@@ -488,9 +488,10 @@ textarea:focus-visible,
 @media (min-width: 1440px) {
   .workspace {
     display: grid;
-    /* 46/54 floor @ 1440: main ~640px (pinned+MonHoc); tkb ~728px; below 46% AG drops a column */
-    grid-template-columns: minmax(0, 46%) minmax(0, 54%);
-    gap: 24px;
+    /* Panel-first split: the 7-day timetable buys width; grid columns stay resizable and
+       dense. fr units keep both columns inside the container once the gap is subtracted. */
+    grid-template-columns: minmax(0, 46fr) minmax(0, 54fr);
+    gap: 12px;
     align-items: start;
   }
 
@@ -559,9 +560,9 @@ textarea:focus-visible,
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  height: min(50vh, 480px);
-  min-height: 320px;
-  max-height: 480px;
+  /* The grid is the workspace, not a porthole: claim the viewport minus fixed header + page paddings */
+  height: calc(100dvh - 122px);
+  min-height: 360px;
   background: var(--app-surface);
   border: 1px solid var(--app-border-soft);
   border-radius: var(--app-radius);
@@ -631,69 +632,203 @@ textarea:focus-visible,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  min-height: 36px;
+  margin-bottom: 12px;
+  padding: 0 2px 10px;
+  border-bottom: 1px solid var(--border-soft, var(--border-soft-fallback));
 }
 
 .timetable-panel-title-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 10px 16px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 14px;
+  row-gap: 8px;
   width: 100%;
+  min-width: 0;
 }
 
+.timetable-panel-title-row > .subsection-title {
+  grid-column: 1;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+/* Stats scoreboard: the two numbers users glance at all session — big tabular
+   numerals over small labels, hairline between the pair */
 .timetable-panel-stats {
+  grid-column: 2;
+  justify-self: start;
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* Copy actions anchor the title row's right edge, above the table's corner download */
+.timetable-panel-actions {
+  grid-column: 3;
+  justify-self: end;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  margin-left: auto;
+  flex: 0 0 auto;
+  gap: 6px;
+}
+
+.timetable-panel-stats .timetable-stat + .timetable-stat {
+  padding-left: 12px;
+  border-left: 1px solid var(--border-soft, var(--border-soft-fallback));
 }
 
 .timetable-stat {
   display: inline-flex;
   align-items: baseline;
-  gap: 4px;
+  gap: 6px;
   font-size: 12px;
   color: var(--ink-2, var(--ink-2-fallback));
 }
 
 .timetable-stat-value {
-  font-size: 13px;
-  font-weight: 700;
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
   color: var(--ink, var(--ink-fallback));
+  font-variant-numeric: tabular-nums;
+}
+
+.timetable-stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-3, var(--ink-3-fallback));
+}
+
+/* Out-of-range credits: the pill is the alarm — warn tint owns the whole stat */
+.timetable-stat--warn {
+  gap: 6px;
+  padding: 3px 12px 3px 10px;
+  background: var(--warning-soft, var(--warning-soft-fallback));
+  border: 1px solid color-mix(in srgb, var(--warning, var(--warning-fallback)) 26%, transparent);
+  border-radius: 999px;
 }
 
 .timetable-stat--warn .timetable-stat-value,
 .timetable-stat--warn .timetable-stat-label {
-  color: var(--app-warning);
+  color: var(--warning, var(--warning-fallback));
 }
 
-.timetable-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 10px;
+.timetable-stat-icon.MuiSvgIcon-root {
+  flex-shrink: 0;
+  /* SVG baseline is its bottom edge; centering pairs it with the 16px value box */
+  align-self: center;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  color: var(--warning, var(--warning-fallback));
 }
 
-.timetable-toolbar-btn {
-  min-width: 44px !important;
-  min-height: 44px !important;
-  padding: 8px 12px !important;
-  text-transform: none !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  border-color: var(--border-soft, var(--border-soft-fallback)) !important;
-  color: var(--text-secondary, var(--ink-2-fallback)) !important;
+/* Icon-only panel actions: verbs live in tooltips + aria-labels; 32px targets, one filled primary */
+.timetable-action-btn {
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  border: 1px solid var(--border-soft, var(--border-soft-fallback)) !important;
+  border-radius: var(--radius-sm, 8px) !important;
+  color: var(--ink-2, var(--ink-2-fallback)) !important;
+  background: transparent !important;
+  transition:
+    color var(--duration-fast) var(--easing-default),
+    border-color var(--duration-fast) var(--easing-default),
+    background-color var(--duration-fast) var(--easing-default),
+    transform var(--duration-fast) var(--easing-default) !important;
 }
 
-.timetable-toolbar-btn:hover:not(:disabled) {
+.timetable-action-btn .MuiSvgIcon-root {
+  font-size: 16px;
+}
+
+.timetable-action-btn:hover:not(:disabled) {
   border-color: var(--blue, var(--blue-fallback)) !important;
   color: var(--blue, var(--blue-fallback)) !important;
   background: var(--blue-soft, var(--blue-soft-fallback)) !important;
+  transform: translateY(-1px);
 }
 
-.timetable-toolbar-btn:disabled {
+.timetable-action-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.timetable-action-btn:focus-visible {
+  outline: var(--focus-ring, 2px solid var(--blue, var(--blue-fallback)));
+  outline-offset: var(--focus-ring-offset, 2px);
+}
+
+.timetable-action-btn:disabled {
   opacity: 0.45;
+}
+
+/* One primary action per region: the script copy is the finish line (B2) */
+.timetable-action-btn--primary,
+.timetable-action-btn--primary:hover:not(:disabled) {
+  border-color: transparent !important;
+  color: #ffffff !important;
+  background: var(--blue, var(--blue-fallback)) !important;
+}
+
+.timetable-action-btn--primary:hover:not(:disabled) {
+  filter: brightness(0.92);
+}
+
+/* Download overlays the timetable's top-right corner; the frame (not the scrollable
+   wrapper) anchors it so horizontal scrolling never moves the button away */
+.tkb-frame {
+  position: relative;
+}
+
+.tkb-download-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  background: var(--surface, var(--surface-fallback)) !important;
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 767px) {
+  .schedule-panel-header {
+    align-items: flex-start;
+    padding-bottom: 8px;
+  }
+
+  .timetable-panel-title-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 8px;
+  }
+
+  .timetable-panel-stats {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .timetable-panel-actions {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .timetable-action-btn {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .tkb-download-btn {
+    top: 6px;
+    right: 6px;
+  }
+
+  #thoi-khoa-bieu.compact table thead tr th:last-child {
+    padding-right: 44px;
+  }
 }
 
 .timetable-empty-state {
@@ -743,7 +878,9 @@ textarea:focus-visible,
 
 @media (max-width: 760px) {
   .grid-frame {
-    min-height: 500px;
+    /* Viewport-relative so horizontal panning keeps a stable target (header height varies on mobile) */
+    height: min(70vh, 640px);
+    min-height: 320px;
   }
 }
 

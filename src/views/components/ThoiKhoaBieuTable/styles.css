@@ -9,6 +9,9 @@
 #thoi-khoa-bieu td {
   padding: 0.65em 0.5em;
   border: 1px solid var(--border-soft, var(--border-soft-fallback));
+  /* Codes like IT001.R11.MTUN.1 have no spaces; wrap them instead of overflowing the fixed layout */
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 #thoi-khoa-bieu table {
@@ -17,6 +20,8 @@
   min-width: 0;
   min-height: auto;
   overflow: hidden;
+  /* Fixed layout: weekday columns share width equally so the weekly rhythm stays stable */
+  table-layout: fixed;
   border: 1px solid var(--border-soft, var(--border-soft-fallback));
   border-radius: var(--radius-lg);
   border-spacing: 0;
@@ -24,14 +29,18 @@
 }
 
 #thoi-khoa-bieu table thead tr th {
-  width: 3%;
   color: var(--ink, var(--ink-fallback));
   background-color: var(--surface-muted, var(--surface-muted-fallback));
   text-align: center;
   font-size: 0.82rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+/* Time column stays distinct from the equal-width weekday columns (fixed layout reads first row) */
+#thoi-khoa-bieu table thead tr th:first-child {
+  width: 11em;
 }
 
 #thoi-khoa-bieu table tr td {
@@ -39,8 +48,7 @@
   border-bottom: 1px solid var(--border-soft, var(--border-soft-fallback));
 }
 
-#thoi-khoa-bieu table tr td.cell-tiet {
-  width: 10em;
+#thoi-khoa-bieu .cell-tiet {
   color: var(--ink-2, var(--ink-2-fallback));
   background: var(--surface-muted, var(--surface-muted-fallback)) !important;
   text-align: center;
@@ -49,7 +57,6 @@
 }
 
 #thoi-khoa-bieu .cell-class {
-  width: 230px;
   position: relative;
   color: var(--ink, var(--ink-fallback));
   background-color: var(--surface, var(--surface-fallback)) !important;
@@ -62,7 +69,7 @@
   display: block;
   margin: 0 auto 0.2em;
   font-size: 1rem;
-  color: rgb(234, 88, 12);
+  color: var(--warning, var(--warning-fallback));
 }
 
 #thoi-khoa-bieu .cell-class strong:first-of-type {
@@ -136,12 +143,19 @@
 }
 
 #thoi-khoa-bieu.compact table thead tr th {
-  width: auto;
   font-size: 0.72rem;
 }
 
-#thoi-khoa-bieu.compact table tr td.cell-tiet {
-  width: auto;
+/* Keep the CN label clear of the corner download button in narrow compact panels */
+#thoi-khoa-bieu.compact table thead tr th:last-child {
+  padding-right: 36px;
+}
+
+#thoi-khoa-bieu.compact table thead tr th:first-child {
+  width: 7.5em;
+}
+
+#thoi-khoa-bieu.compact .cell-tiet {
   font-size: 0.78rem;
 }
 
@@ -228,7 +242,7 @@
 }
 
 #thoi-khoa-bieu-export table thead tr th:first-child,
-#thoi-khoa-bieu-export table tr td.cell-tiet {
+#thoi-khoa-bieu-export .cell-tiet {
   width: 88px;
   color: #4a4a4a;
   background: #f4f4f4 !important;
@@ -260,7 +274,8 @@
   display: block;
   margin: 0 auto 0.2em;
   font-size: 12px;
-  color: rgb(234, 88, 12);
+  /* Export clone re-declares tokens as hex for html2canvas, so var() is capture-safe */
+  color: var(--warning, #b45309);
 }
 
 #thoi-khoa-bieu-export .cell-class strong:first-of-type {
@@ -274,9 +289,5 @@
 @media screen and (max-width: 1100px) {
   #thoi-khoa-bieu table {
     font-size: 0.9em;
-  }
-
-  #thoi-khoa-bieu table thead tr th {
-    width: 10ch;
   }
 }

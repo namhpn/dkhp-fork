@@ -121,8 +121,8 @@ const muiTheme = createTheme({
           overflow: 'hidden',
           transition: 'border-color 150ms ease, box-shadow 150ms ease',
           '&.Mui-focused': {
-            outline: '3px solid rgba(37, 99, 235, 0.32)',
-            outlineOffset: 2,
+            outline: 'var(--focus-ring, 2px solid #2563eb)',
+            outlineOffset: 'var(--focus-ring-offset, 2px)',
           },
           '&.Mui-disabled': {
             backgroundColor: '#f4f4f4',

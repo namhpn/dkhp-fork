@@ -1,4 +1,5 @@
 import {
+  CellKeyDownEvent,
   CellStyle,
   ColDef,
   DefaultMenuItem,
@@ -84,6 +85,16 @@ const HTGD_ORDER_PRIORITY: Record<ClassModel['HTGD'], number> = {
 const BOLD_CELL_STYLE: CellStyle = { fontWeight: 600 };
 
 const QUICK_FILTER_FIELDS = new Set(['MonHoc', 'MaLop', 'TenGV']);
+
+/**
+ * AG Grid's native row-click listener fires before React's delegated cell handlers, so
+ * event.stopPropagation() inside a rendered control cannot prevent onRowClicked. Row-level
+ * handlers must skip clicks that belong to embedded controls (the selection toggle).
+ */
+const isFromEmbeddedControl = (event: Event | undefined | null): boolean => {
+  const target = event?.target as HTMLElement | null;
+  return !!target?.closest('button, input, textarea, [contenteditable="true"]');
+};
 
 const getQuickFilterText = ({ colDef, value }: GetQuickFilterTextParams<ClassModel>): string => {
   const field = colDef.field;
@@ -258,7 +269,7 @@ const buildColumnDefs = (): GridOptions['columnDefs'] => [
   {
     headerName: 'MÃ LỚP',
     field: 'MaLop',
-    width: 160,
+    width: 180,
     minWidth: 120,
     filter: 'agTextColumnFilter',
   },
@@ -332,11 +343,13 @@ const buildColumnDefs = (): GridOptions['columnDefs'] => [
     filter: false,
   },
   {
+    // So sánh lớp cần Thứ/Tiết/GV; Sỉ số chỉ thêm nhiễu — mở lại qua menu cột
     headerName: 'SỈ SỐ',
     field: 'SiSo',
     width: 72,
     minWidth: 64,
     filter: false,
+    hide: true,
   },
   {
     headerName: 'HTGD',
@@ -352,6 +365,7 @@ const buildColumnDefs = (): GridOptions['columnDefs'] => [
     field: 'NgonNgu',
     width: 96,
     minWidth: 80,
+    hide: true,
   },
   {
     headerName: 'HỆ ĐT',
@@ -426,12 +440,15 @@ const defaultColDef: GridOptions['defaultColDef'] = {
   filter: true,
   floatingFilter: false,
   filterParams: { buttons: ['reset'], defaultToNothingSelected: true },
-  menuTabs: ['generalMenuTab'],
+  // Filter + columns tabs stay reachable from the visible header menu, not just the right-click
+  // context menu; columnsMenuTab is the only way to re-show default-hidden columns (e.g. SỈ SỐ)
+  menuTabs: ['generalMenuTab', 'filterMenuTab', 'columnsMenuTab'],
   getQuickFilterText,
 };
 
 function createAutoGroupColumnDef(getTokens: () => string[]): GridOptions['autoGroupColumnDef'] {
   return {
+    headerName: 'Nhóm',
     sort: 'asc',
     width: 120,
     maxWidth: 180,
@@ -670,11 +687,37 @@ export const useGridOptions = () => {
     [agGridColumnState],
   );
 
-  const onRowClicked = useCallback(({ node }: RowClickedEvent<ClassModel>) => {
-    if (node.group) {
-      node.setExpanded(!node.expanded);
-    }
-  }, []);
+  const onRowClicked = useCallback(
+    ({ node, event }: RowClickedEvent<ClassModel>) => {
+      if (isFromEmbeddedControl(event as Event | undefined)) return;
+      if (node.group) {
+        node.setExpanded(!node.expanded);
+        return;
+      }
+      // One click grammar: leaf rows toggle selection (conflicting adds are blocked downstream)
+      if (node.data && node.selectable) {
+        onToggleRowSelection(node.data);
+      }
+    },
+    [onToggleRowSelection],
+  );
+
+  const onCellKeyDown = useCallback(
+    (event: CellKeyDownEvent<ClassModel>) => {
+      const nativeEvent = event.event as KeyboardEvent | undefined;
+      if (!nativeEvent || nativeEvent.defaultPrevented) return;
+      // Let embedded controls (the selection toggle button) keep native key activation
+      if (isFromEmbeddedControl(nativeEvent)) return;
+      if (nativeEvent.key !== ' ' && nativeEvent.key !== 'Enter') return;
+
+      const node = event.node;
+      if (!node || node.group || !node.data || !node.selectable) return;
+
+      nativeEvent.preventDefault();
+      onToggleRowSelection(node.data);
+    },
+    [onToggleRowSelection],
+  );
 
   const onQuickFilterChange = useCallback((value: string) => {
     setQuickFilterText(value);
@@ -840,6 +883,7 @@ export const useGridOptions = () => {
     onGridReady,
     onFirstDataRendered,
     onRowClicked,
+    onCellKeyDown,
     rowData,
     getRowId,
     gridContext,

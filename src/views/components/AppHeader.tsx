@@ -7,7 +7,7 @@ function AppHeader() {
   return (
     <header className="app-header">
       <Typography component="h1" className="app-title">
-        Courses
+        Course Planner
       </Typography>
       <ModeTabs />
       <HeaderFileControl />
