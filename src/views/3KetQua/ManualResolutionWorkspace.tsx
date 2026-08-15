@@ -144,7 +144,10 @@ export function ManualResolutionWorkspace() {
     }
   };
 
-  const activeCombos = activeSubject ? subjectCombos[activeSubject] ?? [] : [];
+  const activeCombos = useMemo(
+    () => (activeSubject ? subjectCombos[activeSubject] ?? [] : []),
+    [activeSubject, subjectCombos],
+  );
   const activeCourseName = useMemo(
     () => (activeCombos.length > 0 ? getSubjectCourseName(activeCombos, classByMaLop) : null),
     [activeCombos, classByMaLop],

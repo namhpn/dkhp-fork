@@ -1,6 +1,6 @@
+import ExcelJS from 'exceljs';
 import { enqueueSnackbar } from 'notistack';
 import { ChangeEventHandler, useCallback, useRef, useState } from 'react';
-import XLSX from 'xlsx';
 import { useTkbStore } from '../../zus';
 import { arrayToTkbObject, sheetJSFT, toDateTimeString } from './utils';
 
@@ -15,16 +15,28 @@ export function useExcelImport() {
       setIsImporting(true);
 
       const reader = new FileReader();
-      const rABS = !!reader.readAsBinaryString;
 
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         try {
-          const bstr = e?.target?.result;
-          const wb = XLSX.read(bstr, { type: rABS ? 'binary' : 'array' });
-          const wsLyThuyet = wb.Sheets[wb.SheetNames[0]];
-          const wsThucHanh = wb.Sheets[wb.SheetNames[1]];
-          const dataLyThuyet = XLSX.utils.sheet_to_json<any[][]>(wsLyThuyet, { header: 1 });
-          const dataThucHanh = XLSX.utils.sheet_to_json<any[][]>(wsThucHanh, { header: 1 });
+          const buffer = e?.target?.result as ArrayBuffer;
+          const wb = new ExcelJS.Workbook();
+          await wb.xlsx.load(buffer);
+
+          const wsLyThuyet = wb.worksheets[0];
+          const wsThucHanh = wb.worksheets[1];
+
+          const sheetToRows = (ws: ExcelJS.Worksheet): any[][] => {
+            const rows: any[][] = [];
+            ws.eachRow({ includeEmpty: false }, (row) => {
+              const vals = row.values as any[];
+              // row.values is 1-indexed; drop the leading undefined
+              rows.push(vals.slice(1));
+            });
+            return rows;
+          };
+
+          const dataLyThuyet = sheetToRows(wsLyThuyet);
+          const dataThucHanh = wsThucHanh ? sheetToRows(wsThucHanh) : [];
           const dataInArray = [...dataLyThuyet, ...dataThucHanh].filter((row) => typeof row[0] === 'number');
 
           if (!dataInArray.length) {
@@ -51,8 +63,7 @@ export function useExcelImport() {
         enqueueSnackbar('Không đọc được file Excel.', { variant: 'error' });
       };
 
-      if (rABS) reader.readAsBinaryString(file);
-      else reader.readAsArrayBuffer(file);
+      reader.readAsArrayBuffer(file);
     },
     [isImporting, setDataExcel],
   );

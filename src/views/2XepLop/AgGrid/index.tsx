@@ -27,6 +27,8 @@ function AgGrid() {
     visibleCount,
     totalCount,
     hasNoVisibleRows,
+    isExternalFilterPresent,
+    doesExternalFilterPass,
   } = useGridOptions();
 
   return (
@@ -37,8 +39,9 @@ function AgGrid() {
           className="grid-search-input"
           value={quickFilterText}
           onChange={(event) => onQuickFilterChange(event.target.value)}
-          placeholder="Tìm lớp, môn học, giảng viên…"
-          aria-label="Tìm lớp, môn học, giảng viên"
+          placeholder="Tìm theo lớp, môn, GV… (phân cách bằng ;)"
+          aria-label="Tìm theo lớp, môn, GV… (phân cách bằng ;)"
+          title="Tìm theo lớp, môn, GV… (phân cách bằng ;)"
         />
         <span className="grid-result-summary" aria-live="polite">
           {visibleCount} / {totalCount} lớp
@@ -68,6 +71,8 @@ function AgGrid() {
           rowSelection="multiple"
           groupSelectsChildren={true}
           groupSelectsFiltered={true}
+          isExternalFilterPresent={isExternalFilterPresent}
+          doesExternalFilterPass={doesExternalFilterPass}
           getMainMenuItems={getMainMenuItems}
           getContextMenuItems={getContextMenuItems}
           rowGroupPanelShow="never"
