@@ -12,16 +12,7 @@ import { selectIsChiVeTkb, selectSelectedClasses, selectSelectedClassesOutput, u
 import { usePhanLoaiHocTrenTruongContext } from './hooks';
 import './styles.css';
 
-const randomColors = [
-  '#2563EB',
-  '#1D4ED8',
-  '#0F766E',
-  '#047857',
-  '#B45309',
-  '#B91C1C',
-  '#52525B',
-  '#18181B',
-] as const;
+const randomColors = ['#2563EB', '#1D4ED8', '#0F766E', '#047857', '#B45309', '#B91C1C', '#52525B', '#18181B'] as const;
 
 type Props = {
   data: ClassModel;
@@ -71,7 +62,7 @@ export const [ClassCellContext, useClassCellContext] = constate(() => {
 });
 
 function ClassCell({ data, isOutsideTable = false, forExport = false, ...restProps }: Props) {
-  const { MaLop, NgonNgu, TenMH, TenGV, PhongHoc, NBD, NKT, Thu, Tiet } = data;
+  const { MaLop, NgonNgu, TenMH, TenGV, PhongHoc, KhoaHoc, NBD, NKT, Thu, Tiet } = data;
   const removeClasses = useTkbStore((s) => s.removeClasses);
   const selectedClasses = useTkbStore(selectSelectedClasses);
   const isChiVeTkb = useTkbStore(selectIsChiVeTkb);
@@ -183,6 +174,12 @@ function ClassCell({ data, isOutsideTable = false, forExport = false, ...restPro
       <strong>{TenGV}</strong>
       <br />
       {PhongHoc}
+      {String(KhoaHoc ?? '').trim() !== '' && (
+        <>
+          <br />
+          <span className="cell-class-khoahoc">Chỉ áp dụng cho khoá {KhoaHoc}</span>
+        </>
+      )}
       <br />
       {forExport && (
         <>

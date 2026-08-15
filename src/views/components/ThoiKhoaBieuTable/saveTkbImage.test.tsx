@@ -31,7 +31,13 @@ test('saveTkbImageToComputer captures export wrapper with hex-safe html2canvas o
   mockedHtml2canvas.mockResolvedValue(canvas as never);
 
   let save!: () => Promise<void>;
-  render(<ExportHarness onReady={(fn) => { save = fn; }} />);
+  render(
+    <ExportHarness
+      onReady={(fn) => {
+        save = fn;
+      }}
+    />,
+  );
 
   await waitFor(() => expect(save).toBeDefined());
   await save();
@@ -47,18 +53,19 @@ test('saveTkbImageToComputer captures export wrapper with hex-safe html2canvas o
 });
 
 test('saveTkbImageToComputer surfaces a snackbar when html2canvas rejects oklch colors', async () => {
-  mockedHtml2canvas.mockRejectedValue(
-    new Error('Attempting to parse an unsupported color function "oklch"'),
-  );
+  mockedHtml2canvas.mockRejectedValue(new Error('Attempting to parse an unsupported color function "oklch"'));
 
   let save!: () => Promise<void>;
-  render(<ExportHarness onReady={(fn) => { save = fn; }} />);
+  render(
+    <ExportHarness
+      onReady={(fn) => {
+        save = fn;
+      }}
+    />,
+  );
 
   await waitFor(() => expect(save).toBeDefined());
   await save();
 
-  expect(mockedEnqueueSnackbar).toHaveBeenCalledWith(
-    'Tải ảnh TKB thất bại, vui lòng thử lại.',
-    { variant: 'error' },
-  );
+  expect(mockedEnqueueSnackbar).toHaveBeenCalledWith('Tải ảnh TKB thất bại, vui lòng thử lại.', { variant: 'error' });
 });

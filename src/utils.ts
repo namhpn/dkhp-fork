@@ -21,8 +21,8 @@ export function getTongSoTcJudgement(tongSoTC: number) {
     tongSoTC < 14
       ? 'Chưa đạt số TC quy định: 14'
       : tongSoTC > 24
-      ? 'Vượt quá số TC quy định: 24'
-      : 'Thỏa mãn số TC quy định 14-24';
+        ? 'Vượt quá số TC quy định: 24'
+        : 'Thỏa mãn số TC quy định 14-24';
   const isOk = tongSoTC >= 14 && tongSoTC <= 24;
   return {
     isOk,
@@ -43,9 +43,81 @@ export const getBuoiFromTiet = (tiet: ClassModel['Tiet']): Buoi => {
 };
 
 export const getDanhSachTiet = (tiet: ClassModel['Tiet']): string[] => {
-  if (tiet.includes(',')) return tiet.split(',');
-  if (tiet === '*') return ['*'];
-  return tiet.split('');
+  const raw = tiet.trim();
+  if (raw.includes(',')) return raw.split(',').map((s) => s.trim()).filter(Boolean).map((s) => s === '0' ? '10' : s);
+  if (raw === '*') return ['*'];
+  const s = raw.replace(/\s+/g, '');
+  if (!s) return [];
+  if (s === '0') return ['10'];
+  const consecutive = parseConsecutiveTietString(s);
+  if (consecutive) return consecutive;
+  return parseGenericTietString(s);
+};
+
+const parseConsecutiveTietString = (s: string): string[] | null => {
+  const candidates: string[][] = [];
+  for (let len = 1; len <= 2 && len <= s.length; len++) {
+    const prefix = s.slice(0, len);
+    if (prefix === '0') continue;
+    if (!/^\d+$/.test(prefix)) continue;
+    const first = parseInt(prefix, 10);
+    if (first < 1 || first > 14) continue;
+    if (String(first) !== prefix) continue;
+    const seq: string[] = [prefix];
+    let pos = len;
+    let cur = first;
+    let ok = true;
+    while (pos < s.length) {
+      const nxt = cur + 1;
+      if (nxt > 14) { ok = false; break; }
+      const nxtStr = String(nxt);
+      if (s.slice(pos, pos + nxtStr.length) !== nxtStr) { ok = false; break; }
+      seq.push(nxtStr);
+      pos += nxtStr.length;
+      cur = nxt;
+    }
+    if (ok && pos === s.length) candidates.push(seq);
+  }
+  if (candidates.length === 0) return null;
+  candidates.sort((a, b) => b.length - a.length);
+  return candidates[0];
+};
+
+const parseGenericTietString = (s: string): string[] => {
+  const memo = new Map<number, string[] | null>();
+  const dfs = (pos: number): string[] | null => {
+    if (pos === s.length) return [];
+    if (memo.has(pos)) return memo.get(pos)!;
+    const ch = s[pos];
+    let best: string[] | null = null;
+    const tryCandidate = (cand: string[] | null) => {
+      if (cand === null) return;
+      if (best === null || cand.length > best.length) best = cand;
+    };
+    if (ch === '0') {
+      const rest = dfs(pos + 1);
+      if (rest !== null) tryCandidate(['10', ...rest]);
+    } else if (ch >= '1' && ch <= '9') {
+      const restSingle = dfs(pos + 1);
+      if (restSingle !== null) tryCandidate([ch, ...restSingle]);
+      if (pos + 1 < s.length) {
+        const two = s.slice(pos, pos + 2);
+        const val = parseInt(two, 10);
+        if (val >= 10 && val <= 14 && String(val) === two) {
+          const restTwo = dfs(pos + 2);
+          if (restTwo !== null) tryCandidate([two, ...restTwo]);
+        }
+      }
+    } else if (ch === ' ' || ch === '\t') {
+      const rest = dfs(pos + 1);
+      if (rest !== null) tryCandidate(rest);
+    }
+    memo.set(pos, best);
+    return best;
+  };
+  const result = dfs(0);
+  if (result) return result;
+  return s.split('').map((c) => (c === '0' ? '10' : c)).filter(Boolean);
 };
 
 /**

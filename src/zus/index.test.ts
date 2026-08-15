@@ -1,9 +1,4 @@
-import {
-  getUrlResolvedMaLop,
-  selectActiveTimetableClasses,
-  selectIsChiVeTkb,
-  useTkbStore,
-} from './index';
+import { getUrlResolvedMaLop, selectActiveTimetableClasses, selectIsChiVeTkb, useTkbStore } from './index';
 import { SAMPLE_CLASSES, SAMPLE_DATA_EXCEL } from '../testFixtures';
 import { ClassModel } from '../types';
 

@@ -1,4 +1,4 @@
-import { ColumnApi, GridApi } from 'ag-grid-community';
+import { GridApi } from 'ag-grid-community';
 import { partition } from 'lodash';
 import { memoize } from 'proxy-memoize';
 import { Mutate, StoreApi, create } from 'zustand';
@@ -17,6 +17,22 @@ import {
   parseAndValidate,
 } from '../manualInput';
 
+/**
+ * Fix corrupted ThucHanh values from persisted localStorage.
+ * Sheet 1 (LT) rows may have had wrong ThucHanh values. Rows from Sheet 1
+ * should always have ThucHanh=0. Heuristic: a MaLop with >2 dot-separated
+ * parts whose last part is purely numeric is a TH practice variant (e.g.
+ * IT003.O21.1); everything else is LT.
+ */
+function migrateThucHanh(data: ClassModelOriginal[]): ClassModelOriginal[] {
+  return data.map((row) => {
+    const parts = row.MaLop.split('.');
+    const lastPart = parts[parts.length - 1];
+    const looksLikeTH = parts.length > 2 && /^\d+$/.test(lastPart);
+    return looksLikeTH ? row : { ...row, ThucHanh: 0 };
+  });
+}
+
 type TkbStore = {
   dataExcel: {
     fileName: string;
@@ -27,7 +43,7 @@ type TkbStore = {
   } | null;
 
   selectedClasses: ClassModel[];
-  agGridColumnState: ReturnType<ColumnApi['getColumnState']> | null;
+  agGridColumnState: ReturnType<GridApi['getColumnState']> | null;
   agGridFilterModel: ReturnType<GridApi['getFilterModel']> | null;
 
   // Manual class-code mode for timetable/script output
@@ -117,6 +133,16 @@ export const useTkbStore = create<TkbStore>()(
     {
       name: 'tkb-state-storage',
       storage: createJSONStorage(() => localStorage),
+      version: 2,
+      migrate: (persisted: unknown, version: number) => {
+        if (version < 2) {
+          const state = persisted as TkbStore;
+          if (state.dataExcel?.data) {
+            state.dataExcel.data = migrateThucHanh(state.dataExcel.data);
+          }
+        }
+        return persisted as TkbStore;
+      },
     },
   ),
 );

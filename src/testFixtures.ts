@@ -23,7 +23,9 @@ const BASE_CLASS: Omit<ClassModel, 'MaLop' | 'MaMH' | 'ThucHanh'> = {
   NgonNgu: 'VN',
 };
 
-export function makeClass(overrides: Partial<ClassModel> & Pick<ClassModel, 'MaLop' | 'MaMH' | 'ThucHanh'>): ClassModel {
+export function makeClass(
+  overrides: Partial<ClassModel> & Pick<ClassModel, 'MaLop' | 'MaMH' | 'ThucHanh'>,
+): ClassModel {
   return { ...BASE_CLASS, ...overrides };
 }
 

@@ -27,11 +27,11 @@ export function arrayToTkbObject(array: any[]): ClassModelOriginal {
     SoTc: parseInt(array[7]),
     ThucHanh: array[8],
     HTGD: array[9],
-    Thu: String(array[10]),
-    Tiet: String(array[11]),
+    Thu: array[10] == null ? '*' : String(array[10]),
+    Tiet: array[11] == null ? '*' : String(array[11]),
     CachTuan: String(array[12]),
     PhongHoc: array[13],
-    KhoaHoc: String(array[14]),
+    KhoaHoc: array[14] == null || String(array[14]).trim() === '' ? '' : String(array[14]).trim(),
     HocKy: String(array[15]),
     NamHoc: String(array[16]),
     HeDT: array[17],
@@ -64,7 +64,9 @@ export function formatTimestampToString(timestamp: number): string {
 }
 
 // Get formatted lastUpdate string from dataExcel (backward compatible)
-export function getLastUpdateString(dataExcel: { lastUpdate?: string; lastUpdateTimestamp?: number } | null): string | undefined {
+export function getLastUpdateString(
+  dataExcel: { lastUpdate?: string; lastUpdateTimestamp?: number } | null,
+): string | undefined {
   if (!dataExcel) return undefined;
   if (dataExcel.lastUpdateTimestamp !== undefined) {
     return formatTimestampToString(dataExcel.lastUpdateTimestamp);

@@ -10,8 +10,7 @@ import ConfirmDialog from './ConfirmDialog';
 
 type PendingAction = 'remove' | null;
 
-const DESTRUCTIVE_BODY =
-  'Thao tác này sẽ xóa các lớp đang chọn và kết quả đã ghép từ mã lớp.';
+const DESTRUCTIVE_BODY = 'Thao tác này sẽ xóa các lớp đang chọn và kết quả đã ghép từ mã lớp.';
 
 function HeaderFileControl() {
   const dataExcel = useTkbStore(selectDataExcel);
@@ -24,9 +23,7 @@ function HeaderFileControl() {
 
   const restoreFocusAfterRemove = () => {
     requestAnimationFrame(() => {
-      const uploadBtn = document.querySelector<HTMLButtonElement>(
-        '.header-file-control button:not([disabled])',
-      );
+      const uploadBtn = document.querySelector<HTMLButtonElement>('.header-file-control button:not([disabled])');
       const mainWorkspace = document.getElementById('main-workspace');
       (uploadBtn ?? mainWorkspace)?.focus();
     });
@@ -65,12 +62,7 @@ function HeaderFileControl() {
       />
 
       {isImporting ? (
-        <Button
-          variant="outlined"
-          disabled
-          aria-busy="true"
-          startIcon={<CircularProgress size={14} color="inherit" />}
-        >
+        <Button variant="outlined" disabled aria-busy="true" startIcon={<CircularProgress size={14} color="inherit" />}>
           Đang đọc file…
         </Button>
       ) : !hasFile ? (
@@ -79,19 +71,10 @@ function HeaderFileControl() {
         </Button>
       ) : (
         <div className="header-file-control-loaded">
-          <Typography
-            className="header-file-control-filename"
-            noWrap
-            title={dataExcel?.fileName}
-            component="span"
-          >
+          <Typography className="header-file-control-filename" noWrap title={dataExcel?.fileName} component="span">
             {dataExcel?.fileName}
           </Typography>
-          <IconButton
-            className="header-file-remove-btn"
-            aria-label="Xóa file"
-            onClick={handleRemoveClick}
-          >
+          <IconButton className="header-file-remove-btn" aria-label="Xóa file" onClick={handleRemoveClick}>
             <CloseIcon fontSize="small" />
           </IconButton>
         </div>
