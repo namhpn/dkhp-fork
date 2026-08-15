@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import App from './App';
 
-test('renders Courses app', () => {
+test('renders the app title', () => {
   const { getByText } = render(<App />);
-  expect(getByText(/Courses/i)).toBeInTheDocument();
+  expect(getByText(/Course Planner/i)).toBeInTheDocument();
 });

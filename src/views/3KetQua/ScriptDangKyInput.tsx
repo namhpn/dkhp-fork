@@ -21,6 +21,8 @@ const getReadonlySx = (theme: Theme) => ({
 });
 
 const MANUAL_PLACEHOLDER = 'VD: EC201, IT003\nHoặc mỗi mã một dòng';
+/** Grid-mode readonly mirror: empty selection shows a hint, never fake data that could be copied */
+const GRID_EMPTY_PLACEHOLDER = 'Chưa có lớp nào';
 
 const useCommon = () => {
   const cacLop = useTkbStore(selectPhanLoaiHocTrenTruong);
@@ -34,7 +36,7 @@ const useCommon = () => {
     if (isChiVeTkb) {
       return textareaChiVeTkb || '';
     }
-    if (!hasLop) return 'Chưa có lớp nào';
+    if (!hasLop) return '';
     return listMaLop.join(',');
   })();
 
@@ -76,7 +78,7 @@ export function DanhSachLopInput() {
         error={hasErrors}
         fullWidth
         multiline
-        placeholder={isChiVeTkb ? MANUAL_PLACEHOLDER : undefined}
+        placeholder={isChiVeTkb ? MANUAL_PLACEHOLDER : GRID_EMPTY_PLACEHOLDER}
         inputProps={{
           readOnly: useToolXepLop,
           style: { resize: 'vertical' },

@@ -133,12 +133,21 @@ export const useTkbStore = create<TkbStore>()(
     {
       name: 'tkb-state-storage',
       storage: createJSONStorage(() => localStorage),
-      version: 2,
+      version: 3,
       migrate: (persisted: unknown, version: number) => {
         if (version < 2) {
           const state = persisted as TkbStore;
           if (state.dataExcel?.data) {
             state.dataExcel.data = migrateThucHanh(state.dataExcel.data);
+          }
+        }
+        if (version < 3) {
+          // KHÓA HỌC became a default-visible column; saved layouts that hid it must not mask that
+          const state = persisted as TkbStore;
+          if (Array.isArray(state.agGridColumnState)) {
+            state.agGridColumnState = state.agGridColumnState.map((column) =>
+              column.colId === 'KhoaHoc' ? { ...column, hide: false } : column,
+            );
           }
         }
         return persisted as TkbStore;

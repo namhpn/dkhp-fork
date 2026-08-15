@@ -1,6 +1,8 @@
 import React, { useRef } from 'react';
 import { selectIsChiVeTkb, useTkbStore } from '../../zus';
 
+const WORKSPACE_PANEL_ID = 'workspace-panel';
+
 type TabConfig = {
   id: string;
   label: string;
@@ -22,7 +24,7 @@ function ModeTabs() {
     },
     {
       id: 'mode-tab-manual',
-      label: 'Nhập mã lớp',
+      label: 'Nhập mã',
       selected: isChiVeTkb,
       onSelect: () => setIsChiVeTkb(true),
     },
@@ -54,6 +56,7 @@ function ModeTabs() {
             role="tab"
             id={tab.id}
             aria-selected={tab.selected}
+            aria-controls={WORKSPACE_PANEL_ID}
             tabIndex={tab.selected ? 0 : -1}
             className={`mode-tab${tab.selected ? ' mode-tab--active' : ''}`}
             onClick={tab.onSelect}

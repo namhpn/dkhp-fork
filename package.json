@@ -41,7 +41,7 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,md}\"",
     "lint:fix": "eslint --fix --color \"./src/**/*.{js,jsx,ts,tsx}\"",
     "build:strict": "cross-env CI=true GENERATE_SOURCEMAP=false react-scripts build",
-    "deploy": "npx wrangler pages deploy build --project-name=${CLOUDFLARE_PAGES_PROJECT_NAME:-dkhp-fork} --branch=${CF_PAGES_BRANCH:-main}"
+    "deploy": "npm run build && wrangler deploy"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -67,7 +67,8 @@
     "@types/react-router-dom": "^5.1.8",
     "cross-env": "^7.0.3",
     "prettier": "^3.9.6",
-    "typescript": "~5.7"
+    "typescript": "~5.7",
+    "wrangler": "^4.123.0"
   },
   "packageManager": "npm@10.8.1"
 }

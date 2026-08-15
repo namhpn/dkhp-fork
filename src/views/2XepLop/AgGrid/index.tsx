@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { ClassModel } from 'types';
 import './styles.css';
 import { useGridOptions } from './utils';
+
+const SEARCH_PLACEHOLDER = 'Tìm theo lớp, môn, GV… (phân cách bằng ;)';
 
 function AgGrid() {
   const {
@@ -19,6 +21,7 @@ function AgGrid() {
     onGridReady,
     onFirstDataRendered,
     onRowClicked,
+    onCellKeyDown,
     rowData,
     getRowId,
     gridContext,
@@ -31,20 +34,48 @@ function AgGrid() {
     doesExternalFilterPass,
   } = useGridOptions();
 
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // "/" focuses search from anywhere outside a text field
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== '/' || event.ctrlKey || event.metaKey || event.altKey) return;
+      const target = event.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)
+      ) {
+        return;
+      }
+      event.preventDefault();
+      searchInputRef.current?.focus();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <div className="grid-with-toolbar">
       <div className="grid-toolbar">
-        <input
-          type="search"
-          className="grid-search-input"
-          value={quickFilterText}
-          onChange={(event) => onQuickFilterChange(event.target.value)}
-          placeholder="Tìm theo lớp, môn, GV… (phân cách bằng ;)"
-          aria-label="Tìm theo lớp, môn, GV… (phân cách bằng ;)"
-          title="Tìm theo lớp, môn, GV… (phân cách bằng ;)"
-        />
+        <div className="grid-search-wrap">
+          <input
+            ref={searchInputRef}
+            type="search"
+            className="grid-search-input"
+            value={quickFilterText}
+            onChange={(event) => onQuickFilterChange(event.target.value)}
+            placeholder={SEARCH_PLACEHOLDER}
+            aria-label={SEARCH_PLACEHOLDER}
+            title={SEARCH_PLACEHOLDER}
+          />
+          <span className="grid-search-kbd" aria-hidden="true">
+            /
+          </span>
+        </div>
         <span className="grid-result-summary" aria-live="polite">
-          {visibleCount} / {totalCount} lớp
+          {visibleCount === totalCount
+            ? `${totalCount} lớp`
+            : `${visibleCount} lớp phù hợp / ${totalCount} lớp`}
         </span>
       </div>
 
@@ -89,6 +120,7 @@ function AgGrid() {
           onFirstDataRendered={onFirstDataRendered}
           getRowId={getRowId}
           onRowClicked={onRowClicked}
+          onCellKeyDown={onCellKeyDown}
         />
       </div>
     </div>

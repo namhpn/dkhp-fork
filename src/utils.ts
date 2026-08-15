@@ -35,6 +35,21 @@ export function extractListMaLop(classes: ClassModel[]) {
   return unique.map((it) => it.MaLop);
 }
 
+export type TimetableSummary = {
+  classCount: number;
+  tongSoTC: number;
+};
+
+/** Aggregate for the timetable panel: unique classes and total credits. */
+export function getTimetableSummary(classes: ClassModel[]): TimetableSummary {
+  const listMaLop = extractListMaLop(classes);
+  const tongSoTC = calcTongSoTC(classes);
+  return {
+    classCount: listMaLop.length,
+    tongSoTC,
+  };
+}
+
 export const getBuoiFromTiet = (tiet: ClassModel['Tiet']): Buoi => {
   if (tiet.includes('11')) return Buoi.Toi;
   if (/1|2|3|4|5/g.test(tiet)) return Buoi.Sang;

@@ -34,10 +34,10 @@ const GetCell = ({ data, forExport }: { data: any; forExport?: boolean }) => {
 function RowHocTrenTruong({ row, index, forExport }: { row: RowData; index: number; forExport?: boolean }) {
   return (
     <tr>
-      <td className="cell-tiet">
+      <th scope="row" className="cell-tiet">
         Tiết {index === tietOnline.index ? tietOnline.stringValue : index + 1} <br />
         {timeLookup[index]}
-      </td>
+      </th>
       {[2, 3, 4, 5, 6, 7].map((t) => (
         <GetCell key={t} data={row['Thu' + t]} forExport={forExport} />
       ))}

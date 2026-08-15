@@ -31,6 +31,34 @@
   color: var(--ink-3, var(--ink-3-fallback));
 }
 
+/* Search box + "/" accelerator affordance */
+.grid-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.grid-search-wrap .grid-search-input {
+  width: 100%;
+  padding-right: 34px;
+}
+
+.grid-search-kbd {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  padding: 1px 6px;
+  color: var(--ink-3, var(--ink-3-fallback));
+  background: var(--surface, var(--surface-fallback));
+  border: 1px solid var(--border-soft, var(--border-soft-fallback));
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
 .grid-result-summary {
   flex-shrink: 0;
   color: var(--ink-2, var(--ink-2-fallback));
@@ -117,8 +145,9 @@
   --ag-background-color: var(--surface, var(--surface-fallback));
   --ag-header-background-color: var(--surface-muted, var(--surface-muted-fallback));
   --ag-odd-row-background-color: var(--bg, var(--bg-fallback));
-  --ag-row-hover-color: var(--blue-soft, var(--blue-soft-fallback));
-  --ag-selected-row-background-color: #dbeafe;
+  /* Hover is neutral; only selection earns the blue tint (selected must read stronger than hover) */
+  --ag-row-hover-color: var(--surface-muted, var(--surface-muted-fallback));
+  --ag-selected-row-background-color: var(--blue-soft, var(--blue-soft-fallback));
   --ag-alpine-active-color: var(--blue, var(--blue-fallback));
   --ag-border-color: var(--border-soft, var(--border-soft-fallback));
   --ag-header-column-separator-color: var(--border-soft, var(--border-soft-fallback));
@@ -148,7 +177,7 @@
   padding-left: 12px;
   padding-right: 12px;
   color: var(--ink, var(--ink-fallback));
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   border-right: 1px solid var(--border-soft, var(--border-soft-fallback));
@@ -233,6 +262,7 @@
   -webkit-font-smoothing: antialiased;
   content: var(--ag-icon-font-code-pin, "\f124");
 }
+
 
 
 

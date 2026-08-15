@@ -76,10 +76,10 @@
   --duration-fast: 120ms;
   --duration-normal: 150ms;
   --easing-default: ease;
-  --easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* ── Focus ── */
-  --focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.32);
+  /* Solid ring: keeps ≥3:1 non-text contrast (WCAG 1.4.11 / 2.4.11); alpha rings fail it */
+  --focus-ring: 2px solid var(--blue, var(--blue-fallback));
   --focus-ring-offset: 2px;
 
   /* ── Layout ── */
