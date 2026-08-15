@@ -92,6 +92,32 @@
   opacity: 1;
 }
 
+#thoi-khoa-bieu .cell-class-khoahoc {
+  display: inline-block;
+  margin-top: 0.3em;
+  padding: 0.15em 0.5em;
+  border-radius: 999px;
+  background: var(--surface-muted, var(--surface-muted-fallback));
+  color: var(--ink-2, var(--ink-2-fallback));
+  font-size: 0.78em;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+#thoi-khoa-bieu-export .cell-class-khoahoc {
+  display: inline-block;
+  margin-top: 0.3em;
+  padding: 0.15em 0.5em;
+  border-radius: 999px;
+  background: #f4f4f4;
+  color: #4a4a4a;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
 .MuiTooltip-tooltipPlacementBottom {
   margin-top: 0 !important;
 }

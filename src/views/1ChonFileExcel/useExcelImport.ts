@@ -35,9 +35,13 @@ export function useExcelImport() {
             return rows;
           };
 
-          const dataLyThuyet = sheetToRows(wsLyThuyet);
-          const dataThucHanh = wsThucHanh ? sheetToRows(wsThucHanh) : [];
-          const dataInArray = [...dataLyThuyet, ...dataThucHanh].filter((row) => typeof row[0] === 'number');
+          const dataLyThuyet = sheetToRows(wsLyThuyet).map((row) => ({ row, fromSheet: 'LT' as const }));
+          const dataThucHanh = wsThucHanh
+            ? sheetToRows(wsThucHanh).map((row) => ({ row, fromSheet: 'TH' as const }))
+            : [];
+          const dataInArray = [...dataLyThuyet, ...dataThucHanh].filter(
+            ({ row }) => typeof row[0] === 'number',
+          );
 
           if (!dataInArray.length) {
             enqueueSnackbar('File không đúng định dạng thời khóa biểu.', { variant: 'error' });
@@ -46,7 +50,16 @@ export function useExcelImport() {
 
           const now = new Date();
           setDataExcel({
-            data: dataInArray.map((array) => arrayToTkbObject(array)),
+            data: dataInArray.map(({ row, fromSheet }) => {
+              const obj = arrayToTkbObject(row);
+              // Sheet origin is authoritative: Sheet 1 is always LT, Sheet 2 trusts column value
+              if (fromSheet === 'LT') {
+                obj.ThucHanh = 0;
+              } else {
+                obj.ThucHanh = Number(obj.ThucHanh) || 1;
+              }
+              return obj;
+            }),
             fileName: file.name,
             lastUpdateTimestamp: now.getTime(),
             lastUpdate: toDateTimeString(now),

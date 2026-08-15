@@ -382,8 +382,9 @@ const buildColumnDefs = (): GridOptions['columnDefs'] => [
   {
     headerName: 'KHÓA HỌC',
     field: 'KhoaHoc',
-    initialWidth: 120,
-    hide: true,
+    width: 110,
+    minWidth: 90,
+    filter: 'agTextColumnFilter',
   },
   {
     headerName: 'HỌC KỲ',

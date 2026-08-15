@@ -62,7 +62,7 @@ export const [ClassCellContext, useClassCellContext] = constate(() => {
 });
 
 function ClassCell({ data, isOutsideTable = false, forExport = false, ...restProps }: Props) {
-  const { MaLop, NgonNgu, TenMH, TenGV, PhongHoc, NBD, NKT, Thu, Tiet } = data;
+  const { MaLop, NgonNgu, TenMH, TenGV, PhongHoc, KhoaHoc, NBD, NKT, Thu, Tiet } = data;
   const removeClasses = useTkbStore((s) => s.removeClasses);
   const selectedClasses = useTkbStore(selectSelectedClasses);
   const isChiVeTkb = useTkbStore(selectIsChiVeTkb);
@@ -174,6 +174,12 @@ function ClassCell({ data, isOutsideTable = false, forExport = false, ...restPro
       <strong>{TenGV}</strong>
       <br />
       {PhongHoc}
+      {String(KhoaHoc ?? '').trim() !== '' && (
+        <>
+          <br />
+          <span className="cell-class-khoahoc">Chỉ áp dụng cho khoá {KhoaHoc}</span>
+        </>
+      )}
       <br />
       {forExport && (
         <>
