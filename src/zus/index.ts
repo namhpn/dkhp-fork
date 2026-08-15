@@ -1,4 +1,4 @@
-import { ColumnApi, GridApi } from 'ag-grid-community';
+import { GridApi } from 'ag-grid-community';
 import { partition } from 'lodash';
 import { memoize } from 'proxy-memoize';
 import { Mutate, StoreApi, create } from 'zustand';
@@ -27,7 +27,7 @@ type TkbStore = {
   } | null;
 
   selectedClasses: ClassModel[];
-  agGridColumnState: ReturnType<ColumnApi['getColumnState']> | null;
+  agGridColumnState: ReturnType<GridApi['getColumnState']> | null;
   agGridFilterModel: ReturnType<GridApi['getFilterModel']> | null;
 
   // Manual class-code mode for timetable/script output

@@ -1,7 +1,7 @@
 import {
-  AgGridEvent,
   CellStyle,
   ColDef,
+  DefaultMenuItem,
   FilterChangedEvent,
   FirstDataRenderedEvent,
   GetContextMenuItemsParams,
@@ -219,7 +219,7 @@ const buildColumnDefs = (): GridOptions['columnDefs'] => [
     pinned: 'left',
     sortable: false,
     filter: false,
-    suppressMenu: true,
+    suppressHeaderMenuButton: true,
     suppressNavigable: true,
     lockPosition: true,
     cellRenderer: SelectionToggleCell,
@@ -473,7 +473,7 @@ function getVisibleLeafCount(api: GridApi<ClassModel>) {
 }
 
 function getContextMenuItemsBuilder() {
-  type MenuItem = string | MenuItemDef;
+  type MenuItem = DefaultMenuItem | MenuItemDef;
 
   const menuItems: MenuItem[] = [];
   let numItemsInThisBlock = 0;
@@ -539,7 +539,7 @@ export const useGridOptions = () => {
     if (!agGridRef.current?.api) return;
     const { api } = agGridRef.current;
 
-    api.deselectAll(PROGRAMMATICALLY_CHANGE_SELECTION);
+    api.deselectAll();
 
     const toSelectNodes: IRowNode<ClassModel>[] = [];
     api.forEachNode((node) => {
@@ -602,21 +602,21 @@ export const useGridOptions = () => {
     updateVisibleCount();
   }, DEBOUNCE_TIME);
 
-  const onColumnChanged = useDebouncedCallback(({ columnApi }: AgGridEvent) => {
+  const onColumnChanged = useDebouncedCallback(({ api }: { api: GridApi }) => {
     log('>>onColumnChanged');
-    setAgGridColumnState(columnApi.getColumnState());
+    setAgGridColumnState(api.getColumnState());
   }, DEBOUNCE_TIME);
 
   const agGridFilterModel = useTkbStore(selectAgGridFilterModel);
   const agGridColumnState = useTkbStore(selectAgGridColumnState);
   const onGridReady = useCallback(
-    ({ api, columnApi }: GridReadyEvent<ClassModel, any>) => {
-      columnApiRef.current = columnApi;
+    ({ api }: GridReadyEvent<ClassModel, any>) => {
+      columnApiRef.current = api;
       if (agGridColumnState?.length) {
         const sanitizedColumnState = agGridColumnState.filter(
           (column) => column.colId !== 'TrangThai' && column.colId !== 'searchGroup',
         );
-        columnApi.applyColumnState({ state: sanitizedColumnState });
+        api.applyColumnState({ state: sanitizedColumnState });
       }
       if (agGridFilterModel && Object.keys(agGridFilterModel).length) {
         api.setFilterModel(agGridFilterModel);
@@ -627,7 +627,7 @@ export const useGridOptions = () => {
       const tokens = parseSearchTokens(quickFilterText);
       if (tokens.length > 1) {
         try {
-          columnApi.setRowGroupColumns(['searchGroup']);
+          api.setRowGroupColumns(['searchGroup']);
         } catch (e) {
           log('searchGroup grouping failed', e);
         }
@@ -640,9 +640,9 @@ export const useGridOptions = () => {
         }, 0);
       } else {
         try {
-          const currentGroups = columnApi.getRowGroupColumns().map((c: any) => c.getColId());
+          const currentGroups = api.getRowGroupColumns().map((c: any) => c.getColId());
           if (currentGroups.includes('searchGroup')) {
-            columnApi.setRowGroupColumns(currentGroups.filter((id: string) => id !== 'searchGroup'));
+            api.setRowGroupColumns(currentGroups.filter((id: string) => id !== 'searchGroup'));
           }
         } catch {}
       }
@@ -662,9 +662,9 @@ export const useGridOptions = () => {
   );
 
   const onFirstDataRendered = useCallback(
-    ({ api, columnApi }: FirstDataRenderedEvent) => {
+    ({ api }: FirstDataRenderedEvent) => {
       if (agGridColumnState?.length) return;
-      columnApi.autoSizeColumns(['MonHoc'], false);
+      api.autoSizeColumns(['MonHoc'], false);
     },
     [agGridColumnState],
   );
@@ -681,7 +681,7 @@ export const useGridOptions = () => {
   }, []);
 
   const getContextMenuItems = useCallback(
-    ({ value, column, api, columnApi }: GetContextMenuItemsParams<ClassModel>): (string | MenuItemDef)[] => {
+    ({ value, column, api }: GetContextMenuItemsParams<ClassModel>): (DefaultMenuItem | MenuItemDef)[] => {
       const { addToBlock, endOfBlock, constructFinal } = getContextMenuItemsBuilder();
       const headerName = column?.getColDef().headerName;
 
@@ -752,7 +752,7 @@ export const useGridOptions = () => {
       addToBlock('resetColumns', 'autoSizeAll');
       endOfBlock();
 
-      if (columnApi.getRowGroupColumns().length) {
+      if (api.getRowGroupColumns().length) {
         addToBlock('expandAll', 'contractAll');
       }
       endOfBlock();
