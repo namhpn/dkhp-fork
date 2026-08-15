@@ -2,7 +2,7 @@ import ExcelJS from 'exceljs';
 import { enqueueSnackbar } from 'notistack';
 import { ChangeEventHandler, useCallback, useRef, useState } from 'react';
 import { useTkbStore } from '../../zus';
-import { arrayToTkbObject, sheetJSFT, toDateTimeString } from './utils';
+import { arrayToTkbObject, sheetJSFT, splitMultiSessionClass, toDateTimeString } from './utils';
 
 export function useExcelImport() {
   const setDataExcel = useTkbStore((s) => s.setDataExcel);
@@ -50,15 +50,14 @@ export function useExcelImport() {
 
           const now = new Date();
           setDataExcel({
-            data: dataInArray.map(({ row, fromSheet }) => {
+            data: dataInArray.flatMap(({ row, fromSheet }) => {
               const obj = arrayToTkbObject(row);
-              // Sheet origin is authoritative: Sheet 1 is always LT, Sheet 2 trusts column value
               if (fromSheet === 'LT') {
                 obj.ThucHanh = 0;
               } else {
                 obj.ThucHanh = Number(obj.ThucHanh) || 1;
               }
-              return obj;
+              return splitMultiSessionClass(obj);
             }),
             fileName: file.name,
             lastUpdateTimestamp: now.getTime(),

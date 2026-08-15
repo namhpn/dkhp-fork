@@ -1,5 +1,18 @@
 import { ClassModelOriginal } from 'types';
 
+export function splitMultiSessionClass(original: ClassModelOriginal): ClassModelOriginal[] {
+  const thus = original.Thu.split(',').map((s) => s.trim());
+  if (thus.length <= 1) return [original];
+  const tiets = original.Tiet.split(',').map((s) => s.trim());
+  const phongs = (original.PhongHoc ?? '').split(',').map((s) => s.trim());
+  return thus.map((thu, i) => ({
+    ...original,
+    Thu: thu,
+    Tiet: tiets[i] ?? tiets[0] ?? original.Tiet,
+    PhongHoc: phongs[i] ?? phongs[0] ?? original.PhongHoc,
+  }));
+}
+
 export function arrayToTkbObject(array: any[]): ClassModelOriginal {
   // convert excel based date (1989-Dec-30) to Js based date (1970-Jan-01)
   function convertExcelDateToStringDate(excelDate) {

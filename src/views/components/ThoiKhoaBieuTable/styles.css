@@ -97,8 +97,8 @@
   margin-top: 0.3em;
   padding: 0.15em 0.5em;
   border-radius: 999px;
-  background: var(--surface-muted, var(--surface-muted-fallback));
-  color: var(--ink-2, var(--ink-2-fallback));
+  background: #ECFDF5;
+  color: #047857;
   font-size: 0.78em;
   font-weight: 600;
   line-height: 1.4;
@@ -110,8 +110,8 @@
   margin-top: 0.3em;
   padding: 0.15em 0.5em;
   border-radius: 999px;
-  background: #f4f4f4;
-  color: #4a4a4a;
+  background: #ECFDF5;
+  color: #047857;
   font-size: 10px;
   font-weight: 600;
   line-height: 1.4;

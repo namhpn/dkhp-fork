@@ -177,7 +177,7 @@ function ClassCell({ data, isOutsideTable = false, forExport = false, ...restPro
       {String(KhoaHoc ?? '').trim() !== '' && (
         <>
           <br />
-          <span className="cell-class-khoahoc">Chỉ áp dụng cho khoá {KhoaHoc}</span>
+          <span className="cell-class-khoahoc">Khoá {KhoaHoc}</span>
         </>
       )}
       <br />
