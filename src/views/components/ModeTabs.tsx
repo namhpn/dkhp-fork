@@ -35,10 +35,7 @@ function ModeTabs() {
 
     event.preventDefault();
 
-    const nextIndex =
-      event.key === 'ArrowLeft'
-        ? (index - 1 + tabs.length) % tabs.length
-        : (index + 1) % tabs.length;
+    const nextIndex = event.key === 'ArrowLeft' ? (index - 1 + tabs.length) % tabs.length : (index + 1) % tabs.length;
 
     tabs[nextIndex].onSelect();
     tabRefs.current[nextIndex]?.focus();

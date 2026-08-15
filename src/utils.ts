@@ -21,8 +21,8 @@ export function getTongSoTcJudgement(tongSoTC: number) {
     tongSoTC < 14
       ? 'Chưa đạt số TC quy định: 14'
       : tongSoTC > 24
-      ? 'Vượt quá số TC quy định: 24'
-      : 'Thỏa mãn số TC quy định 14-24';
+        ? 'Vượt quá số TC quy định: 24'
+        : 'Thỏa mãn số TC quy định 14-24';
   const isOk = tongSoTC >= 14 && tongSoTC <= 24;
   return {
     isOk,

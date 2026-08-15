@@ -13,13 +13,7 @@ function SelectedIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="10" cy="10" r="9" fill="currentColor" />
-      <path
-        d="M6 10.2L8.6 12.8L14 7.4"
-        stroke="white"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M6 10.2L8.6 12.8L14 7.4" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -54,8 +48,8 @@ function SelectionToggleCell(params: ICellRendererParams<ClassModel, unknown, Gr
   const label = selected
     ? `Bỏ chọn ${data.MaLop}`
     : disabled
-    ? `Không thể chọn ${data.MaLop}: trùng ${conflictMaLop}`
-    : `Chọn ${data.MaLop}`;
+      ? `Không thể chọn ${data.MaLop}: trùng ${conflictMaLop}`
+      : `Chọn ${data.MaLop}`;
 
   const button = (
     <button

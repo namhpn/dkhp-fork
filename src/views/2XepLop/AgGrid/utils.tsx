@@ -109,11 +109,9 @@ export function parseSearchTokensLower(input: string): string[] {
 
 /** Return searchable text values for a row (lower-cased). */
 function getSearchableText(row: ClassModel): string[] {
-  return [
-    row.MaMH || row.TenMH ? `${row.MaMH} - ${row.TenMH}` : '',
-    row.MaLop ?? '',
-    row.TenGV ?? '',
-  ].map((s) => s.toLowerCase());
+  return [row.MaMH || row.TenMH ? `${row.MaMH} - ${row.TenMH}` : '', row.MaLop ?? '', row.TenGV ?? ''].map((s) =>
+    s.toLowerCase(),
+  );
 }
 
 /** Check if a row matches a single lower-cased token across searchable fields. */
@@ -122,10 +120,7 @@ export function rowMatchesToken(row: ClassModel, lowerToken: string): boolean {
 }
 
 /** Return the display label of the first matching token (input order wins), or null. */
-export function getFirstMatchingTokenLabel(
-  row: ClassModel,
-  tokens: string[],
-): string | null {
+export function getFirstMatchingTokenLabel(row: ClassModel, tokens: string[]): string | null {
   const lowerTexts = getSearchableText(row);
   for (let i = 0; i < tokens.length; i++) {
     const lowerToken = tokens[i].toLowerCase();
@@ -137,9 +132,7 @@ export function getFirstMatchingTokenLabel(
 }
 
 /** Factory: create a hidden column definition for search-group row grouping. */
-function createSearchGroupColumnDef(
-  getTokens: () => string[],
-): ColDef<ClassModel> {
+function createSearchGroupColumnDef(getTokens: () => string[]): ColDef<ClassModel> {
   return {
     colId: 'searchGroup',
     headerName: 'Nhóm tìm kiếm',
@@ -186,15 +179,9 @@ export function useGridSearchGrouping(
     [tokens],
   );
 
-  const searchGroupColDef = useMemo(
-    () => createSearchGroupColumnDef(() => tokens),
-    [tokens],
-  );
+  const searchGroupColDef = useMemo(() => createSearchGroupColumnDef(() => tokens), [tokens]);
 
-  const searchAutoGroupColumnDef = useMemo(
-    () => createAutoGroupColumnDef(() => tokens),
-    [tokens],
-  );
+  const searchAutoGroupColumnDef = useMemo(() => createAutoGroupColumnDef(() => tokens), [tokens]);
 
   // Toggle grouping on the synthetic searchGroup column
   useEffect(() => {
@@ -442,9 +429,7 @@ const defaultColDef: GridOptions['defaultColDef'] = {
   getQuickFilterText,
 };
 
-function createAutoGroupColumnDef(
-  getTokens: () => string[],
-): GridOptions['autoGroupColumnDef'] {
+function createAutoGroupColumnDef(getTokens: () => string[]): GridOptions['autoGroupColumnDef'] {
   return {
     sort: 'asc',
     width: 120,
@@ -666,7 +651,14 @@ export const useGridOptions = () => {
       }
       updateVisibleCount();
     },
-    [agGridColumnState, agGridFilterModel, quickFilterText, selectedClasses, updateNodesSelectionToAgGrid, updateVisibleCount],
+    [
+      agGridColumnState,
+      agGridFilterModel,
+      quickFilterText,
+      selectedClasses,
+      updateNodesSelectionToAgGrid,
+      updateVisibleCount,
+    ],
   );
 
   const onFirstDataRendered = useCallback(

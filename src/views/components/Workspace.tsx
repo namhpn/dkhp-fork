@@ -12,11 +12,7 @@ function Workspace() {
   const { isStacked, isCompact } = useWorkspaceLayout(timetableRef);
 
   return (
-    <main
-      id="main-workspace"
-      className={clsx('workspace', isStacked && 'workspace--stacked')}
-      tabIndex={-1}
-    >
+    <main id="main-workspace" className={clsx('workspace', isStacked && 'workspace--stacked')} tabIndex={-1}>
       <section className="workspace-main" aria-label="Khu vực làm việc">
         {isChiVeTkb ? <ManualWorkspace /> : <GridWorkspace />}
       </section>

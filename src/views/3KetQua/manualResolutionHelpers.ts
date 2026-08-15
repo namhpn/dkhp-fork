@@ -223,11 +223,6 @@ export const getSubjectCourseName = (
   return null;
 };
 
-export const getComboClassRows = (
-  combo: SuggestionCombo,
-  classByMaLop: Map<string, ClassModel>,
-): ClassModel[] => {
-  return combo.fullCodes
-    .map((code) => classByMaLop.get(code))
-    .filter((row): row is ClassModel => row !== undefined);
+export const getComboClassRows = (combo: SuggestionCombo, classByMaLop: Map<string, ClassModel>): ClassModel[] => {
+  return combo.fullCodes.map((code) => classByMaLop.get(code)).filter((row): row is ClassModel => row !== undefined);
 };

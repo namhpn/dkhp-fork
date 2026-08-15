@@ -30,9 +30,7 @@ beforeEach(() => {
 test('renders upload button when no file is loaded', () => {
   render(<HeaderFileControl />);
 
-  expect(
-    screen.getByRole('button', { name: 'Tải file thời khóa biểu (.xlsx)' }),
-  ).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Tải file thời khóa biểu (.xlsx)' })).toBeInTheDocument();
 });
 
 test('when file is loaded, shows filename and does not render Đổi file button', () => {
@@ -74,7 +72,5 @@ test('confirming remove clears file and shows upload button again', async () => 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  expect(
-    screen.getByRole('button', { name: 'Tải file thời khóa biểu (.xlsx)' }),
-  ).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Tải file thời khóa biểu (.xlsx)' })).toBeInTheDocument();
 });

@@ -64,7 +64,9 @@ export function formatTimestampToString(timestamp: number): string {
 }
 
 // Get formatted lastUpdate string from dataExcel (backward compatible)
-export function getLastUpdateString(dataExcel: { lastUpdate?: string; lastUpdateTimestamp?: number } | null): string | undefined {
+export function getLastUpdateString(
+  dataExcel: { lastUpdate?: string; lastUpdateTimestamp?: number } | null,
+): string | undefined {
   if (!dataExcel) return undefined;
   if (dataExcel.lastUpdateTimestamp !== undefined) {
     return formatTimestampToString(dataExcel.lastUpdateTimestamp);

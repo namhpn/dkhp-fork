@@ -16,9 +16,7 @@ function getStackedFromMedia(): boolean {
   return mediaQuery ? !mediaQuery.matches : false;
 }
 
-export function useWorkspaceLayout(
-  timetableRef: RefObject<HTMLElement | null>,
-): WorkspaceLayoutState {
+export function useWorkspaceLayout(timetableRef: RefObject<HTMLElement | null>): WorkspaceLayoutState {
   const [isStacked, setIsStacked] = useState(getStackedFromMedia);
   const [timetableWidth, setTimetableWidth] = useState(TIMETABLE_COMPACT_BREAKPOINT);
 

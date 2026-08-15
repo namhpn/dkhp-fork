@@ -12,16 +12,7 @@ import { selectIsChiVeTkb, selectSelectedClasses, selectSelectedClassesOutput, u
 import { usePhanLoaiHocTrenTruongContext } from './hooks';
 import './styles.css';
 
-const randomColors = [
-  '#2563EB',
-  '#1D4ED8',
-  '#0F766E',
-  '#047857',
-  '#B45309',
-  '#B91C1C',
-  '#52525B',
-  '#18181B',
-] as const;
+const randomColors = ['#2563EB', '#1D4ED8', '#0F766E', '#047857', '#B45309', '#B91C1C', '#52525B', '#18181B'] as const;
 
 type Props = {
   data: ClassModel;

@@ -16,11 +16,7 @@ import ThoiKhoaBieuTable, { TkbTableHandle } from './ThoiKhoaBieuTable';
 
 type PanelState = 'no-file' | 'no-grid-selection' | 'no-manual-classes' | 'has-classes';
 
-function getPanelState(
-  hasFile: boolean,
-  isChiVeTkb: boolean,
-  activeClassesCount: number,
-): PanelState {
+function getPanelState(hasFile: boolean, isChiVeTkb: boolean, activeClassesCount: number): PanelState {
   if (!hasFile) return 'no-file';
   if (activeClassesCount > 0) return 'has-classes';
   if (isChiVeTkb) return 'no-manual-classes';
@@ -100,11 +96,7 @@ const TimetablePanel = React.forwardRef<HTMLDivElement, TimetablePanelProps>(fun
                 <span className="timetable-stat-value">{listMaLop.length}</span>
                 <span className="timetable-stat-label">Lớp đã chọn</span>
               </span>
-              <span
-                className={
-                  'timetable-stat' + (creditJudgement.isOk ? '' : ' timetable-stat--warn')
-                }
-              >
+              <span className={'timetable-stat' + (creditJudgement.isOk ? '' : ' timetable-stat--warn')}>
                 <span className="timetable-stat-value">{tongSoTC}</span>
                 <span className="timetable-stat-label">Số tín chỉ</span>
               </span>

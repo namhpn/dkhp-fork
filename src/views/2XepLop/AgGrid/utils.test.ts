@@ -1,9 +1,4 @@
-import {
-  parseSearchTokens,
-  parseSearchTokensLower,
-  rowMatchesToken,
-  getFirstMatchingTokenLabel,
-} from './utils';
+import { parseSearchTokens, parseSearchTokensLower, rowMatchesToken, getFirstMatchingTokenLabel } from './utils';
 import type { ClassModel } from 'types';
 
 // ── Test fixtures ──────────────────────────────────────────────────────────

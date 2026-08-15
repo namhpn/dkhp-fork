@@ -1,12 +1,7 @@
 import CheckIcon from '@mui/icons-material/Check';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import { useEffect, useMemo, useState } from 'react';
-import {
-  selectFinalDataTkb,
-  selectManualRecommendations,
-  selectManualResolvedMaLop,
-  useTkbStore,
-} from '../../zus';
+import { selectFinalDataTkb, selectManualRecommendations, selectManualResolvedMaLop, useTkbStore } from '../../zus';
 import { DanhSachLopInput } from './ScriptDangKyInput';
 import {
   buildSelectedComboMap,
@@ -145,7 +140,7 @@ export function ManualResolutionWorkspace() {
   };
 
   const activeCombos = useMemo(
-    () => (activeSubject ? subjectCombos[activeSubject] ?? [] : []),
+    () => (activeSubject ? (subjectCombos[activeSubject] ?? []) : []),
     [activeSubject, subjectCombos],
   );
   const activeCourseName = useMemo(
@@ -155,21 +150,14 @@ export function ManualResolutionWorkspace() {
   const showResolution = queueOrder.length > 0;
 
   return (
-    <div
-      className={
-        'manual-resolution-workspace' + (showResolution ? ' manual-resolution-workspace--resolving' : '')
-      }
-    >
+    <div className={'manual-resolution-workspace' + (showResolution ? ' manual-resolution-workspace--resolving' : '')}>
       <DanhSachLopInput />
 
       {showResolution && (
         <div className="manual-resolution-body">
           <nav className="manual-resolution-nav" aria-label="Mã cần chọn">
             <p
-              className={
-                'manual-resolution-progress' +
-                (allResolved ? ' manual-resolution-progress--complete' : '')
-              }
+              className={'manual-resolution-progress' + (allResolved ? ' manual-resolution-progress--complete' : '')}
               aria-live="polite"
             >
               {allResolved
@@ -179,12 +167,9 @@ export function ManualResolutionWorkspace() {
             <ul className="manual-resolution-subject-list">
               {queueOrder.map((subject) => {
                 const combos = subjectCombos[subject] ?? [];
-                const resolved = combos.some((combo) =>
-                  isSelectedCombo(subject, combo, selectedCombo),
-                );
+                const resolved = combos.some((combo) => isSelectedCombo(subject, combo, selectedCombo));
                 const isActive = subject === activeSubject;
-                const courseName =
-                  combos.length > 0 ? getSubjectCourseName(combos, classByMaLop) : null;
+                const courseName = combos.length > 0 ? getSubjectCourseName(combos, classByMaLop) : null;
 
                 return (
                   <li key={subject}>

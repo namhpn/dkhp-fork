@@ -10,7 +10,6 @@ import muiTheme from './theme/muiTheme';
 import 'ag-grid-enterprise/styles/ag-grid.css';
 import 'ag-grid-enterprise/styles/ag-theme-alpine.css';
 
-
 LicenseManager.setLicenseKey('I_<3_SCHOOL_NDEwMjMzMzIwMDAwMA==afc05c982fa05a2578eb9cab60c42d78');
 
 ReactDOM.render(

@@ -44,8 +44,7 @@ const MIN_VISIBLE_ROWS = 10;
 const MAX_ROWS = 14;
 const ROW_BUFFER_AFTER_LAST = 1;
 
-export const isRowEmpty = (row: RowData): boolean =>
-  Object.values(row).every((cell) => cell === CELL.NO_CLASS);
+export const isRowEmpty = (row: RowData): boolean => Object.values(row).every((cell) => cell === CELL.NO_CLASS);
 
 export const getLastOccupiedRowIndex = (rows: TableData): number => {
   for (let i = rows.length - 1; i >= 0; i--) {
