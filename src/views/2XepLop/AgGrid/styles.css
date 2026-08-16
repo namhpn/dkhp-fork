@@ -198,6 +198,18 @@
   cursor: pointer;
 }
 
+/* Group header rows never take the selected tint — only their leaf rows do.
+   Alpine paints selection on both the row and its ::before layer. */
+.course-grid .ag-row-group.ag-row-selected,
+.course-grid .ag-row-group.ag-row-selected::before {
+  background-color: transparent;
+}
+
+.course-grid .ag-row-group.ag-row-selected.ag-row-odd,
+.course-grid .ag-row-group.ag-row-selected.ag-row-odd::before {
+  background-color: var(--ag-odd-row-background-color);
+}
+
 .course-grid .ag-header-cell-filtered,
 .course-grid .ag-filter-toolpanel-group.ag-has-filter {
   background-color: var(--warning-soft, var(--warning-soft-fallback)) !important;

@@ -22,6 +22,9 @@ type Props = {
 } & React.TdHTMLAttributes<HTMLTableCellElement>;
 
 const getMonChonRoiKey = (data: ClassModel) => `${data.MaMH}-${data.ThucHanh}`;
+/** Files without NBD/NKT columns yield 'NaN-NaN-NaN' — treat that as missing (legacy persisted imports stored it verbatim). */
+const isMissingNgay = (value: string | undefined | null) =>
+  value == null || String(value).trim() === '' || String(value).includes('NaN');
 const useMonChonRoi = () => {
   const newRandomColors = useMemo(() => reverse([...randomColors]), []);
   const selectedClasses = useTkbStore(selectSelectedClassesOutput);
@@ -90,11 +93,13 @@ function ClassCell({ data, isOutsideTable = false, forExport = false, ...restPro
     );
   });
   const isRedundantRelated = redundantIndex > -1;
-  const detailTooltip = (
-    <span style={{ whiteSpace: 'pre-line' }}>
-      {isRedundantRelated ? `Bị trùng TKB\nBĐ: ${NBD}\nKT: ${NKT}` : `BĐ: ${NBD}\nKT: ${NKT}`}
-    </span>
-  );
+  const hasNbd = !isMissingNgay(NBD);
+  const hasNkt = !isMissingNgay(NKT);
+  const detailTooltipText = [
+    ...(isRedundantRelated ? ['Bị trùng TKB'] : []),
+    ...(hasNbd ? [`BĐ: ${NBD}`] : []),
+    ...(hasNkt ? [`KT: ${NKT}`] : []),
+  ].join('\n');
 
   const warningBorder = isWarning(data) ? 'inset 0 0 0 2px var(--warning, var(--warning-fallback))' : null;
   const redundantBorder = isRedundantRelated ? `inset 0 0 0 3px ${randomColors[redundantIndex]}` : null;
@@ -181,10 +186,14 @@ function ClassCell({ data, isOutsideTable = false, forExport = false, ...restPro
         </>
       )}
       <br />
-      {forExport && (
+      {forExport && hasNbd && (
         <>
           BĐ: {NBD}
           <br />
+        </>
+      )}
+      {forExport && hasNkt && (
+        <>
           KT: {NKT}
           <br />
         </>
@@ -201,11 +210,13 @@ function ClassCell({ data, isOutsideTable = false, forExport = false, ...restPro
     </td>
   );
 
-  if (forExport) {
+  if (forExport || detailTooltipText === '') {
     return cell;
   }
 
-  return <Tooltip title={detailTooltip}>{cell}</Tooltip>;
+  return (
+    <Tooltip title={<span style={{ whiteSpace: 'pre-line' }}>{detailTooltipText}</span>}>{cell}</Tooltip>
+  );
 }
 
 export default ClassCell;

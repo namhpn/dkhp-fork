@@ -1,8 +1,22 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { AgGridReact } from 'ag-grid-react';
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+import { ColumnMenuModule, ContextMenuModule, LicenseManager, RowGroupingModule } from 'ag-grid-enterprise';
 import { ClassModel } from 'types';
+
+import 'ag-grid-enterprise/styles/ag-grid.css';
+import 'ag-grid-enterprise/styles/ag-theme-alpine.css';
 import './styles.css';
 import { useGridOptions } from './utils';
+
+// ag-grid lives entirely in this lazy chunk: registering here (module scope) keeps the
+// enterprise anchor out of the entry chunk — the grid is unreachable until an Excel
+// import sets dataExcel. Register only the features in use — RowGrouping (multi-token
+// search), ContextMenu and the ColumnMenu (header menu) pull their internal
+// dependencies via ModuleRegistry; everything else (charts, Excel export, set filter,
+// side bars, …) stays tree-shaken out. setupTests.ts mirrors this for tests.
+ModuleRegistry.registerModules([AllCommunityModule, ColumnMenuModule, ContextMenuModule, RowGroupingModule]);
+LicenseManager.setLicenseKey('I_<3_SCHOOL_NDEwMjMzMzIwMDAwMA==afc05c982fa05a2578eb9cab60c42d78');
 
 const SEARCH_PLACEHOLDER = 'Tìm theo lớp, môn, GV… (phân cách bằng ;)';
 
@@ -35,6 +49,26 @@ function AgGrid() {
   } = useGridOptions();
 
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Stable object identity forever — ag-grid re-processes selection options (and
+  // re-renders rows) whenever the rowSelection object changes, which breaks cell
+  // interactions mid-click and triggers flushSync warnings. Fresh selectability is
+  // delivered through the ref; the utils effect keeps node.selectable in sync.
+  // checkboxes/headerCheckbox stay off: the pinned "action" toggle is the app's
+  // selection UI; the v32.2+ object API would otherwise add a default selection column.
+  const isRowSelectableRef = useRef(isRowSelectable);
+  isRowSelectableRef.current = isRowSelectable;
+  const rowSelection = useMemo(
+    () => ({
+      mode: 'multiRow' as const,
+      enableClickSelection: false,
+      groupSelects: 'filteredDescendants' as const,
+      checkboxes: false,
+      headerCheckbox: false,
+      isRowSelectable: (node) => isRowSelectableRef.current(node),
+    }),
+    [],
+  );
 
   // "/" focuses search from anywhere outside a text field
   useEffect(() => {
@@ -90,7 +124,8 @@ function AgGrid() {
           ref={agGridRef}
           rowData={rowData}
           context={gridContext}
-          isRowSelectable={isRowSelectable}
+          theme="legacy"
+          rowSelection={rowSelection}
           defaultColDef={defaultColDef}
           columnDefs={columnDefs}
           autoGroupColumnDef={autoGroupColumnDef}
@@ -98,15 +133,10 @@ function AgGrid() {
           rowHeight={34}
           enableCellTextSelection={true}
           suppressAnimationFrame={true}
-          suppressRowClickSelection={true}
-          rowSelection="multiple"
-          groupSelectsChildren={true}
-          groupSelectsFiltered={true}
           isExternalFilterPresent={isExternalFilterPresent}
           doesExternalFilterPass={doesExternalFilterPass}
           getMainMenuItems={getMainMenuItems}
           getContextMenuItems={getContextMenuItems}
-          rowGroupPanelShow="never"
           suppressDragLeaveHidesColumns={true}
           rowClass="ag-cell-normal"
           onColumnVisible={onColumnChanged}
