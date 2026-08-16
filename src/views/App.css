@@ -621,7 +621,7 @@ textarea:focus-visible,
 .schedule-panel,
 .timetable-panel {
   margin-top: 0;
-  padding: 14px;
+  padding: var(--space-4);
   position: relative;
   background: var(--app-surface);
   border: 1px solid var(--app-border-soft);
@@ -632,18 +632,16 @@ textarea:focus-visible,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 36px;
-  margin-bottom: 12px;
-  padding: 0 2px 10px;
-  border-bottom: 1px solid var(--border-soft, var(--border-soft-fallback));
+  margin-bottom: var(--space-3);
+  padding: 0;
 }
 
 .timetable-panel-title-row {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  column-gap: 14px;
-  row-gap: 8px;
+  column-gap: var(--space-3);
+  row-gap: var(--space-2);
   width: 100%;
   min-width: 0;
 }
@@ -662,7 +660,7 @@ textarea:focus-visible,
   display: inline-flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--space-3);
   min-width: 0;
 }
 
@@ -673,11 +671,11 @@ textarea:focus-visible,
   display: inline-flex;
   align-items: center;
   flex: 0 0 auto;
-  gap: 6px;
+  gap: var(--space-1);
 }
 
 .timetable-panel-stats .timetable-stat + .timetable-stat {
-  padding-left: 12px;
+  padding-left: var(--space-3);
   border-left: 1px solid var(--border-soft, var(--border-soft-fallback));
 }
 
@@ -798,12 +796,11 @@ textarea:focus-visible,
 @media (max-width: 767px) {
   .schedule-panel-header {
     align-items: flex-start;
-    padding-bottom: 8px;
   }
 
   .timetable-panel-title-row {
     grid-template-columns: minmax(0, 1fr) auto;
-    row-gap: 8px;
+    row-gap: var(--space-2);
   }
 
   .timetable-panel-stats {

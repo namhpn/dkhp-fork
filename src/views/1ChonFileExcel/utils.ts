@@ -16,17 +16,19 @@ export function splitMultiSessionClass(original: ClassModelOriginal): ClassModel
 export function arrayToTkbObject(array: any[]): ClassModelOriginal {
   // convert excel based date (1989-Dec-30) to Js based date (1970-Jan-01)
   function convertExcelDateToStringDate(excelDate) {
+    // Files without NBD/NKT columns pass undefined/null here
+    if (excelDate == null) return '';
     // in Excel, based date is 1989-Dec-30: https://stackoverflow.com/questions/36378476/why-does-the-date-returns-31-12-1899-when-1-is-passed-to-it
     // @ts-ignore
     const offsetOfBases = new Date(0) - new Date(1899, 11, 31);
     const jsDate = new Date(excelDate * 24 * 60 * 60 * 1000 - offsetOfBases);
-    return (
+    const formatted =
       jsDate.getFullYear() +
       '-' +
       (jsDate.getMonth() + 1).toString().padStart(2, '0') +
       '-' +
-      jsDate.getDate().toString().padStart(2, '0')
-    );
+      jsDate.getDate().toString().padStart(2, '0');
+    return formatted.includes('NaN') ? '' : formatted;
   }
 
   return {

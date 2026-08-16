@@ -9,6 +9,9 @@
 #thoi-khoa-bieu td {
   padding: 0.65em 0.5em;
   border: 1px solid var(--border-soft, var(--border-soft-fallback));
+}
+
+#thoi-khoa-bieu td {
   /* Codes like IT001.R11.MTUN.1 have no spaces; wrap them instead of overflowing the fixed layout */
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -41,6 +44,7 @@
 /* Time column stays distinct from the equal-width weekday columns (fixed layout reads first row) */
 #thoi-khoa-bieu table thead tr th:first-child {
   width: 11em;
+  white-space: nowrap;
 }
 
 #thoi-khoa-bieu table tr td {
@@ -54,6 +58,7 @@
   text-align: center;
   font-size: 0.86rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 #thoi-khoa-bieu .cell-class {
@@ -142,6 +147,15 @@
   padding: 0.45em 0.3em;
 }
 
+#thoi-khoa-bieu.compact td {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+#thoi-khoa-bieu.compact th {
+  white-space: nowrap;
+}
+
 #thoi-khoa-bieu.compact table thead tr th {
   font-size: 0.72rem;
 }
@@ -152,11 +166,13 @@
 }
 
 #thoi-khoa-bieu.compact table thead tr th:first-child {
-  width: 7.5em;
+  width: 10em;
+  white-space: nowrap;
 }
 
 #thoi-khoa-bieu.compact .cell-tiet {
   font-size: 0.78rem;
+  white-space: nowrap;
 }
 
 #thoi-khoa-bieu.compact .cell-class {

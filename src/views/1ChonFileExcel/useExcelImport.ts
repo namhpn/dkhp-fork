@@ -1,6 +1,6 @@
-import ExcelJS from 'exceljs';
 import { enqueueSnackbar } from 'notistack';
 import { ChangeEventHandler, useCallback, useRef, useState } from 'react';
+import type { Worksheet } from 'exceljs';
 import { useTkbStore } from '../../zus';
 import { arrayToTkbObject, sheetJSFT, splitMultiSessionClass, toDateTimeString } from './utils';
 
@@ -19,13 +19,16 @@ export function useExcelImport() {
       reader.onload = async (e) => {
         try {
           const buffer = e?.target?.result as ArrayBuffer;
-          const wb = new ExcelJS.Workbook();
+          // Loaded on demand: exceljs (+jszip/pako/buffer) is ~27% of the old entry
+          // chunk and only runs inside this file-picker handler.
+          const { Workbook } = await import('exceljs');
+          const wb = new Workbook();
           await wb.xlsx.load(buffer);
 
           const wsLyThuyet = wb.worksheets[0];
           const wsThucHanh = wb.worksheets[1];
 
-          const sheetToRows = (ws: ExcelJS.Worksheet): any[][] => {
+          const sheetToRows = (ws: Worksheet): any[][] => {
             const rows: any[][] = [];
             ws.eachRow({ includeEmpty: false }, (row) => {
               const vals = row.values as any[];

@@ -1,5 +1,4 @@
 import constate from 'constate';
-import html2canvas from 'html2canvas';
 import React from 'react';
 import { enqueueSnackbar } from 'notistack';
 import { ClassModel } from '../../../types';
@@ -114,6 +113,8 @@ export const useProcessImageTkb = () => {
   const saveTkbImageToComputer = React.useCallback(async () => {
     try {
       if (!tkbTableRef.current) return;
+      // Loaded on demand: html2canvas (~6% of the old entry chunk) only runs for this export click.
+      const { default: html2canvas } = await import('html2canvas');
       const canvas = await html2canvas(tkbTableRef.current, {
         backgroundColor: '#ffffff',
         scale: Math.min(window.devicePixelRatio || 1, 2),

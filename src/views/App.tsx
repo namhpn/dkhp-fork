@@ -1,13 +1,17 @@
-import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import AppHeader from './components/AppHeader';
 import AppShell from './components/AppShell';
 import ErrorBoundary from './components/ErrorBoundary';
-import ScrollToTop from './components/ScrollToTop';
 import Workspace from './components/Workspace';
 import './App.css';
 
 function AppContent() {
+  // The app has no routes; this effect replaces the old router-driven ScrollToTop
+  // (its pathname dependency could never change without navigation).
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <AppShell>
       <a href="#main-workspace" className="skip-link">
@@ -22,16 +26,9 @@ function AppContent() {
 function App() {
   return (
     <ErrorBoundary>
-      <BrowserRouter basename={process.env.PUBLIC_URL}>
-        <RouteReset />
-        <AppContent />
-      </BrowserRouter>
+      <AppContent />
     </ErrorBoundary>
   );
-}
-
-function RouteReset() {
-  return <ScrollToTop />;
 }
 
 export default App;

@@ -1,5 +1,5 @@
-import { GridApi } from 'ag-grid-community';
-import { partition } from 'lodash';
+import type { GridApi } from 'ag-grid-community';
+import partition from 'lodash/partition';
 import { memoize } from 'proxy-memoize';
 import { Mutate, StoreApi, create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';

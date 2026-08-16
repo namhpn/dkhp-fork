@@ -859,12 +859,12 @@ export const useGridOptions = () => {
 
   useEffect(() => {
     agGridRef.current?.api?.forEachLeafNode((node) => {
-      const oldSelectable = node.selectable;
       const newSelectable = isRowSelectable(node);
-      if (oldSelectable === newSelectable) return;
+      if (node.selectable === newSelectable) return;
 
-      // @ts-ignore
-      node.setRowSelectable(isRowSelectable(node));
+      // v33: RowNode has no setRowSelectable(); assign the property directly —
+      // the action column refresh below re-renders the toggle cell state.
+      node.selectable = newSelectable;
     });
     refreshSelectionColumns();
   }, [selectedClasses, isRowSelectable, refreshSelectionColumns]);
